@@ -12,7 +12,7 @@ class Work(position: Position, val maxPeople: Int) : Place(position, zIndex = 1,
 
 class FoodShop(position: Position) : Place(position, zIndex = 2, Color(0xFF359750))
 
-class Home(position: Position) : Place(position, zIndex = 3, color = Color(0xFF237cec))
+class Home(position: Position) : Place(position, zIndex = 3, color = Color(0xFF94bdf8))
 // Also other shop?
 
 // Also education?

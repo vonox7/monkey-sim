@@ -30,7 +30,7 @@ class CanvasDrawer(
         // Background
         val worldBottomRight = Position(worldWidth, worldHeight).toOffset()
         drawRect(
-          color = Color(0xFFDFDFDF),
+          color = Color(0xFFFFFFFF),
           topLeft = Offset(0f, 0f),
           size = Size(worldBottomRight.x, worldBottomRight.y)
         )
@@ -49,16 +49,32 @@ class CanvasDrawer(
               val position = place.position
               val topLeft = position.toOffset()
               val center = topLeft + (Position(1, 1).toOffset() * 0.5f)
-              val size = 4.dp.toPx()
+              val outline = 1.dp.toPx()
+              val size = 7.dp.toPx()
               val resizedTopLeft = center - Offset(size, size) * 0.5f
-              drawRect(
-                color = place.color,
-                topLeft = resizedTopLeft,
-                size = Size(size, size),
-              )
+
               when (place) {
                 is Home -> {
+                  // Draw box
+                  drawRect(
+                    color = Color.White,
+                    topLeft = resizedTopLeft - Offset(outline, outline),
+                    size = Size(size + outline * 2, size + outline * 2),
+                  )
+                  drawRect(
+                    color = place.color,
+                    topLeft = resizedTopLeft,
+                    size = Size(size, size),
+                  )
+
                   // Draw house roof
+                  val outlinePath = Path()
+                  outlinePath.moveTo(resizedTopLeft.x - outline, resizedTopLeft.y)
+                  outlinePath.lineTo(resizedTopLeft.x + size / 2, resizedTopLeft.y - size / 2 - outline)
+                  outlinePath.lineTo(resizedTopLeft.x + size + outline, resizedTopLeft.y)
+                  outlinePath.close()
+                  drawPath(outlinePath, color = Color.White)
+
                   val path = Path()
                   path.moveTo(resizedTopLeft.x, resizedTopLeft.y)
                   path.lineTo(resizedTopLeft.x + size / 2, resizedTopLeft.y - size / 2)
@@ -67,8 +83,36 @@ class CanvasDrawer(
                   drawPath(path, color = place.color)
                 }
 
-                is FoodShop -> Color(0xFF359750)
+                is FoodShop -> {
+                  // Draw box with left side shorter
+                  drawRect(
+                    color = Color.White,
+                    topLeft = resizedTopLeft - Offset(outline, outline),
+                    size = Size(size + outline * 2, size + outline * 2),
+                  )
+                  val path = Path()
+                  path.moveTo(resizedTopLeft.x, resizedTopLeft.y + size * 0.2f)
+                  path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y)
+                  path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y + size)
+                  path.lineTo(resizedTopLeft.x, resizedTopLeft.y + size)
+                  path.close()
+
+                  drawPath(path, color = place.color)
+                }
+
                 is Work -> {
+                  // Draw box
+                  drawRect(
+                    color = Color.White,
+                    topLeft = resizedTopLeft - Offset(outline, outline),
+                    size = Size(size + outline * 2, size + outline * 2),
+                  )
+                  drawRect(
+                    color = place.color,
+                    topLeft = resizedTopLeft,
+                    size = Size(size, size),
+                  )
+
                   // Draw chimney
                   val path = Path()
                   path.moveTo(resizedTopLeft.x + size, resizedTopLeft.y)
@@ -82,18 +126,20 @@ class CanvasDrawer(
             }
 
         // Draw actors
+
         world.actors.forEach { actor ->
           val topLeft = actor.currentPosition.toOffset()
           val center = topLeft + (Position(1, 1).toOffset() * 0.5f)
+          val size = 2.4f
           drawCircle(
             color = Color(0xFFceb28b),
             center = center,
-            radius = 1.9f.dp.toPx(),
+            radius = size.dp.toPx(),
           )
           drawCircle(
             color = Color(0xFF4a2a0b),
             center = center,
-            radius = 1.33f.dp.toPx(),
+            radius = (size - 0.6f).dp.toPx(),
           )
         }
 
