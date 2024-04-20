@@ -7,7 +7,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
 
   // Commute
   if (targetState.targetPlace.position != currentPosition) {
-    val commuteSpeed = 300 * elapsedHours // TODO travel speed
+    val commuteSpeed = 500 * elapsedHours // TODO travel speed
     val direction = currentPosition.directionTo(targetState.targetPlace.position, maxTravelSpeed = commuteSpeed)
     currentPosition += Position(direction.dx, direction.dy)
     return
@@ -31,7 +31,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
         money -= 200 * elapsedHours
       }
 
-      is Sleeping -> needs.sleep.add(0.1, elapsedHours)
+      is Sleeping -> needs.sleep.add(0.125, elapsedHours)
       is Socializing -> TODO()
       is Working -> money += 20 * elapsedHours
     }
@@ -45,9 +45,8 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
 private fun Actor.decreaseNeeds(elapsedHours: Double) {
   if (perceivedState is Sleeping) {
     needs.food.add(-0.1, elapsedHours)
-    needs.sleep.add(0.125, elapsedHours)
   } else {
-    needs.food.add(-0.2, elapsedHours)
+    needs.food.add(-0.10, elapsedHours)
     needs.sleep.add(-0.04, elapsedHours)
   }
 }
@@ -55,7 +54,7 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
 private fun Actor.generateTargetState(world: World, worldState: WorldState): Actor.State.DurationalState {
   // Satisfy "immediate needs": food, sleep
 
-  if (needs.food.amount < 0.3) {
+  if (needs.food.amount < 0.3 || (needs.food.amount < 0.6 && !worldState.isCoreWorkingHours)) {
     if (currentPosition == home.position) {
       // Eat at home
       return Eating(1.0, home)
@@ -75,6 +74,13 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
   // Do things because it is time to do so: work, sleep
 
   if (worldState.isWorkingHours && worldState.isWorkDay && work != null) {
+    if (needs.food.amount < 0.7 && worldState.isLunchTime) {
+      // Lunch break
+      val nearestFoodPlace = getNearestPlace<FoodShop>(world) // TODO cache, can not be changed
+      if (nearestFoodPlace.position.distanceTo(currentPosition) < 100) {
+        return Eating(0.5, nearestFoodPlace)
+      }
+    }
     return Working(1.0, work!!)
   }
 

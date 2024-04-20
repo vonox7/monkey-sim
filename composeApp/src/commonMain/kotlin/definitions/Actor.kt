@@ -81,16 +81,14 @@ enum class Sex {
 }
 
 class Needs(
-  val money: Need.Money,
   val food: Need.Food,
   val sleep: Need.Sleep,
   val social: Need.Social,
 ) {
   companion object {
     fun default() = Needs(
-      money = Need.Money(0.5),
       food = Need.Food(0.5),
-      sleep = Need.Sleep(0.5),
+      sleep = Need.Sleep(1.0),
       social = Need.Social(0.5),
     )
   }

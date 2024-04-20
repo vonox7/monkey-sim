@@ -30,7 +30,7 @@ fun App() {
       var lastTime = TimeSource.Monotonic.markNow()
       while (true) {
         val renderTime = measureTime {
-          game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 300.0)
+          game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 1000.0)
           tick.value += 1
           lastTime = TimeSource.Monotonic.markNow()
         }
