@@ -80,35 +80,29 @@ fun App() {
     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
       Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {
         Column(Modifier.fillMaxSize()) {
+          val actor = inspectingActor.value
+
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("Random actor", style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold))
+            Text(actor.name, style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold))
             Spacer(Modifier.weight(1f))
             OutlinedButton(onClick = { inspectingActor.value = game.world.actors.random() }) {
               Image(vectorResource(Res.drawable.refresh), null, Modifier.width(16.dp).height(16.dp))
             }
           }
 
-          val actor = inspectingActor.value
           Text(
             """
-            ${actor.name}
-            
             Age: ${actor.age}
-            
             Money: ${actor.money.display()}€
-            
             Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "-"}
-            
             Gender: ${actor.gender}
-            
+            Preferred partner: ${actor.preferences.partnerGenderPreference}
             Years of education: ${actor.yearsOfEducation.display()}
-            
             State: ${actor.perceivedState}
-            
             Connection sum: ${
               actor.socialConnections.connections.entries.sumOf { it.value }.display()
             } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
-            """.trimIndent()
+            """.trimIndent().trim()
           )
 
           Spacer(Modifier.weight(1f))
