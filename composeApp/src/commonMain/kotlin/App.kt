@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import definitions.Actor
 import game.Game
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -91,7 +92,8 @@ fun App() {
             Connection sum: ${
               actor.social.connections.entries.sumOf { it.value }.display()
             } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
-            """.trimIndent().trim()
+            """.trimIndent().trim(),
+            style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 17.sp),
           )
 
           Spacer(Modifier.weight(1f))
