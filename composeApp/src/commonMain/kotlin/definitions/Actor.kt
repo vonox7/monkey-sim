@@ -207,6 +207,15 @@ enum class WorkingCategory {
   HAS_JOB,
   UNEMPLOYED,
   RETIRED;
+
+  companion object {
+    val colors = mapOf(
+      CHILD to Color(0xFFf8e394),
+      HAS_JOB to Color(0xFF108e5e),
+      UNEMPLOYED to Color(0xFF2e2523),
+      RETIRED to Color(0xFF94bdf8),
+    )
+  }
 }
 
 class Needs(
