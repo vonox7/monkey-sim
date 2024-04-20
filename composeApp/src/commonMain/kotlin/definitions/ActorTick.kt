@@ -1,6 +1,7 @@
 package definitions
 
 import definitions.Actor.State.DurationalState.*
+import kotlin.reflect.KClass
 
 fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
   decreaseNeeds(elapsedHours)
@@ -23,8 +24,17 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
       }
 
       is Educating -> yearsOfEducation += 0.001
-      is Fun -> {
-        money -= 20 * elapsedHours
+
+      is InThePark -> {
+        money -= 3 * elapsedHours
+      }
+
+      is AtTheGym -> {
+        money -= 5 * elapsedHours
+      }
+
+      is AtTheClub -> {
+        money -= 30 * elapsedHours
       }
 
       is Shopping -> {
@@ -32,10 +42,13 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
       }
 
       is Sleeping -> needs.sleep.add(0.125, elapsedHours)
-      is Socializing -> TODO()
       is Working -> {
         money += 20 * elapsedHours
         needs.workFreeTime.add(0.125, elapsedHours)
+      }
+
+      is WatchTv -> {
+        // Do nothing
       }
     }
     return
@@ -115,8 +128,28 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
     }
   }
 
-  // Do something fun
-  return Fun(1.0, home)//getNearestPlace<Place>(world)) // TODO where to do fun?!? :D
+  if (preferences.minConnectionCount < socialConnections.connections.size ||
+    preferences.minConnectionCount < socialConnections.connections.entries.sumOf { it.value }
+  ) {
+    val place = listOf(Club::class, Gym::class, Park::class)
+        .flatMap { clazz ->
+          val places = getNearestOpenPlaces(clazz, world, worldState)
+          val preference = preferences.places[clazz]!!
+          places.map { place -> place to preference }
+        }
+        .maxByOrNull { (place, preference) -> preference * place.position.distanceTo(currentPosition) }
+        ?.first
+
+
+    return when (place) {
+      is Club -> AtTheClub(2.5, place)
+      is Gym -> AtTheGym(2.0, place)
+      is Park -> InThePark(1.5, place)
+      else -> throw Exception("Can't happen")
+    }
+  }
+
+  return WatchTv(1.0, home)
 }
 
 inline fun <reified T : Place> Actor.getNearestPlace(world: World): T? {
@@ -124,8 +157,22 @@ inline fun <reified T : Place> Actor.getNearestPlace(world: World): T? {
   return world.places[T::class]!!.minByOrNull { it.position.distanceTo(currentPosition) } as T?
 }
 
-inline fun <reified T : Place> Actor.getNearestOpenPlace(world: World, worldState: WorldState): T? {
+fun <T : Place> Actor.getNearestOpenPlaces(clazz: KClass<out T>, world: World, worldState: WorldState, k: Int = 5): List<T> {
   // TODO optimize so we don't need to filter ever time and iterate over all places every time
-  return world.places[T::class]!!.filter { worldState.hour.toInt() in it.openHours }
-    .minByOrNull { it.position.distanceTo(currentPosition) } as T?
+  @Suppress("UNCHECKED_CAST") val places = world.places[clazz]!! as List<T>
+  return places.filter { worldState.hour.toInt() in it.openHours }
+      .sortedBy { it.position.distanceTo(currentPosition) }
+      .take(k)
+}
+
+inline fun <reified T : Place> Actor.getNearestOpenPlaces(world: World, worldState: WorldState, k: Int = 5): List<T> {
+  // TODO optimize so we don't need to filter ever time and iterate over all places every time
+  @Suppress("UNCHECKED_CAST") val places = world.places[T::class]!! as List<T>
+  return places.filter { worldState.hour.toInt() in it.openHours }
+      .sortedBy { it.position.distanceTo(currentPosition) }
+      .take(k)
+}
+
+inline fun <reified T : Place> Actor.getNearestOpenPlace(world: World, worldState: WorldState): T? {
+  return getNearestOpenPlaces<T>(world, worldState, k = 1).firstOrNull()
 }

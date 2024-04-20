@@ -89,13 +89,13 @@ fun App() {
               
               Years of education: ${actor.yearsOfEducation.display()}
               
-              Position: ${actor.currentPosition.let { "x: ${it.x.display()}, y: ${it.y.display()}" }}
+              State: ${actor.perceivedState}
               
-              Perceived state: ${actor.perceivedState}
+              Connection count: ${actor.socialConnections.connections.size} (ideal: ${actor.preferences.minConnectionCount})
               
-              Target: ${actor.targetState}
-              
-              
+              Connection sum: ${
+                actor.socialConnections.connections.entries.sumOf { it.value }.display()
+              } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
               """.trimIndent()
             )
           }

@@ -4,6 +4,7 @@ import display
 import kotlin.random.Random
 
 class Actor(
+  random: Random,
   val name: String,
   val needs: Needs,
 
@@ -18,6 +19,8 @@ class Actor(
   // TODO partner
 ) {
   val socialConnections: SocialConnections = SocialConnections()
+
+  val preferences = Preferences(random)
 
   val perceivedState: State
     get() {
@@ -34,40 +37,29 @@ class Actor(
   sealed class State(val socializeFactor: Double = 0.0) {
     abstract override fun toString(): String;
 
-    sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place, socializeFactor: Double = 0.0) :
-      State(socializeFactor) {
-      override fun toString(): String = "${mainToString()}, hours left: ${hoursLeft.display()}"
-      abstract fun mainToString(): String
+    sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place, formSocialConnectionsPerHour: Double = 0.0) :
+      State(formSocialConnectionsPerHour) {
+      override fun toString(): String = "${this::class.simpleName!!} at ${targetPlace}, hours left: ${hoursLeft.display()}"
 
       class Working(hoursLeft: Double, targetPlace: Place) :
-        DurationalState(hoursLeft, targetPlace, socializeFactor = 0.00001) {
-        override fun mainToString(): String = "Working at $targetPlace"
-      }
+        DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.001)
 
-      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
-        override fun mainToString(): String = "Shopping at $targetPlace"
-      }
+      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
 
-      class Sleeping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
-        override fun mainToString(): String = "Sleeping at $targetPlace"
-      }
+      class Sleeping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
 
       class Eating(hoursLeft: Double, targetPlace: Place) :
-        DurationalState(hoursLeft, targetPlace, socializeFactor = 0.00001) {
-        override fun mainToString(): String = "Eating at $targetPlace"
-      }
+        DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.001)
 
-      class Socializing(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
-        override fun mainToString(): String = "Socializing at $targetPlace"
-      }
+      class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.004)
 
-      class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
-        override fun mainToString(): String = "Educating at $targetPlace"
-      }
+      class InThePark(hoursLeft: Double, targetPlace: Park) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.006)
 
-      class Fun(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
-        override fun mainToString(): String = "Having fun at $targetPlace"
-      }
+      class AtTheClub(hoursLeft: Double, targetPlace: Club) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.010)
+
+      class AtTheGym(hoursLeft: Double, targetPlace: Gym) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.002)
+
+      class WatchTv(hoursLeft: Double, targetPlace: Home) : DurationalState(hoursLeft, targetPlace)
     }
 
     class Commuting(val direction: Direction) : State() {
@@ -80,19 +72,30 @@ class Actor(
         DurationalState.Shopping::class,
         DurationalState.Sleeping::class,
         DurationalState.Eating::class,
-        DurationalState.Socializing::class,
         DurationalState.Educating::class,
-        DurationalState.Fun::class,
-        Commuting::class
+        Commuting::class,
+        DurationalState.InThePark::class,
+        DurationalState.AtTheClub::class,
+        DurationalState.AtTheGym::class,
+        DurationalState.WatchTv::class
       )
     }
   }
 
   companion object {
     // TODO name corresponding to sex
-    private val firstNames = listOf(
-      "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Linda", "Mallory", "Niaj", "Oscar",
-      "Peggy", "Quentin", "Rene", "Steve", "Trent", "Ursula", "Victor", "Walter", "Xavier", "Yvonne", "Zelda"
+    private val firstNames = mapOf(
+      Sex.Male to listOf(
+        "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Daniel", "Matthew", "Anthony",
+        "Donald", "Mark", "Paul", "Steven", "Andrew", "Kenneth", "Joshua", "George", "Kevin", "Brian", "Edward", "Ronald", "Timothy"
+      ),
+      Sex.Female to listOf(
+        "Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen", "Nancy", "Lisa", "Betty",
+        "Dorothy", "Sandra", "Ashley", "Kimberly", "Donna", "Emily", "Michelle", "Carol", "Amanda", "Melissa", "Deborah", "Stephanie",
+      ),
+      Sex.Other to listOf(
+        "Alex", "Ali",
+      )
     )
 
     private val lastNames = listOf(
@@ -101,14 +104,23 @@ class Actor(
     )
 
     fun create(random: Random, home: Home): Actor {
-      val age = random.nextInt(0, 80)
+      val age = when (random.nextInt(0, 5)) {
+        0 -> random.nextInt(0, 35)
+        1 -> random.nextInt(35, 50)
+        2 -> random.nextInt(50, 62)
+        3 -> random.nextInt(62, 80)
+        4 -> random.nextInt(80, 100)
+        else -> throw IllegalArgumentException("Can't happen")
+      }
+      val sex = when (random.nextFloat()) {
+        in 0.0..0.48 -> Sex.Male
+        in 0.48..0.95 -> Sex.Female
+        else -> Sex.Other
+      }
       return Actor(
-        name = "${firstNames.random(random)} ${lastNames.random(random)}",
-        sex = when (random.nextFloat()) {
-          in 0.0..0.45 -> Sex.Male
-          in 0.4..0.9 -> Sex.Female
-          else -> Sex.Other
-        },
+        random,
+        name = "${firstNames[sex]!!.random(random)} ${lastNames.random(random)}",
+        sex = sex,
         needs = Needs.default(),
         yearsOfEducation = if (age <= 6) 0.0 else random.nextDouble(0.0, age - 5.0), // TODO better education system
         age = age,
@@ -127,14 +139,12 @@ enum class Sex {
 class Needs(
   val food: Need.Food,
   val sleep: Need.Sleep,
-  val social: Need.Social,
   val workFreeTime: Need.WorkFreeTime,
 ) {
   companion object {
     fun default() = Needs(
       food = Need.Food(0.5),
       sleep = Need.Sleep(1.0),
-      social = Need.Social(0.5),
       workFreeTime = Need.WorkFreeTime(0.0),
     )
   }
@@ -145,12 +155,9 @@ sealed class Need(
   /** Between [0;1] */
   var amount: Double, // Do not modify directly, but use add() function
 ) {
-  class Money(amount: Double) : Need(amount)
   class Food(amount: Double) : Need(amount)
   class Sleep(amount: Double) : Need(amount)
-  class Social(amount: Double) : Need(amount)
   class WorkFreeTime(amount: Double) : Need(amount)
-  class Fun(amount: Double) : Need(amount)
 
   fun add(amountPerHour: Double, elapsedHours: Double) {
     amount = (amount + amountPerHour * elapsedHours).coerceIn(0.0, 1.0)

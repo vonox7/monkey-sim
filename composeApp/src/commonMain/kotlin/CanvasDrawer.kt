@@ -231,17 +231,17 @@ fun DrawWorldOnCanvas(
       fun drawSocialConnections(world: World) {
         world.actors.forEach { actor ->
           actor.socialConnections.connections.forEach connectionLoop@{ (otherActor, strength) ->
-            if (strength < 0.1) return@connectionLoop
+            if (strength < 3) return@connectionLoop
             val position = actor.currentPosition
             val topLeft = position.toOffset()
 
             val otherPosition = otherActor.currentPosition
             val otherTopLeft = otherPosition.toOffset()
             drawLine(
-              color = Color(0xAA000000),
+              color = Color(0x55000000),
               start = topLeft,
               end = otherTopLeft,
-              strokeWidth = strength.toFloat(),
+              strokeWidth = strength.toFloat().coerceAtMost(4f),
             )
           }
         }
