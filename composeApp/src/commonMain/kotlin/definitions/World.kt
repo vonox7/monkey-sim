@@ -1,6 +1,6 @@
 package definitions
 
-class Map(
+class World(
   val width: Int,
   val height: Int,
   val places: List<Place>,
