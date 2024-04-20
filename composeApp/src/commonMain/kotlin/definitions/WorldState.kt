@@ -32,8 +32,8 @@ class WorldState(
       else -> throw Exception()
     }
 
-    val hours = time.toInt()
-    val minutes = ((time % 1) * 60).toInt()
+    val hours = time.toInt().toString().padStart(2, '0')
+    val minutes = ((time % 1) * 60).toInt().toString().padStart(2, '0')
 
     return "$day $hours:$minutes"
   }

@@ -1,7 +1,7 @@
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.Divider
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +39,7 @@ fun App() {
       while (true) {
         if (!paused.value) {
           val renderTime = measureTime {
-          game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 1000.0)
+            game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 1000.0)
             tick.value += 1
             lastTime = TimeSource.Monotonic.markNow()
           }
@@ -55,40 +55,21 @@ fun App() {
       }
     }
 
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-      Row(
-        Modifier.fillMaxWidth().padding(16.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-      ) {
-        Button(onClick = { paused.value = !paused.value }, modifier = Modifier.padding(end = 16.dp)) {
-          Text(if (paused.value) "▶️" else "⏸️")
-        }
+    //WeekView(game)
+    Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+      Box(Modifier.fillMaxWidth(0.2f).padding(8.dp)) {
+        Column {
+          Button(onClick = { inspectingActor.value = game.world.actors.random() }) {
+            Text("Inspect random actor")
+          }
 
-        Text(
-          "${game.worldState} - ${tick.value} - " +
-              "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)} - " +
-              "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)}"
-        )
-      }
-
-      Divider()
-
-      //WeekView(game)
-      Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-        Box(Modifier.fillMaxWidth(0.2f).padding(8.dp)) {
-          Column {
-            Button(onClick = { inspectingActor.value = game.world.actors.random() }) {
-              Text("Inspect random actor")
-            }
-
-            val actor = inspectingActor.value
-            if (actor != null) {
-              Text(
-                """
+          val actor = inspectingActor.value
+          if (actor != null) {
+            Text(
+              """
               ${actor.name}
               Age: ${actor.age}
-              Money: ${actor.money}
+              Money: ${actor.money.display()}
               Sex: ${actor.sex}
               Years of education: ${actor.yearsOfEducation.display()}
               Position: ${actor.currentPosition.let { "x: ${it.x.display()}, y: ${it.y.display()}" }}
@@ -96,12 +77,33 @@ fun App() {
               Target: ${actor.targetState}
               
               """.trimIndent()
-              )
-            }
+            )
           }
         }
+      }
 
-        VerticalDivider()
+      VerticalDivider()
+
+      Column(
+        Modifier.fillMaxWidth().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        Row(
+          Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Button(onClick = { paused.value = !paused.value }, modifier = Modifier.padding(end = 16.dp)) {
+            Text(if (paused.value) "▶️" else "⏸️")
+          }
+
+          Text(
+            "${game.worldState} - ${tick.value} - " +
+                "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)} - " +
+                "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)}",
+            style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
+          )
+        }
 
         Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
           Canvas(modifier = Modifier.fillMaxSize()) {

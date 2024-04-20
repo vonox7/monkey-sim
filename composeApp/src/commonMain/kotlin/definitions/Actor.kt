@@ -1,5 +1,6 @@
 package definitions
 
+import display
 import kotlin.random.Random
 
 class Actor(
@@ -34,7 +35,7 @@ class Actor(
     abstract override fun toString(): String;
 
     sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place) : State() {
-      override fun toString(): String = "${mainToString()}, hours left: $hoursLeft"
+      override fun toString(): String = "${mainToString()}, hours left: ${hoursLeft.display()}"
       abstract fun mainToString(): String
 
       class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
