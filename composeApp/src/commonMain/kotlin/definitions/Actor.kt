@@ -6,9 +6,11 @@ class Actor(
   val name: String,
   val needs: Needs,
 
-  val yearsOfEducation: Int,
+  var yearsOfEducation: Double,
   val age: Int,
   val sex: Sex,
+  var money: Int,
+
   var currentPosition: Position,
   var home: Home,
   var work: Work? = null,
@@ -64,10 +66,11 @@ class Actor(
           else -> Sex.Other
         },
         needs = Needs.default(),
-        yearsOfEducation = if (age <= 6) 0 else random.nextInt(0, age - 5), // TODO better education system
+        yearsOfEducation = if (age <= 6) 0.0 else random.nextDouble(0.0, age - 5.0), // TODO better education system
         age = age,
         currentPosition = home.position,
         home = home,
+        money = 1000 * age
       )
     }
   }
@@ -95,7 +98,7 @@ class Needs(
 
 sealed class Need(
   /** Between [0;1] */
-  val amount: Double,
+  var amount: Double,
 ) {
   class Money(amount: Double) : Need(amount)
   class Food(amount: Double) : Need(amount)

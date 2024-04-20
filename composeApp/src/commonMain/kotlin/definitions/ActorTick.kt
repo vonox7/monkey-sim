@@ -3,6 +3,8 @@ package definitions
 import definitions.Actor.State.DurationalState.*
 
 fun Actor.tick(world: World, worldState: WorldState) {
+  decreaseNeeds()
+
   // Commute
   if (this.targetState.targetPlace.position != this.currentPosition) {
     val direction =
@@ -14,12 +16,35 @@ fun Actor.tick(world: World, worldState: WorldState) {
   // Consume current state
   if (this.targetState.durationLeft > 0) {
     this.targetState.durationLeft -= 1
+    when (this.targetState) {
+      is Eating -> {
+        this.needs.food.amount = (this.needs.food.amount + 0.1).coerceAtMost(1.0)
+        this.money -= 1
+      }
+
+      is Educating -> this.yearsOfEducation += 0.001
+      is Fun -> {
+        this.money -= 1
+      }
+
+      is Shopping -> {
+        this.money -= 10
+      }
+
+      is Sleeping -> this.needs.sleep.amount = (this.needs.sleep.amount + 0.05).coerceAtMost(1.0)
+      is Socializing -> TODO()
+      is Working -> this.money += 1
+    }
     return
   }
 
   // Generate next state
   this.targetState = generateTargetState(world, worldState)
+}
 
+private fun Actor.decreaseNeeds() {
+  this.needs.food.amount = (this.needs.food.amount - 0.000003).coerceAtLeast(0.0)
+  this.needs.sleep.amount = (this.needs.sleep.amount - 0.000001).coerceAtLeast(0.0)
 }
 
 private fun Actor.generateTargetState(world: World, worldState: WorldState): Actor.State.DurationalState {
