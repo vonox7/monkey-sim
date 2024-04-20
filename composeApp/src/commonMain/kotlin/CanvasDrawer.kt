@@ -152,22 +152,13 @@ fun DrawWorldOnCanvas(
                 }
 
                 is Park -> {
-                  drawRect(
+                  drawCircle(
                     color = Color.White,
-                    topLeft = resizedTopLeft - Offset(outline, outline),
-                    size = Size(size + outline * 2, size + outline * 2),
+                    center = center,
+                    radius = size / 2 + outline,
                   )
 
-                  // Draw tree
-                  //TODO test, right now there are no parks
-                  val treePath = Path()
-                  treePath.moveTo(resizedTopLeft.x + size / 2, resizedTopLeft.y)
-                  treePath.relativeLineTo(0f, -size * 0.5f)
-                  treePath.relativeLineTo(-size * 0.2f, size * 0.2f)
-                  treePath.relativeLineTo(size * 0.4f, 0f)
-                  treePath.relativeLineTo(-size * 0.2f, size * 0.2f)
-                  treePath.close()
-                  drawPath(treePath, color = place.color)
+                  drawText("🌳", topLeft = resizedTopLeft, size = size)
                 }
 
                 is Gym -> {
