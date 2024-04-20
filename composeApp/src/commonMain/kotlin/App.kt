@@ -63,6 +63,7 @@ fun App() {
           delay((1000.0 / 60 - renderTime.inWholeMilliseconds).toLong().coerceAtLeast(3))
         } else {
           delay((1000.0 / 60).toLong())
+          lastTime = TimeSource.Monotonic.markNow()
         }
       }
     }
