@@ -96,7 +96,7 @@ fun App() {
             Money: ${actor.money.display()}€
             Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "-"}
             Gender: ${actor.gender}
-            Preferred partner: ${actor.preferences.partnerGenderPreference}
+            ${if (actor.social.partner == null) "Preferred partner: ${actor.preferences.partnerGenderPreference}" else "Partner: ${actor.social.partner}"}            
             Years of education: ${actor.yearsOfEducation.display()}
             State: ${actor.perceivedState}
             Connection sum: ${
