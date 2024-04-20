@@ -134,10 +134,12 @@ fun generateSimpleGraz(): World {
   val actors = mutableListOf<Actor>()
 
   homeAreas.forEach { homeArea ->
-    repeat(homeArea.density * 5) {
+    repeat(homeArea.density * 10) {
       val homePlace = Home(homeArea.toPosition(random))
       places += homePlace
-      actors += Actor.create(random, homePlace)
+      repeat(random.nextInt(1, 3)) {
+        actors += Actor.create(random, homePlace)
+      }
     }
   }
 
@@ -147,7 +149,7 @@ fun generateSimpleGraz(): World {
       val minEducationYears = random.nextInt(0, 15)
       places += Industry(
         workArea.toPosition(random), openHours = 0..0, work = Place.Work(
-          maxPeople = random.nextInt(5, 100),
+          maxPeople = random.nextInt(1, 10) * random.nextInt(1, 10),
           minEducationYears = minEducationYears,
           salaryPerHour = random.nextDouble(10.0, 50.0) + minEducationYears * 3,
           coreWorkingHours = coreWorkingHours,
@@ -163,7 +165,7 @@ fun generateSimpleGraz(): World {
       val position = shopArea.toPosition(random)
       val openHours = random.nextInt(6, 8)..random.nextInt(18, 20)
       val work = Place.Work(
-        maxPeople = random.nextInt(1, 30),
+        maxPeople = random.nextInt(1, 3),
         minEducationYears = 0,
         salaryPerHour = random.nextDouble(10.0, 50.0),
         coreWorkingHours = openHours,
@@ -177,7 +179,7 @@ fun generateSimpleGraz(): World {
     repeat(educationArea.density) {
       places += University(
         educationArea.toPosition(random), openHours = 8..16, work = Place.Work(
-          maxPeople = random.nextInt(10, 500),
+          maxPeople = random.nextInt(3, 30),
           minEducationYears = 12,
           salaryPerHour = random.nextDouble(30.0, 60.0),
           coreWorkingHours = 9..14,
@@ -192,7 +194,7 @@ fun generateSimpleGraz(): World {
       places += Club(
         // TODO openHours & workingHours should be a list of ranges, so we can also work before and after midnight
         clubArea.toPosition(random), openHours = 20..24, work = Place.Work(
-          maxPeople = random.nextInt(5, 30),
+          maxPeople = random.nextInt(2, 6),
           minEducationYears = 0,
           salaryPerHour = random.nextDouble(10.0, 40.0),
           coreWorkingHours = 20..24,
@@ -206,7 +208,7 @@ fun generateSimpleGraz(): World {
     repeat(sportArea.density) {
       places += Gym(
         sportArea.toPosition(random), openHours = 6..22, work = Place.Work(
-          maxPeople = random.nextInt(2, 10),
+          maxPeople = random.nextInt(1, 5),
           minEducationYears = 0,
           salaryPerHour = random.nextDouble(10.0, 30.0),
           coreWorkingHours = 8..20,
@@ -234,6 +236,8 @@ fun generateSimpleGraz(): World {
       }
     }
   }
+
+  println("All people: ${actors.count()}, working people: ${workPlaces.sumOf { it.work!!.currentWorkingPeople }}, available work places: ${workPlaces.sumOf { it.work!!.maxPeople }}")
 
   return World(
     width = 1000,
