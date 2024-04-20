@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import definitions.Actor
 import game.Game
 import io.github.koalaplot.core.line.AreaBaseline
@@ -118,7 +119,7 @@ fun App() {
             game.history.entries.map { it.time.toFloat() },
             transposedGameHistory
           )
-          val styles = game.history.entries.first().stateToPeopleCount.keys.mapIndexed { index, stateClass ->
+          val styles = game.history.entries.first().stateToPeopleCount.keys.map { stateClass ->
             StackedAreaStyle(
               LineStyle(SolidColor(Color.Black), strokeWidth = 1.5.dp),
               AreaStyle(SolidColor(Actor.State.colors[stateClass]!!))
@@ -152,20 +153,33 @@ fun App() {
             }
           }
 
-          lastEntry.stateToPeopleCount.entries.reversed().forEach { (clazz, count) ->
-            val color = Actor.State.colors[clazz]!!
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              Spacer(Modifier.width(16.dp))
-              Box(Modifier.size(16.dp).clip(CircleShape).background(color))
-              Spacer(Modifier.width(8.dp))
-              Text(clazz.simpleName!!)
-              Spacer(Modifier.width(8.dp))
-              Text(
-                (100 * count.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt().toString().padStart(2, '0') + "%",
-                style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
-              )
+          val statesList = lastEntry.stateToPeopleCount.entries.reversed()
+          Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            val splitColumns = 3
+            val size = statesList.size / splitColumns
+            repeat(splitColumns) { index ->
+              val subList = statesList.subList(index * size, (index + 1) * size)
+              Column(Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
+                subList.forEach { (clazz, count) ->
+                  val color = Actor.State.colors[clazz]!!
+                  Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.size(16.dp).clip(CircleShape).background(color))
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                      clazz.simpleName!!,
+                      style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                      (100 * count.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt().toString() + "%",
+                      style = LocalTextStyle.current.copy(fontSize = 14.sp, fontFeatureSettings = "tnum"),
+                    )
+                  }
+                  Spacer(Modifier.height(8.dp))
+                }
+              }
             }
-            Spacer(Modifier.height(8.dp))
           }
         }
       }
