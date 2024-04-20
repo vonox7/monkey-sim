@@ -89,7 +89,7 @@ fun App() {
             
             Age: ${actor.age}
             
-              Money: ${actor.money.display()}€
+            Money: ${actor.money.display()}€
             
             Sex: ${actor.sex}
             
@@ -134,7 +134,7 @@ fun App() {
               xAxisTitle = "",
               yAxisTitle = "",
               xAxisLabels = { "" },
-              yAxisLabels = { it.toDouble().display(1) }
+              yAxisLabels = { "" }
             ) {
               StackedAreaPlot(
                 stackData,
