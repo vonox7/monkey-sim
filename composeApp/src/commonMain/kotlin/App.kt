@@ -100,7 +100,7 @@ fun App() {
             Years of education: ${actor.yearsOfEducation.display()}
             State: ${actor.perceivedState}
             Connection sum: ${
-              actor.socialConnections.connections.entries.sumOf { it.value }.display()
+              actor.social.connections.entries.sumOf { it.value }.display()
             } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
             """.trimIndent().trim()
           )

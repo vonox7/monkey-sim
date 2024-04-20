@@ -16,9 +16,8 @@ class Actor(
   var currentPosition: Position,
   var home: Home,
   var workPlace: Place? = null, // Needs to be manually synchronized with Place.Work.currentWorkingPeople
-  // TODO partner
 ) {
-  val socialConnections: SocialConnections = SocialConnections()
+  val social: SocialConnections = SocialConnections()
 
   val preferences = Preferences(gender, random)
 

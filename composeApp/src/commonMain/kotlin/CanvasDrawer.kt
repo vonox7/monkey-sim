@@ -47,16 +47,16 @@ fun DrawWorldOnCanvas(
 
       fun drawBackground() {
         // Daytime: brightness 1, nighttime: 0.2, dawn/dusk: inter
-        val brightness = when (val hour = game.worldState.hour) {
-          in 6.0..7.0 -> hour - 6
-          in 18.0..19.0 -> 19 - hour
-          in 7.0..18.0 -> 1.0
-          else -> 0.0
+        val overlayStrength = when (val hour = game.worldState.hour) {
+          in 6.0..7.0 -> 7 - hour
+          in 18.0..19.0 -> hour - 18
+          in 7.0..18.0 -> 0.0
+          else -> 1.0
         }
 
 
         drawRect(
-          color = Color((0xFF * (brightness * 0.8 + 0.2)).toLong() * 0x1000000),
+          color = Color(0xFFFFFFFF - (0xBD * (overlayStrength)).toLong() * 0x10101),
           topLeft = Offset(0f, 0f),
           size = Size(worldBottomRight.x, worldBottomRight.y)
         )
@@ -250,7 +250,7 @@ fun DrawWorldOnCanvas(
 
       fun drawSocialConnections(world: World) {
         world.actors.forEach { actor ->
-          actor.socialConnections.connections.forEach connectionLoop@{ (otherActor, strength) ->
+          actor.social.connections.forEach connectionLoop@{ (otherActor, strength) ->
             if (strength < 3) return@connectionLoop
             val position = actor.currentPosition
             val topLeft = position.toOffset()
