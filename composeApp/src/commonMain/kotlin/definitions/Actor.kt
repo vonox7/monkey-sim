@@ -9,7 +9,7 @@ class Actor(
   var yearsOfEducation: Double,
   val age: Int,
   val sex: Sex,
-  var money: Int,
+  var money: Double,
 
   var currentPosition: Position,
   var home: Home,
@@ -28,17 +28,17 @@ class Actor(
       }
     }
 
-  var targetState: State.DurationalState = State.DurationalState.Sleeping(0, home)
+  var targetState: State.DurationalState = State.DurationalState.Sleeping(0.0, home)
 
   sealed class State {
-    sealed class DurationalState(var durationLeft: Int, val targetPlace: Place) : State() {
-      class Working(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
-      class Shopping(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
-      class Sleeping(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
-      class Eating(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
-      class Socializing(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
-      class Educating(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
-      class Fun(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+    sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place) : State() {
+      class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Sleeping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Eating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Socializing(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Fun(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
     }
 
     class Commuting(val direction: Direction) : State()
@@ -70,7 +70,7 @@ class Actor(
         age = age,
         currentPosition = home.position,
         home = home,
-        money = 1000 * age
+        money = 1000.0 * age
       )
     }
   }
@@ -98,7 +98,7 @@ class Needs(
 
 sealed class Need(
   /** Between [0;1] */
-  var amount: Double,
+  var amount: Double, // Do not modify directly, but use add() function
 ) {
   class Money(amount: Double) : Need(amount)
   class Food(amount: Double) : Need(amount)
