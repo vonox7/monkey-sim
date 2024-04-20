@@ -39,7 +39,7 @@ fun App() {
       while (true) {
         if (!paused.value) {
           val renderTime = measureTime {
-            game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 1000.0)
+            game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 1000.0) // TODO after pausing, this will do a big jump
             tick.value += 1
             lastTime = TimeSource.Monotonic.markNow()
           }
@@ -68,13 +68,21 @@ fun App() {
             Text(
               """
               ${actor.name}
+              
               Age: ${actor.age}
+              
               Money: ${actor.money.display()}
+              
               Sex: ${actor.sex}
+              
               Years of education: ${actor.yearsOfEducation.display()}
+              
               Position: ${actor.currentPosition.let { "x: ${it.x.display()}, y: ${it.y.display()}" }}
+              
               Perceived state: ${actor.perceivedState}
+              
               Target: ${actor.targetState}
+              
               
               """.trimIndent()
             )
@@ -98,16 +106,16 @@ fun App() {
           }
 
           Text(
-            "${game.worldState} - ${tick.value} - " +
+            "${game.worldState} - ${tick.value.toString().padStart(5, '0')} - " +
                 "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)} - " +
-                "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)}",
+                "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(2, '0')}",
             style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
           )
         }
 
         Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
           Canvas(modifier = Modifier.fillMaxSize()) {
-            CanvasDrawer(this, game.world.width, game.world.height).draw(game.world)
+            CanvasDrawer(this, game.world.width, game.world.height).draw(game)
           }
         }
       }
