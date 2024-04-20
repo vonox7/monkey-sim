@@ -117,7 +117,9 @@ class CanvasDrawer(
                     drawBoxWithLeftSideShort()
                   }
 
-                  is Work -> {
+                  // TODO different drawings for different places
+                  is Industry, is Park, is Gym, is University, is Club -> {
+
                     // Draw box with left side shorter
                     drawBoxWithLeftSideShort()
 
