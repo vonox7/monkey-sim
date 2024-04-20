@@ -27,8 +27,8 @@ fun App() {
         val startTime = TimeSource.Monotonic.markNow()
         game.tick()
         tick.value += 1
-        // 60 FPS
-        delay((1000.0 / 60 - startTime.elapsedNow().inWholeMilliseconds).toLong())
+        // 60 FPS, but sleep at least 3ms to avoid 100% CPU
+        delay((1000.0 / 60 - startTime.elapsedNow().inWholeMilliseconds).toLong().coerceAtLeast(3))
       }
     }
 
