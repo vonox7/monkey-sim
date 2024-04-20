@@ -195,11 +195,15 @@ fun App() {
             style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
           )
         }
-
         Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
-          DrawWorldOnCanvas(game, game.world.width, game.world.height)
+          WorldView(game)
         }
       }
     }
   }
+}
+
+@Composable
+fun WorldView(game: Game) {
+  DrawWorldOnCanvas(game, game.world.width, game.world.height)
 }
