@@ -61,17 +61,15 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
 private fun Actor.generateTargetState(world: World, worldState: WorldState): Actor.State.DurationalState {
   // Satisfy "immediate needs": food, sleep
 
-  if (needs.food.amount < 0.3 || (needs.food.amount < 0.6 && !worldState.isCoreWorkingHours)) {
-    if (currentPosition == home.position) {
-      // Eat at home
-      return Eating(1.0, home)
-    } else if (worldState.isShopOpenHours) {
-      // Find some place to eat
-      return Eating(0.5, getNearestPlace<FoodShop>(world))
-    } else if (needs.food.amount < 0.1) {
-      // Go home and eat, I am very hungry
-      return Eating(0.5, home)
-    }
+  if (needs.food.amount < 0.5 && currentPosition == home.position) {
+    // Eat at home
+    return Eating(1.0, home)
+  } else if (needs.food.amount < 0.6 && worldState.isDayTime) {
+    // Find some place to eat
+    return Eating(0.5, getNearestOpenPlace<FoodShop>(world, worldState) ?: home)
+  } else if (needs.food.amount < 0.1) {
+    // Go home and eat, I am very hungry
+    return Eating(0.5, home)
   }
 
   if (needs.sleep.amount < 0.3) {
@@ -80,17 +78,20 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
 
   // Do things because it is time to do so: work, sleep
 
-  if (worldState.isWorkingHours && worldState.isWorkDay && work != null) {
+  if (worldState.isWorkDay && workPlace?.work?.let { worldState.time.toInt() in it.workableHours } == true) {
     if (needs.food.amount < 0.7 && worldState.isLunchTime) {
       // Lunch break
-      val nearestFoodPlace = getNearestPlace<FoodShop>(world) // TODO cache, can not be changed
-      if (nearestFoodPlace.position.distanceTo(currentPosition) < 100) {
+      val nearestFoodPlace = getNearestOpenPlace<FoodShop>(world, worldState) // TODO cache, can not be changed
+      if (nearestFoodPlace != null && nearestFoodPlace.position.distanceTo(currentPosition) < 100) {
         return Eating(0.5, nearestFoodPlace)
       }
     }
-    if (worldState.isCoreWorkingHours && needs.workFreeTime.amount < 0.9) {
-      // Not enough work for today
-      return Working(1.0, work!!)
+    if (workPlace?.work?.let { worldState.time.toInt() in it.coreWorkingHours } == true) {
+      // Work within core working hours
+      return Working(1.0, workPlace!!)
+    } else if (needs.workFreeTime.amount < 0.9) {
+      // Not enough work for today (outside core working hours)
+      return Working(1.0, workPlace!!)
     }
   }
 
@@ -100,14 +101,23 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
 
   // Go out and eat if we are a little bit hungry
   if (needs.food.amount < 0.5) {
-    return Eating(1.0, getNearestPlace<FoodShop>(world))
+    val nearestFoodPlace = getNearestOpenPlace<FoodShop>(world, worldState)
+    if (nearestFoodPlace != null) {
+      return Eating(1.0, nearestFoodPlace)
+    }
   }
 
   // Do something fun
   return Fun(1.0, home)//getNearestPlace<Place>(world)) // TODO where to do fun?!? :D
 }
 
-inline fun <reified T : Place> Actor.getNearestPlace(world: World): T {
+inline fun <reified T : Place> Actor.getNearestPlace(world: World): T? {
   // TODO optimize so we don't need to filter ever time and iterate over all places every time
-  return world.places.filterIsInstance<T>().minBy { it.position.distanceTo(currentPosition) }
+  return world.places.filterIsInstance<T>().minByOrNull { it.position.distanceTo(currentPosition) }
+}
+
+inline fun <reified T : Place> Actor.getNearestOpenPlace(world: World, worldState: WorldState): T? {
+  // TODO optimize so we don't need to filter ever time and iterate over all places every time
+  return world.places.filterIsInstance<T>().filter { worldState.time.toInt() in it.openHours }
+    .minByOrNull { it.position.distanceTo(currentPosition) }
 }

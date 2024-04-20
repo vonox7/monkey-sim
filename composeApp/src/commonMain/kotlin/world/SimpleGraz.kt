@@ -120,6 +120,14 @@ fun generateSimpleGraz(): World {
     Area(8, 8, 2),
   )
 
+  val parkAreas = listOf(
+    Area(2, 3, 1),
+    Area(2, 7, 2),
+    Area(3, 2, 2),
+    Area(3, 5, 2),
+    Area(4, 3, 3),
+  )
+
   val random = Random(123456)
 
   val places = mutableListOf<Place>()
@@ -208,11 +216,22 @@ fun generateSimpleGraz(): World {
     }
   }
 
-  // Randomly assign people work. Override workPlace, so not every workPlace is 100% filled.
-  places.shuffled(random).forEach { workPlace ->
-    repeat(workPlace.work?.maxPeople ?: 0) {
-      // We don't care about minEducationYears and distance here to get initial distribution of work
-      actors.random(random).work = workPlace
+  parkAreas.forEach { parkArea ->
+    repeat(parkArea.density) {
+      places += Park(parkArea.toPosition(random))
+    }
+  }
+
+  // Randomly assign people work
+  val workPlaces = places.filter { it.work != null }
+  actors.forEach { actor ->
+    if (actor.age > 15) {
+      val workPlace = workPlaces.shuffled(random)
+        .firstOrNull { it.work!!.currentWorkingPeople < it.work.maxPeople && it.work.minEducationYears <= actor.yearsOfEducation.toInt() }
+      if (workPlace != null) {
+        actor.workPlace = workPlace
+        actor.workPlace!!.work!!.currentWorkingPeople++
+      }
     }
   }
 
