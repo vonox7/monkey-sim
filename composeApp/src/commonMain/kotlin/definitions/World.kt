@@ -1,6 +1,6 @@
 package definitions
 
-class World(
+open class World(
   val width: Int,
   val height: Int,
   val places: List<Place>,

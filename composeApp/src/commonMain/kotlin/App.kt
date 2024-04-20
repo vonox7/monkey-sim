@@ -18,7 +18,7 @@ fun App() {
         height = 20,
         places = listOf(
           Home(Position(0, 0)),
-          Work(Position(10, 10)),
+          Work(Position(10, 10), maxPeople = 10),
           FoodShop(Position(5, 5)),
         ),
         actors = listOf(
@@ -28,7 +28,6 @@ fun App() {
             yearsOfEducation = 10,
             age = 30,
             sex = Sex.Female,
-            socialConnections = SocialConnections(),
             currentPosition = Position(0, 0),
             home = Home(Position(0, 0)),
           ),
@@ -38,7 +37,6 @@ fun App() {
             yearsOfEducation = 5,
             age = 24,
             sex = Sex.Male,
-            socialConnections = SocialConnections(),
             currentPosition = Position(3, 5),
             home = Home(Position(8, 1)),
           )

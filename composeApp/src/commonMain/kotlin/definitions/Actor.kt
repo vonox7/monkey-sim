@@ -17,6 +17,7 @@ class Actor(
   val socialConnections: SocialConnections = SocialConnections()
 
   companion object {
+    // TODO name corresponding to sex
     private val firstNames = listOf(
       "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Linda", "Mallory", "Niaj", "Oscar",
       "Peggy", "Quentin", "Rene", "Steve", "Trent", "Ursula", "Victor", "Walter", "Xavier", "Yvonne", "Zelda"
@@ -27,20 +28,20 @@ class Actor(
       "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", "Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall",
     )
 
-    fun randomInWorld(worldWidth: Int, worldHeight: Int, home: Home, work: Work?): Actor {
+    fun create(random: Random, home: Home): Actor {
+      val age = random.nextInt(0, 80)
       return Actor(
-        name = "${firstNames.random()} ${lastNames.random()}",
-        sex = when (Random.nextFloat()) {
+        name = "${firstNames.random(random)} ${lastNames.random(random)}",
+        sex = when (random.nextFloat()) {
           in 0.0..0.45 -> Sex.Male
           in 0.4..0.9 -> Sex.Female
           else -> Sex.Other
         },
         needs = Needs.default(),
-        yearsOfEducation = Random.nextInt(0, 20),
-        age = Random.nextInt(0, 80),
-        currentPosition = Position(Random.nextInt(0, worldWidth), Random.nextInt(0, worldHeight)),
+        yearsOfEducation = if (age < 6) 0 else random.nextInt(1, age - 6), // TODO better education system
+        age = age,
+        currentPosition = home.position,
         home = home,
-        work = work,
       )
     }
   }
