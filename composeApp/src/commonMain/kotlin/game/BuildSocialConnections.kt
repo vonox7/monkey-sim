@@ -37,6 +37,7 @@ private fun Actor.socializeWith(other: Actor) {
     social.connections.remove(other)
     social.connections.remove(this)
     social.partner = other
+    other.social.partner = this
     if (other.money > this.money) {
       this.home = other.home
     }
