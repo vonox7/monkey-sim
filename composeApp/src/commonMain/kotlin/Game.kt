@@ -4,7 +4,7 @@ import world.generateSimpleGraz
 
 class Game {
   val world = generateSimpleGraz()
-  val worldState = WorldState(time = 16.9, day = 0)
+  val worldState = WorldState(time = 6.9, day = 0)
 
   fun tick(elapsedHours: Double) {
     worldState.tick(elapsedHours)
