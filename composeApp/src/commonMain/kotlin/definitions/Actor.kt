@@ -112,12 +112,14 @@ class Needs(
   val food: Need.Food,
   val sleep: Need.Sleep,
   val social: Need.Social,
+  val workFreeTime: Need.WorkFreeTime,
 ) {
   companion object {
     fun default() = Needs(
       food = Need.Food(0.5),
       sleep = Need.Sleep(1.0),
       social = Need.Social(0.5),
+      workFreeTime = Need.WorkFreeTime(0.0),
     )
   }
 }
@@ -130,6 +132,7 @@ sealed class Need(
   class Food(amount: Double) : Need(amount)
   class Sleep(amount: Double) : Need(amount)
   class Social(amount: Double) : Need(amount)
+  class WorkFreeTime(amount: Double) : Need(amount)
   class Fun(amount: Double) : Need(amount)
 
   fun add(amountPerHour: Double, elapsedHours: Double) {

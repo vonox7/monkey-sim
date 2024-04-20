@@ -33,7 +33,10 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
 
       is Sleeping -> needs.sleep.add(0.125, elapsedHours)
       is Socializing -> TODO()
-      is Working -> money += 20 * elapsedHours
+      is Working -> {
+        money += 20 * elapsedHours
+        needs.workFreeTime.add(0.125, elapsedHours)
+      }
     }
     return
   }
@@ -48,6 +51,10 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
   } else {
     needs.food.add(-0.10, elapsedHours)
     needs.sleep.add(-0.04, elapsedHours)
+  }
+
+  if (perceivedState !is Working) {
+    needs.workFreeTime.add(-0.15, elapsedHours)
   }
 }
 
@@ -81,7 +88,10 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
         return Eating(0.5, nearestFoodPlace)
       }
     }
-    return Working(1.0, work!!)
+    if (worldState.isCoreWorkingHours && needs.workFreeTime.amount < 0.9) {
+      // Not enough work for today
+      return Working(1.0, work!!)
+    }
   }
 
   if (worldState.isSleepTime) {
@@ -94,7 +104,7 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
   }
 
   // Do something fun
-  return Fun(1.0, getNearestPlace<Place>(world)) // TODO where to do fun?!? :D
+  return Fun(1.0, home)//getNearestPlace<Place>(world)) // TODO where to do fun?!? :D
 }
 
 inline fun <reified T : Place> Actor.getNearestPlace(world: World): T {
