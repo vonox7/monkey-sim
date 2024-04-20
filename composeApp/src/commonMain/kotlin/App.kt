@@ -1,4 +1,3 @@
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.LocalTextStyle
@@ -114,9 +113,7 @@ fun App() {
         }
 
         Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
-          Canvas(modifier = Modifier.fillMaxSize()) {
-            CanvasDrawer(this, game.world.width, game.world.height).draw(game)
-          }
+          DrawWorldOnCanvas(game, game.world.width, game.world.height)
         }
       }
     }
