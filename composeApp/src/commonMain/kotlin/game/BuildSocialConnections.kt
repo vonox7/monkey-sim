@@ -40,6 +40,6 @@ private fun Actor.socializeWith(other: Actor) {
     if (other.money > this.money) {
       this.home = other.home
     }
-    println("LOVE!!! $this and $other are now partners at ${this.currentPosition} and ${other.currentPosition}")
+    println("LOVE!!! $this and $other are now partners")
   }
 }

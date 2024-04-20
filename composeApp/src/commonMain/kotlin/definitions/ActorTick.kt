@@ -1,6 +1,7 @@
 package definitions
 
 import definitions.Actor.State.DurationalState.*
+import kotlin.random.Random
 import kotlin.reflect.KClass
 
 fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
@@ -43,6 +44,16 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
       is Working -> {
         money += 20 * elapsedHours
         needs.workFreeTime.add(0.125, elapsedHours)
+
+        val work = workPlace?.work
+        if (elapsedHours > Random.nextDouble(0.0, 1000.0) &&
+          work?.let { it.currentWorkingPeople > it.maxPeople / 2 } == true
+        ) {
+          // You just got fired
+          println("$name got fired at $workPlace $work, oh no")
+          work.currentWorkingPeople -= 1
+          workPlace = null
+        }
       }
 
       is JobHunt -> {
@@ -51,6 +62,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
           if (work != null && work.maxPeople < work.currentWorkingPeople && yearsOfEducation >= work.minEducationYears) {
             workPlace = targetState.targetPlace
             work.currentWorkingPeople += 1
+            println("$name got hired at ${targetState.targetPlace} $work, yeah")
           }
         }
       }
