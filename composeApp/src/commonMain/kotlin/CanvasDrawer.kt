@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.unit.dp
 import definitions.*
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class CanvasDrawer(
   private val canvas: DrawScope,
@@ -129,22 +130,36 @@ class CanvasDrawer(
         }
 
         fun drawActors() {
-          world.actors.forEach { actor ->
-            val topLeft = actor.currentPosition.toOffset()
-            val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
-            val outline = 1f
-            val size = 2.2f
-            drawCircle(
-              color = Color(0xFFceb28b),
-              center = center,
-              radius = (size + outline).dp.toPx(),
-            )
-            drawCircle(
-              color = Color(0xFF4a2a0b),
-              center = center,
-              radius = size.dp.toPx(),
-            )
-          }
+
+          world.actors
+              .groupBy { it.currentPosition.x.roundToInt() to it.currentPosition.y.roundToInt() }
+              .values
+              .forEach { actorsOnSameSpot ->
+                val groupAxisSize = sqrt(actorsOnSameSpot.size.toDouble()).toInt()
+
+                actorsOnSameSpot.forEachIndexed { index, actor ->
+                  val reverseIndex = actorsOnSameSpot.size - index - 1
+                  var position = actor.currentPosition
+                  position += Position(
+                    (reverseIndex % groupAxisSize).toDouble() + reverseIndex * 0.1,
+                    (reverseIndex / groupAxisSize).toDouble() * 1.1
+                  )
+                  val topLeft = position.toOffset()
+                  val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
+                  val outline = 1f
+                  val size = 2.2f
+                  drawCircle(
+                    color = Color(0xFFceb28b),
+                    center = center,
+                    radius = (size + outline).dp.toPx(),
+                  )
+                  drawCircle(
+                    color = Color(0xFF4a2a0b),
+                    center = center,
+                    radius = size.dp.toPx(),
+                  )
+                }
+              }
         }
 
         fun DrawScope.drawSocialConnections(world: World) {
