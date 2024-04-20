@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -153,13 +154,14 @@ fun DrawWorldOnCanvas(
                 }
 
                 is Park -> {
-                  drawCircle(
-                    color = Color.White,
-                    center = center,
-                    radius = size / 2 + outline,
-                  )
+                  rotate(degrees = 45f) {
+                    drawRect(
+                      color = place.color,
+                      topLeft = resizedTopLeft - Offset(outline, outline),
+                      size = Size(size + outline * 2, size + outline * 2),
+                    )
+                  }
 
-                  drawText("🌳", topLeft = resizedTopLeft, size = size)
                 }
 
                 is Gym -> {

@@ -16,7 +16,7 @@ class Preferences(gender: Gender, random: Random) {
 
   val minConnectionStrengthSum = random.nextDouble() * 70
 
-  val partnerGenderPreference = if (random.nextFloat() > 0.9) {
+  val partnerGenderPreference = if (random.nextFloat() <= 0.9) {
     when (gender) {
       Gender.Male -> Gender.Female
       Gender.Female -> Gender.Male

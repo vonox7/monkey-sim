@@ -134,7 +134,14 @@ fun App() {
               rememberLinearAxisModel(0f..1.0f),
               xAxisTitle = { },
               yAxisTitle = { },
-              xAxisLabels = { },
+              xAxisLabels = { timestamp ->
+                Text(
+                  (timestamp.toDouble() % 24).roundToInt().toString() + "h",
+                  color = MaterialTheme.colors.onBackground,
+                  style = MaterialTheme.typography.body2,
+                  modifier = Modifier.padding(top = 2.dp)
+                )
+              },
               yAxisLabels = { }
             ) {
               StackedAreaPlot(

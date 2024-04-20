@@ -1,10 +1,10 @@
 package definitions
 
 class WorldState(
-  var timestamp: Double,
   var hour: Double, // Time in hours between 0 and 24
   var day: Int, // Time in hours between 0 (monday) and 6 (sunday)
 ) {
+  var timestamp: Double = hour + day * 24
   val isWorkDay: Boolean get() = day < 5
   val isWeekend: Boolean get() = day >= 5
   val isLunchTime: Boolean get() = hour >= 12 && hour < 14
