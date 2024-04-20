@@ -1,12 +1,18 @@
 package definitions
 
+import androidx.compose.ui.graphics.Color
+
 sealed class Place(
   val position: Position,
+  val zIndex: Int,
+  val color: Color,
 )
 
-class Home(position: Position) : Place(position)
+class Work(position: Position, val maxPeople: Int) : Place(position, zIndex = 1, color = Color(0xFF4e4553))
 
-class Work(position: Position, val maxPeople: Int) : Place(position)
+class FoodShop(position: Position) : Place(position, zIndex = 2, Color(0xFF359750))
 
-class FoodShop(position: Position) : Place(position)
+class Home(position: Position) : Place(position, zIndex = 3, color = Color(0xFF237cec))
 // Also other shop?
+
+// Also education?
