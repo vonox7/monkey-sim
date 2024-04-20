@@ -128,7 +128,7 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
     }
   }
 
-  if (preferences.minConnectionStrengthSum < social.connections.entries.sumOf { it.value }) {
+  if (social.connections.entries.sumOf { it.value } < preferences.minConnectionStrengthSum) {
     val place = listOf(Club::class, Gym::class, Park::class)
         .flatMap { clazz ->
           val places = getNearestOpenPlaces(clazz, world, worldState)

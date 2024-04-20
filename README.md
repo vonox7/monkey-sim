@@ -12,3 +12,7 @@ a custom canvas renderer for the simulation itself.
 
 Run the JVM desktop application locally with `./gradlew desktopRun -DmainClass=MainKt --quiet`.
 And the web application with `./gradlew :composeApp:wasmJsBrowserDevelopmentRun`.
+
+# Authors
+
+Created in April 2024 by [Valentin](https://github.com/vonox7) and [Filippo](https://filippo-orru.com).

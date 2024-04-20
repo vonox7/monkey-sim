@@ -34,7 +34,7 @@ class Actor(
   var targetState: State.DurationalState = State.DurationalState.Sleeping(0.0, home)
 
   sealed class State(
-    val socializeFactor: Double = 0.0,
+    val formSocialConnectionsPerHour: Double = 0.0,
   ) {
 
     abstract override fun toString(): String
@@ -50,7 +50,7 @@ class Actor(
       class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.001,
+        formSocialConnectionsPerHour = 0.01,
       )
 
       class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(
@@ -66,30 +66,30 @@ class Actor(
       class Eating(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.001,
+        formSocialConnectionsPerHour = 0.05,
       )
 
       class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
-        targetPlace, formSocialConnectionsPerHour = 0.004,
+        targetPlace, formSocialConnectionsPerHour = 0.1,
       )
 
       class InThePark(hoursLeft: Double, targetPlace: Park) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.006,
+        formSocialConnectionsPerHour = 0.1,
       )
 
       class AtTheClub(hoursLeft: Double, targetPlace: Club) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.010,
+        formSocialConnectionsPerHour = 0.3,
       )
 
       class AtTheGym(hoursLeft: Double, targetPlace: Gym) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.002,
+        formSocialConnectionsPerHour = 0.05,
       )
 
       class WatchTv(hoursLeft: Double, targetPlace: Home) : DurationalState(
