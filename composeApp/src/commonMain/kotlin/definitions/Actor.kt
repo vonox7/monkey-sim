@@ -87,7 +87,7 @@ class Actor(
       class AtTheClub(hoursLeft: Double, targetPlace: Club) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.3,
+        formSocialConnectionsPerHour = 1.2,
       )
 
       class AtTheGym(hoursLeft: Double, targetPlace: Gym) : DurationalState(
