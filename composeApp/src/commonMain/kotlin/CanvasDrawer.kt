@@ -249,20 +249,42 @@ fun DrawWorldOnCanvas(
       }
 
       fun drawSocialConnections(world: World) {
+        val connectionStrengths = mutableListOf<Double>()
+        world.actors.forEach { actor ->
+          actor.social.connections.forEach { (otherActor, strength) ->
+            // TODO fix this if (and the thing below): Extract or do something else better
+            if (actor.gender == otherActor.preferences.partnerGenderPreference &&
+              actor.preferences.partnerGenderPreference == otherActor.gender &&
+              actor.social.partner == null &&
+              otherActor.social.partner == null
+            ) {
+              connectionStrengths.add(strength)
+            }
+          }
+        }
+        connectionStrengths.sortDescending()
+        val minDisplayConnectionStrength = connectionStrengths.getOrNull(30) ?: 0.0
+
         world.actors.forEach { actor ->
           actor.social.connections.forEach connectionLoop@{ (otherActor, strength) ->
-            if (strength < 3) return@connectionLoop
-            val position = actor.currentPosition
-            val topLeft = position.toOffset()
+            if (strength < minDisplayConnectionStrength) return@connectionLoop
+            if (actor.gender == otherActor.preferences.partnerGenderPreference &&
+              actor.preferences.partnerGenderPreference == otherActor.gender &&
+              actor.social.partner == null &&
+              otherActor.social.partner == null
+            ) {
+              val position = actor.currentPosition
+              val topLeft = position.toOffset()
 
-            val otherPosition = otherActor.currentPosition
-            val otherTopLeft = otherPosition.toOffset()
-            drawLine(
-              color = Color(0x55000000),
-              start = topLeft,
-              end = otherTopLeft,
-              strokeWidth = strength.toFloat().coerceAtMost(4f),
-            )
+              val otherPosition = otherActor.currentPosition
+              val otherTopLeft = otherPosition.toOffset()
+              drawLine(
+                color = if (strength > 8.0) Color(0x33FF3333) else Color(0x33000000),
+                start = topLeft,
+                end = otherTopLeft,
+                strokeWidth = strength.toFloat(),
+              )
+            }
           }
         }
       }
