@@ -6,10 +6,19 @@ import kotlin.random.Random
 fun generateSimpleGraz(): World {
     // Area codes from 0 to 9
     class Area(val x: Int, val y: Int, val density: Int) {
-        fun toPosition(random: Random) = Position(
-            100 * x + random.nextInt(-100, 100),
-            100 * y + random.nextInt(-100, 100),
-        )
+        fun toPosition(random: Random): Position {
+            val shift = when (random.nextInt(0, 4)) {
+                0 -> if (x % 2 == 0) 20 else 60
+                1 -> if (y % 2 == 0) 40 else 80
+                2 -> 90
+                3 -> if (x == 0 || y == 0 || x == 9 || y == 9) 30 else 120
+                else -> throw Exception()
+            }
+            return Position(
+                (50 + 90 * x + random.nextInt(-shift, shift)).coerceIn(10, 990),
+                (50 + 90 * y + random.nextInt(-shift, shift)).coerceIn(10, 990),
+            )
+        }
     }
 
     val homeAreas = listOf(
