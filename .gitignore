@@ -39,4 +39,5 @@ replay_pid*
 # Other stuff
 !gradle/wrapper/gradle-wrapper.jar
 *.klib
+*.salive
 yarn.lock
