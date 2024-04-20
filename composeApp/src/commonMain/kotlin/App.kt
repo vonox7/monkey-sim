@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import definitions.Actor
 import game.Game
@@ -32,6 +33,7 @@ import monkey_sim.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
@@ -76,10 +78,14 @@ fun App() {
 
     //WeekView(game)
     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-      Box(Modifier.fillMaxWidth(0.35f).padding(8.dp)) {
-        Column {
-          Button(onClick = { inspectingActor.value = game.world.actors.random() }) {
-            Image(vectorResource(Res.drawable.refresh), null, Modifier.width(16.dp).height(16.dp))
+      Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {
+        Column(Modifier.fillMaxSize()) {
+          Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text("Random actor", style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold))
+            Spacer(Modifier.weight(1f))
+            OutlinedButton(onClick = { inspectingActor.value = game.world.actors.random() }) {
+              Image(vectorResource(Res.drawable.refresh), null, Modifier.width(16.dp).height(16.dp))
+            }
           }
 
           val actor = inspectingActor.value
@@ -99,17 +105,15 @@ fun App() {
             
             State: ${actor.perceivedState}
             
-            Connection count: ${actor.socialConnections.connections.size} (ideal: ${actor.preferences.minConnectionCount})
-            
             Connection sum: ${
               actor.socialConnections.connections.entries.sumOf { it.value }.display()
             } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
             """.trimIndent()
           )
 
-          Spacer(Modifier)
+          Spacer(Modifier.weight(1f))
 
-          Divider()
+          Divider(Modifier.padding(vertical = 16.dp))
 
           // History
           val gameHistory = game.history.entries
@@ -127,31 +131,38 @@ fun App() {
             )
           }
 
-          Box(Modifier.height(200.dp)) {
+          val lastEntry = game.history.entries.last()
+          Box(Modifier.height(200.dp).padding(end = 8.dp)) {
             XYGraph(
               rememberLinearAxisModel(
-                game.history.entries.first().time.toFloat()..game.history.entries.last().time.toFloat() + 0.001f
+                game.history.entries.first().time.toFloat()..lastEntry.time.toFloat() + 0.001f
               ),
               rememberLinearAxisModel(0f..1.0f),
-              xAxisTitle = "",
-              yAxisTitle = "",
-              xAxisLabels = { "" },
-              yAxisLabels = { "" }
+              xAxisTitle = { },
+              yAxisTitle = { },
+              xAxisLabels = { },
+              yAxisLabels = { }
             ) {
               StackedAreaPlot(
                 stackData,
                 styles,
-                AreaBaseline.ConstantLine(0f)
+                AreaBaseline.ConstantLine(0f),
               )
             }
           }
 
-          Actor.State.colors.forEach { (clazz, color) ->
+          lastEntry.stateToPeopleCount.entries.reversed().forEach { (clazz, count) ->
+            val color = Actor.State.colors[clazz]!!
             Row(verticalAlignment = Alignment.CenterVertically) {
               Spacer(Modifier.width(16.dp))
               Box(Modifier.size(16.dp).clip(CircleShape).background(color))
               Spacer(Modifier.width(8.dp))
               Text(clazz.simpleName!!)
+              Spacer(Modifier.width(8.dp))
+              Text(
+                (100 * count.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt().toString().padStart(2, '0') + "%",
+                style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
+              )
             }
             Spacer(Modifier.height(8.dp))
           }

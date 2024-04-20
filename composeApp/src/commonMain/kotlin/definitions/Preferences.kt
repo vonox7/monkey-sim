@@ -14,7 +14,6 @@ class Preferences(random: Random) {
     Park::class to basicRandom(random),
   )
 
-  val minConnectionCount = random.nextInt(1, 20) * random.nextInt(1, 20).toDouble()
   val minConnectionStrengthSum = random.nextDouble() * 70
 }
 
