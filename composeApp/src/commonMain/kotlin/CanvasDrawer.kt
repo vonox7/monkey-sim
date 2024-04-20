@@ -14,6 +14,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import definitions.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -76,8 +77,10 @@ fun DrawWorldOnCanvas(
 
       fun drawPlaces() {
         world.places
-            .sortedBy { it.zIndex }
-            .forEach { place ->
+          .entries
+          .sortedBy { it.value.first().zIndex }
+          .fastForEach { (_, places) ->
+            places.forEach { place ->
               val position = place.position
               val topLeft = position.toOffset()
               val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
@@ -197,39 +200,40 @@ fun DrawWorldOnCanvas(
                 }
               }
             }
+          }
       }
 
       fun drawActors() {
 
         world.actors
-            .groupBy { it.currentPosition.x.roundToInt() to it.currentPosition.y.roundToInt() }
-            .values
-            .forEach { actorsOnSameSpot ->
-              val groupAxisSize = sqrt(actorsOnSameSpot.size.toDouble()).toInt()
+          .groupBy { it.currentPosition.x.roundToInt() to it.currentPosition.y.roundToInt() }
+          .values
+          .forEach { actorsOnSameSpot ->
+            val groupAxisSize = sqrt(actorsOnSameSpot.size.toDouble()).toInt()
 
-              actorsOnSameSpot.forEachIndexed { index, actor ->
-                val reverseIndex = actorsOnSameSpot.size - index - 1
-                var position = actor.currentPosition
-                position += Position(
-                  (reverseIndex % groupAxisSize).toDouble() + reverseIndex * 0.1,
-                  (reverseIndex / groupAxisSize).toDouble() * 1.1
-                )
-                val topLeft = position.toOffset()
-                val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
-                val outline = 1f
-                val size = 2.2f
-                drawCircle(
-                  color = Color(0xFFceb28b),
-                  center = center,
-                  radius = (size + outline).dp.toPx(),
-                )
-                drawCircle(
-                  color = Color(0xFF4a2a0b),
-                  center = center,
-                  radius = size.dp.toPx(),
-                )
-              }
+            actorsOnSameSpot.forEachIndexed { index, actor ->
+              val reverseIndex = actorsOnSameSpot.size - index - 1
+              var position = actor.currentPosition
+              position += Position(
+                (reverseIndex % groupAxisSize).toDouble() + reverseIndex * 0.1,
+                (reverseIndex / groupAxisSize).toDouble() * 1.1
+              )
+              val topLeft = position.toOffset()
+              val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
+              val outline = 1f
+              val size = 2.2f
+              drawCircle(
+                color = Color(0xFFceb28b),
+                center = center,
+                radius = (size + outline).dp.toPx(),
+              )
+              drawCircle(
+                color = Color(0xFF4a2a0b),
+                center = center,
+                radius = size.dp.toPx(),
+              )
             }
+          }
       }
 
       fun drawSocialConnections(world: World) {
@@ -266,21 +270,23 @@ fun DrawWorldOnCanvas(
         )
 
         world.places
-            .forEach { place ->
-              // Draw light if it's nighttime and a person is here
-              if (game.worldState.time !in 7.0..18.0 &&
-                world.actors.any { it.currentPosition == place.position && it.perceivedState !is Actor.State.DurationalState.Sleeping }
-              ) {
-                val position = place.position
-                val topLeft = position.toOffset()
-                val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
-                drawCircle(
-                  color = Color(0x61f0D957),
-                  center = center,
-                  radius = 8.dp.toPx(),
-                )
-              }
+          .values
+          .flatten()
+          .forEach { place ->
+            // Draw light if it's nighttime and a person is here
+            if (game.worldState.time !in 7.0..18.0 &&
+              world.actors.any { it.currentPosition == place.position && it.perceivedState !is Actor.State.DurationalState.Sleeping }
+            ) {
+              val position = place.position
+              val topLeft = position.toOffset()
+              val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
+              drawCircle(
+                color = Color(0x61f0D957),
+                center = center,
+                radius = 8.dp.toPx(),
+              )
             }
+          }
       }
 
 

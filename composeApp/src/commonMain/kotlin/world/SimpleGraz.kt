@@ -242,7 +242,7 @@ fun generateSimpleGraz(): World {
   return World(
     width = 1000,
     height = 1000,
-    places = places,
+    places = places.groupBy { it::class },
     actors = actors,
   )
 }

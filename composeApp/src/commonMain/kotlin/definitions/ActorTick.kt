@@ -121,11 +121,11 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
 
 inline fun <reified T : Place> Actor.getNearestPlace(world: World): T? {
   // TODO optimize so we don't need to filter ever time and iterate over all places every time
-  return world.places.filterIsInstance<T>().minByOrNull { it.position.distanceTo(currentPosition) }
+  return world.places[T::class]!!.minByOrNull { it.position.distanceTo(currentPosition) } as T?
 }
 
 inline fun <reified T : Place> Actor.getNearestOpenPlace(world: World, worldState: WorldState): T? {
   // TODO optimize so we don't need to filter ever time and iterate over all places every time
-  return world.places.filterIsInstance<T>().filter { worldState.time.toInt() in it.openHours }
-    .minByOrNull { it.position.distanceTo(currentPosition) }
+  return world.places[T::class]!!.filter { worldState.time.toInt() in it.openHours }
+    .minByOrNull { it.position.distanceTo(currentPosition) } as T?
 }
