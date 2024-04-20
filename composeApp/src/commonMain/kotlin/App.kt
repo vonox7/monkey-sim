@@ -91,6 +91,8 @@ fun App() {
             
             Money: ${actor.money.display()}€
             
+            Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "-"}
+            
             Sex: ${actor.sex}
             
             Years of education: ${actor.yearsOfEducation.display()}

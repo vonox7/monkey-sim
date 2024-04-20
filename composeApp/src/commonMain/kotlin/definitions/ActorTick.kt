@@ -8,7 +8,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
 
   // Commute
   if (targetState.targetPlace.position != currentPosition) {
-    val commuteSpeed = (if (money > 1000) 600 else 200) * elapsedHours // TODO travel speed more than just by money
+    val commuteSpeed = (if (money > 3_000) 600 else 200) * elapsedHours // TODO travel speed more than just by money
     val direction = currentPosition.directionTo(targetState.targetPlace.position, maxTravelSpeed = commuteSpeed)
     currentPosition += Position(direction.dx, direction.dy)
     return

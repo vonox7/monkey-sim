@@ -151,7 +151,7 @@ fun generateSimpleGraz(): World {
         workArea.toPosition(random), openHours = 0..0, work = Place.Work(
           maxPeople = random.nextInt(1, 10) * random.nextInt(1, 10),
           minEducationYears = minEducationYears,
-          salaryPerHour = random.nextDouble(10.0, 50.0) + minEducationYears * 3,
+          salaryPerHour = random.nextInt(10, 50) + minEducationYears * 3,
           coreWorkingHours = coreWorkingHours,
           workableHours = (coreWorkingHours.first - random.nextInt(0, 5)).coerceAtLeast(6)..
               (coreWorkingHours.last + random.nextInt(0, 5)).coerceAtMost(20),
@@ -167,7 +167,7 @@ fun generateSimpleGraz(): World {
       val work = Place.Work(
         maxPeople = random.nextInt(1, 3),
         minEducationYears = 0,
-        salaryPerHour = random.nextDouble(10.0, 50.0),
+        salaryPerHour = random.nextInt(10, 50),
         coreWorkingHours = openHours,
         workableHours = openHours,
       )
@@ -181,7 +181,7 @@ fun generateSimpleGraz(): World {
         educationArea.toPosition(random), openHours = 8..16, work = Place.Work(
           maxPeople = random.nextInt(3, 30),
           minEducationYears = 12,
-          salaryPerHour = random.nextDouble(30.0, 60.0),
+          salaryPerHour = random.nextInt(30, 60),
           coreWorkingHours = 9..14,
           workableHours = 8..16,
         )
@@ -196,7 +196,7 @@ fun generateSimpleGraz(): World {
         clubArea.toPosition(random), openHours = 20..24, work = Place.Work(
           maxPeople = random.nextInt(2, 6),
           minEducationYears = 0,
-          salaryPerHour = random.nextDouble(10.0, 40.0),
+          salaryPerHour = random.nextInt(10, 40),
           coreWorkingHours = 20..24,
           workableHours = 20..24,
         )
@@ -210,7 +210,7 @@ fun generateSimpleGraz(): World {
         sportArea.toPosition(random), openHours = 6..22, work = Place.Work(
           maxPeople = random.nextInt(1, 5),
           minEducationYears = 0,
-          salaryPerHour = random.nextDouble(10.0, 30.0),
+          salaryPerHour = random.nextInt(10, 30),
           coreWorkingHours = 8..20,
           workableHours = 6..22,
         )

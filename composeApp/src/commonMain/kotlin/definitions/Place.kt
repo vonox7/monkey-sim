@@ -21,7 +21,7 @@ sealed class Place(
   class Work(
     val maxPeople: Int,
     val minEducationYears: Int,
-    val salaryPerHour: Double,
+    val salaryPerHour: Int,
     val coreWorkingHours: IntRange,
     val workableHours: IntRange,
   ) {
@@ -37,6 +37,10 @@ sealed class Place(
       require(workableHours.first <= workableHours.last)
       require(coreWorkingHours.first in workableHours)
       require(coreWorkingHours.last in workableHours)
+    }
+
+    override fun toString(): String {
+      return "$salaryPerHour€/h ($currentWorkingPeople/$maxPeople people, min $minEducationYears years education)"
     }
   }
 }
