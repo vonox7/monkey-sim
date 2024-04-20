@@ -96,7 +96,15 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
   }
 
   if (worldState.isSleepTime) {
-    return Sleeping(7.0, home)
+    val sleepHours = when (age) {
+      in 0..8 -> 10.0
+      in 9..14 -> 9.0
+      in 15..30 -> 8.0
+      in 30..60 -> 7.5
+      in 30..60 -> 7.0
+      else -> 6.5
+    }
+    return Sleeping(sleepHours, home)
   }
 
   // Go out and eat if we are a little bit hungry
