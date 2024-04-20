@@ -24,15 +24,15 @@ class History {
     val time: Double,
   )
 
-  private val entries: MutableList<Entry> = mutableListOf()
-  fun get(): List<Entry> = entries
+  private val _entries: MutableList<Entry> = mutableListOf()
+  val entries get(): List<Entry> = _entries
 
   fun add(world: World, worldState: WorldState) {
 
     val currentStates: Map<KClass<out Actor.State>, List<Actor>> =
       world.actors.groupBy { actor -> actor.perceivedState::class }
 
-    entries.add(
+    _entries.add(
       Entry(
         Actor.State.allStates.associateWith { currentStates[it]?.size ?: 0 },
         world.actors.size,
@@ -41,6 +41,6 @@ class History {
     )
 
     // We only keep the last 24 hours
-    entries.removeAll { it.time < worldState.timestamp - 24 }
+    _entries.removeAll { it.time < worldState.timestamp - 24 }
   }
 }

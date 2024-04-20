@@ -100,33 +100,32 @@ fun App() {
           }
 
           // History
-          // Re-render on tick change... :(
 
-          val original = game.history.get()
+          val gameHistory = game.history.entries
             .map { entry -> entry.stateToPeopleCount.values.map { it / entry.worldPopulation.toFloat() }.toList() }
-          // Transpose original
-          val data = original[0].indices.map { i -> original.map { it[i] } }
+          val transposedGameHistory = gameHistory[0].indices.map { i -> gameHistory.map { it[i] } }
 
           val stackData: StackedAreaPlotDataAdapter<Float> = StackedAreaPlotDataAdapter(
-            game.history.get().map { it.time.toFloat() },
-            data
+            game.history.entries.map { it.time.toFloat() },
+            transposedGameHistory
           )
-          val styles = game.history.get().first().stateToPeopleCount.keys.mapIndexed { index, state ->
+          // TODO better colors
+          val styles = game.history.entries.first().stateToPeopleCount.keys.mapIndexed { index, state ->
             StackedAreaStyle(
-              LineStyle(SolidColor(Color.Black), strokeWidth = 2.dp),
+              LineStyle(SolidColor(Color.Black), strokeWidth = 1.5.dp),
               AreaStyle(SolidColor(Color.Blue.copy(alpha = 0.10f * (index.toFloat() + 1))))
             )
           }
 
           XYGraph(
             rememberLinearAxisModel(
-              game.history.get().first().time.toFloat()..game.history.get().last().time.toFloat() + 0.01f
+              game.history.entries.first().time.toFloat()..game.history.entries.last().time.toFloat() + 0.001f
             ),
-            rememberLinearAxisModel(0f..1.05f),
+            rememberLinearAxisModel(0f..1.0f),
             xAxisTitle = "",
             yAxisTitle = "",
-            xAxisLabels = { it.toString() },
-            yAxisLabels = { it.toString() }
+            xAxisLabels = { "" },
+            yAxisLabels = { it.toDouble().display(1) }
           ) {
             StackedAreaPlot(
               stackData,
