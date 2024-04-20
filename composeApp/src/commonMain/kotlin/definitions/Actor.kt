@@ -33,6 +33,10 @@ class Actor(
 
   var targetState: State.DurationalState = State.DurationalState.Sleeping(0.0, home)
 
+  override fun toString(): String {
+    return name
+  }
+
   sealed class State(
     val formSocialConnectionsPerHour: Double = 0.0,
   ) {

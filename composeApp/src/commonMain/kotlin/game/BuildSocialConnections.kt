@@ -1,6 +1,7 @@
 package game
 
 import definitions.Actor
+import definitions.lovePotential
 import kotlin.random.Random
 
 
@@ -32,12 +33,13 @@ private fun Actor.socializeWith(other: Actor) {
   val connection = social.connections[other]
   social.connections[other] = (connection ?: 0.0) + 1
 
-  if (connection != null && social.partner == null && connection > datingThreshold) {
+  if (connection != null && social.partner == null && connection > datingThreshold && this.lovePotential(other)) {
     social.connections.remove(other)
     social.connections.remove(this)
     social.partner = other
     if (other.money > this.money) {
       this.home = other.home
     }
+    println("LOVE!!! $this and $other are now partners at ${this.currentPosition} and ${other.currentPosition}")
   }
 }
