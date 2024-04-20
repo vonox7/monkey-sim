@@ -8,9 +8,10 @@ fun Game.decaySocialConnections(elapsedHours: Double) {
 
 private fun Actor.decaySocialConnections(elapsedHours: Double) {
   this.social.connections
-    .filter { it.value > 0 }
     .forEach { (actor, connection) ->
-      this.social.connections[actor] = connection - elapsedHours * 0.01
+      if (connection > 0) {
+        this.social.connections[actor] = connection - elapsedHours * 0.01
+      }
     }
   this.social.connections.entries.removeAll { it.value <= 0 }
 

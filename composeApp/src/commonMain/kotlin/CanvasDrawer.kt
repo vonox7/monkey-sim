@@ -15,7 +15,6 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import definitions.*
 import game.Game
 import kotlin.math.roundToInt
@@ -82,7 +81,7 @@ fun DrawWorldOnCanvas(
         world.places
           .entries
           .sortedBy { it.value.first().zIndex }
-          .fastForEach { (_, places) ->
+          .forEach { (_, places) ->
             places.forEach { place ->
               val position = place.position
               val topLeft = position.toOffset()
@@ -201,7 +200,7 @@ fun DrawWorldOnCanvas(
       fun drawActors() {
 
         world.actors
-          .groupBy { it.currentPosition.x.roundToInt() to it.currentPosition.y.roundToInt() }
+          .groupBy { it.currentPosition }
           .values
           .forEach { actorsOnSameSpot ->
             val groupAxisSize = sqrt(actorsOnSameSpot.size.toDouble()).toInt()
@@ -295,24 +294,29 @@ fun DrawWorldOnCanvas(
           size = Size(worldBottomRight.x, worldBottomRight.y)
         )
 
-        world.places
-          .values
-          .flatten()
-          .forEach { place ->
-            // Draw light if it's nighttime and a person is here
-            if (game.worldState.hour !in 7.0..18.0 &&
-              world.actors.any { it.currentPosition == place.position && it.perceivedState !is Actor.State.DurationalState.Sleeping }
-            ) {
-              val position = place.position
-              val topLeft = position.toOffset()
-              val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
-              drawCircle(
-                color = Color(0x61f0D957),
-                center = center,
-                radius = 8.dp.toPx(),
-              )
+        // Draw light if it's nighttime and a person is here
+        if (game.worldState.hour !in 7.0..18.0) {
+
+          val lightPositionsDrawn = mutableSetOf<Position>()
+
+          world.actors
+            .forEach { actor ->
+              if (actor.perceivedState !is Actor.State.DurationalState.Sleeping &&
+                actor.targetState == actor.perceivedState && // Not commuting
+                actor.currentPosition !in lightPositionsDrawn
+              ) {
+                lightPositionsDrawn.add(actor.currentPosition)
+
+                val topLeft = actor.currentPosition.toOffset()
+                val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
+                drawCircle(
+                  color = Color(0x61f0D957),
+                  center = center,
+                  radius = 8.dp.toPx(),
+                )
+              }
             }
-          }
+        }
       }
 
 
