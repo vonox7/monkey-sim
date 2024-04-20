@@ -236,7 +236,7 @@ fun DrawWorldOnCanvas(
           val outline = 2f
           val size = 4f
           drawCircle(
-            color = Color(0xFFfb928b),
+            color = Color(0xFFfb4332),
             center = center,
             radius = (size + outline).dp.toPx(),
           )

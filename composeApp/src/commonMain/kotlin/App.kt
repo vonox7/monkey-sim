@@ -174,7 +174,7 @@ fun App() {
           horizontalArrangement = Arrangement.Center,
           verticalAlignment = Alignment.CenterVertically
         ) {
-          Button(onClick = { paused.value = !paused.value }, modifier = Modifier.padding(end = 16.dp)) {
+          OutlinedButton(onClick = { paused.value = !paused.value }, modifier = Modifier.padding(end = 16.dp)) {
             if (paused.value) {
               Image(vectorResource(Res.drawable.play), null, Modifier.width(16.dp).height(16.dp))
             } else {
