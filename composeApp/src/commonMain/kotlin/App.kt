@@ -71,13 +71,42 @@ fun App() {
               "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)}"
         )
       }
-      Box(
-        modifier = Modifier
-            .weight(1f)
-            .aspectRatio(1f)
-      ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-          CanvasDrawer(this, game.world.width, game.world.height).draw(game.world)
+
+      Divider()
+
+      //WeekView(game)
+      Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Box(Modifier.fillMaxWidth(0.2f).padding(8.dp)) {
+          Column {
+            Button(onClick = { inspectingActor.value = game.world.actors.random() }) {
+              Text("Inspect random actor")
+            }
+
+            val actor = inspectingActor.value
+            if (actor != null) {
+              Text(
+                """
+              ${actor.name}
+              Age: ${actor.age}
+              Money: ${actor.money}
+              Sex: ${actor.sex}
+              Years of education: ${actor.yearsOfEducation.display()}
+              Position: ${actor.currentPosition.let { "x: ${it.x.display()}, y: ${it.y.display()}" }}
+              Perceived state: ${actor.perceivedState}
+              Target: ${actor.targetState}
+              
+              """.trimIndent()
+              )
+            }
+          }
+        }
+
+        VerticalDivider()
+
+        Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
+          Canvas(modifier = Modifier.fillMaxSize()) {
+            CanvasDrawer(this, game.world.width, game.world.height).draw(game.world)
+          }
         }
       }
     }
