@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import definitions.*
+import game.Game
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -239,16 +240,17 @@ fun DrawWorldOnCanvas(
       fun drawSocialConnections(world: World) {
         world.actors.forEach { actor ->
           actor.socialConnections.connections.forEach { (otherActor, strength) ->
+            if (strength < 0.1) return@forEach
             val position = actor.currentPosition
             val topLeft = position.toOffset()
 
             val otherPosition = otherActor.currentPosition
-            val otherTopLeft = Position(otherPosition.x, otherPosition.y)
+            val otherTopLeft = otherPosition.toOffset()
             drawLine(
-              color = Color.Black,
-              start = Offset(topLeft.x + size.width / 2, topLeft.y + size.height / 2),
-              end = Offset((otherTopLeft.x + size.width / 2).toFloat(), (otherTopLeft.y + size.height / 2).toFloat()),
-              strokeWidth = 2f,
+              color = Color(0xAA000000),
+              start = topLeft,
+              end = otherTopLeft,
+              strokeWidth = strength.toFloat(),
             )
           }
         }

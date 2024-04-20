@@ -31,14 +31,16 @@ class Actor(
 
   var targetState: State.DurationalState = State.DurationalState.Sleeping(0.0, home)
 
-  sealed class State {
+  sealed class State(val socializeFactor: Double = 0.0) {
     abstract override fun toString(): String;
 
-    sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place) : State() {
+    sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place, socializeFactor: Double = 0.0) :
+      State(socializeFactor) {
       override fun toString(): String = "${mainToString()}, hours left: ${hoursLeft.display()}"
       abstract fun mainToString(): String
 
-      class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+      class Working(hoursLeft: Double, targetPlace: Place) :
+        DurationalState(hoursLeft, targetPlace, socializeFactor = 0.00001) {
         override fun mainToString(): String = "Working at $targetPlace"
       }
 
@@ -50,7 +52,8 @@ class Actor(
         override fun mainToString(): String = "Sleeping at $targetPlace"
       }
 
-      class Eating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+      class Eating(hoursLeft: Double, targetPlace: Place) :
+        DurationalState(hoursLeft, targetPlace, socializeFactor = 0.00001) {
         override fun mainToString(): String = "Eating at $targetPlace"
       }
 
