@@ -154,7 +154,7 @@ fun App() {
 
           Text(
             "${game.worldState} - ${tick.value.toString().padStart(5, '0')} - " +
-                "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)} - " +
+                "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(2, '0')} - " +
                 "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(2, '0')}",
             style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
           )
