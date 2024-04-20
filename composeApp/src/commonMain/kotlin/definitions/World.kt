@@ -5,5 +5,4 @@ open class World(
   val height: Int,
   val places: List<Place>,
   val actors: List<Actor>,
-) {
-}
+)

@@ -54,7 +54,7 @@ fun generateSimpleGraz(): World {
     Area(9, 9, 2),
   )
 
-  val workAreas = listOf(
+  val industryAreas = listOf(
     Area(1, 9, 10),
     Area(2, 8, 10),
     Area(2, 9, 10),
@@ -80,7 +80,7 @@ fun generateSimpleGraz(): World {
     Area(8, 7, 10),
   )
 
-  val shopAreas = listOf(
+  val foodShopAreas = listOf(
     Area(1, 2, 10),
     Area(1, 8, 10),
     Area(2, 2, 10),
@@ -103,44 +103,115 @@ fun generateSimpleGraz(): World {
     Area(5, 3, 10),
   )
 
+  val clubAreas = listOf(
+    Area(2, 2, 3),
+    Area(2, 4, 5),
+    Area(3, 3, 10),
+    Area(3, 4, 10),
+    Area(4, 3, 30),
+  )
+
+  val sportAreas = listOf(
+    Area(1, 1, 2),
+    Area(3, 7, 2),
+    Area(4, 6, 4),
+    Area(5, 3, 2),
+    Area(8, 5, 2),
+    Area(8, 8, 2),
+  )
+
   val random = Random(123456)
 
+  val places = mutableListOf<Place>()
   val actors = mutableListOf<Actor>()
-  val homePlaces = mutableListOf<Home>()
-  val workPlaces = mutableListOf<Work>()
-  val foodPlaces = mutableListOf<FoodShop>()
 
   homeAreas.forEach { homeArea ->
     repeat(homeArea.density * 5) {
       val homePlace = Home(homeArea.toPosition(random))
-      homePlaces += homePlace
+      places += homePlace
       actors += Actor.create(random, homePlace)
     }
   }
 
-  workAreas.forEach { workArea ->
+  industryAreas.forEach { workArea ->
     repeat(workArea.density) {
-      workPlaces += Work(workArea.toPosition(random), maxPeople = random.nextInt(5, 100))
+      val coreWorkingHours = random.nextInt(7, 10)..random.nextInt(14, 16)
+      val minEducationYears = random.nextInt(0, 15)
+      places += Industry(
+        workArea.toPosition(random), openHours = 0..0, work = Place.Work(
+          maxPeople = random.nextInt(5, 100),
+          minEducationYears = minEducationYears,
+          salaryPerHour = random.nextDouble(10.0, 50.0) + minEducationYears * 3,
+          coreWorkingHours = coreWorkingHours,
+          workableHours = (coreWorkingHours.first - random.nextInt(0, 5)).coerceAtLeast(6)..
+              (coreWorkingHours.last + random.nextInt(0, 5)).coerceAtMost(20),
+        )
+      )
     }
   }
 
-  shopAreas.forEach { shopArea ->
+  foodShopAreas.forEach { shopArea ->
     repeat(shopArea.density) {
       val position = shopArea.toPosition(random)
-      workPlaces += Work(position, maxPeople = random.nextInt(1, 30))
-      foodPlaces += FoodShop(position)
+      val openHours = random.nextInt(6, 8)..random.nextInt(18, 20)
+      val work = Place.Work(
+        maxPeople = random.nextInt(1, 30),
+        minEducationYears = 0,
+        salaryPerHour = random.nextDouble(10.0, 50.0),
+        coreWorkingHours = openHours,
+        workableHours = openHours,
+      )
+      places += FoodShop(position, openHours, work)
     }
   }
 
   educationAreas.forEach { educationArea ->
     repeat(educationArea.density) {
-      workPlaces += Work(educationArea.toPosition(random), maxPeople = random.nextInt(100, 500))
+      places += University(
+        educationArea.toPosition(random), openHours = 8..16, work = Place.Work(
+          maxPeople = random.nextInt(10, 500),
+          minEducationYears = 12,
+          salaryPerHour = random.nextDouble(30.0, 60.0),
+          coreWorkingHours = 9..14,
+          workableHours = 8..16,
+        )
+      )
+    }
+  }
+
+  clubAreas.forEach { clubArea ->
+    repeat(clubArea.density) {
+      places += Club(
+        // TODO openHours & workingHours should be a list of ranges, so we can also work before and after midnight
+        clubArea.toPosition(random), openHours = 20..24, work = Place.Work(
+          maxPeople = random.nextInt(5, 30),
+          minEducationYears = 0,
+          salaryPerHour = random.nextDouble(10.0, 40.0),
+          coreWorkingHours = 20..24,
+          workableHours = 20..24,
+        )
+      )
+    }
+  }
+
+  sportAreas.forEach { sportArea ->
+    repeat(sportArea.density) {
+      places += Gym(
+        sportArea.toPosition(random), openHours = 6..22, work = Place.Work(
+          maxPeople = random.nextInt(2, 10),
+          minEducationYears = 0,
+          salaryPerHour = random.nextDouble(10.0, 30.0),
+          coreWorkingHours = 8..20,
+          workableHours = 6..22,
+        )
+      )
     }
   }
 
   // Randomly assign people work. Override workPlace, so not every workPlace is 100% filled.
-  workPlaces.shuffled(random).forEach { workPlace ->
-    repeat(workPlace.maxPeople) {
+  places.shuffled(random).forEach { workPlace ->
+    repeat(workPlace.work?.maxPeople ?: 0) {
+      // We don't care about minEducationYears and distance here to get initial distribution of work
       actors.random(random).work = workPlace
     }
   }
@@ -148,7 +219,7 @@ fun generateSimpleGraz(): World {
   return World(
     width = 1000,
     height = 1000,
-    places = homePlaces + workPlaces + foodPlaces,
+    places = places,
     actors = actors,
   )
 }

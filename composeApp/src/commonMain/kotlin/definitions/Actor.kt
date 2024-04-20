@@ -14,7 +14,7 @@ class Actor(
 
   var currentPosition: Position,
   var home: Home,
-  var work: Work? = null,
+  var work: Place? = null,
   // TODO partner
 ) {
   val socialConnections: SocialConnections = SocialConnections()
