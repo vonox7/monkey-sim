@@ -46,7 +46,7 @@ fun App() {
     val inspectingActor = remember { mutableStateOf<Actor?>(null) }
 
     LaunchedEffect(key1 = game) {
-      println("Launching")
+      println("Launching...")
       var lastTime = TimeSource.Monotonic.markNow()
       while (true) {
         if (!paused.value) {
