@@ -38,6 +38,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation("io.github.koalaplot:koalaplot-core:0.5.4")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

@@ -1,14 +1,27 @@
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import definitions.Actor
+import io.github.koalaplot.core.line.AreaBaseline
+import io.github.koalaplot.core.line.StackedAreaPlot
+import io.github.koalaplot.core.line.StackedAreaPlotDataAdapter
+import io.github.koalaplot.core.line.StackedAreaStyle
+import io.github.koalaplot.core.style.AreaStyle
+import io.github.koalaplot.core.style.LineStyle
+import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.xygraph.XYGraph
+import io.github.koalaplot.core.xygraph.rememberLinearAxisModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Duration
@@ -17,6 +30,7 @@ import kotlin.time.TimeSource
 import kotlin.time.measureTime
 
 
+@OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 @Preview
 fun App() {
@@ -87,16 +101,39 @@ fun App() {
 
           // History
           // Re-render on tick change... :(
-          TextField(
-            TextFieldValue(
-              tick.value.let {
-                game.history.get()
-                    .joinToString("\n") { entry -> entry.states.entries.joinToString("\n") { (state, count) -> "$state: $count" } }
-              }),
 
-            onValueChange = {},
-            readOnly = true,
+          val original = game.history.get()
+            .map { entry -> entry.stateToPeopleCount.values.map { it / entry.worldPopulation.toFloat() }.toList() }
+          // Transpose original
+          val data = original[0].indices.map { i -> original.map { it[i] } }
+
+          val stackData: StackedAreaPlotDataAdapter<Float> = StackedAreaPlotDataAdapter(
+            game.history.get().map { it.time.toFloat() },
+            data
           )
+          val styles = game.history.get().first().stateToPeopleCount.keys.mapIndexed { index, state ->
+            StackedAreaStyle(
+              LineStyle(SolidColor(Color.Black), strokeWidth = 2.dp),
+              AreaStyle(SolidColor(Color.Blue.copy(alpha = 0.10f * (index.toFloat() + 1))))
+            )
+          }
+
+          XYGraph(
+            rememberLinearAxisModel(
+              game.history.get().first().time.toFloat()..game.history.get().last().time.toFloat() + 0.01f
+            ),
+            rememberLinearAxisModel(0f..1.05f),
+            xAxisTitle = "",
+            yAxisTitle = "",
+            xAxisLabels = { it.toString() },
+            yAxisLabels = { it.toString() }
+          ) {
+            StackedAreaPlot(
+              stackData,
+              styles,
+              AreaBaseline.ConstantLine(0f)
+            )
+          }
         }
       }
 

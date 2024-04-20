@@ -45,7 +45,7 @@ fun DrawWorldOnCanvas(
 
       fun drawBackground() {
         // Daytime: brightness 1, nighttime: 0.2, dawn/dusk: inter
-        val brightness = when (val hour = game.worldState.time) {
+        val brightness = when (val hour = game.worldState.hour) {
           in 6.0..7.0 -> 0.2 + (hour - 6) * 0.8
           in 18.0..19.0 -> 0.2 + (19 - hour) * 0.8
           in 7.0..18.0 -> 1.0
@@ -255,7 +255,7 @@ fun DrawWorldOnCanvas(
       }
 
       fun drawNighttimeOverlay() {
-        val overlayStrength = when (val hour = game.worldState.time) {
+        val overlayStrength = when (val hour = game.worldState.hour) {
           in 6.0..7.0 -> 7 - hour
           in 18.0..19.0 -> hour - 18
           in 7.0..18.0 -> 0.0
@@ -274,7 +274,7 @@ fun DrawWorldOnCanvas(
           .flatten()
           .forEach { place ->
             // Draw light if it's nighttime and a person is here
-            if (game.worldState.time !in 7.0..18.0 &&
+            if (game.worldState.hour !in 7.0..18.0 &&
               world.actors.any { it.currentPosition == place.position && it.perceivedState !is Actor.State.DurationalState.Sleeping }
             ) {
               val position = place.position

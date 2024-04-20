@@ -78,7 +78,7 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
 
   // Do things because it is time to do so: work, sleep
 
-  if (worldState.isWorkDay && workPlace?.work?.let { worldState.time.toInt() in it.workableHours } == true) {
+  if (worldState.isWorkDay && workPlace?.work?.let { worldState.hour.toInt() in it.workableHours } == true) {
     if (needs.food.amount < 0.7 && worldState.isLunchTime) {
       // Lunch break
       val nearestFoodPlace = getNearestOpenPlace<FoodShop>(world, worldState) // TODO cache, can not be changed
@@ -86,7 +86,7 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
         return Eating(0.5, nearestFoodPlace)
       }
     }
-    if (workPlace?.work?.let { worldState.time.toInt() in it.coreWorkingHours } == true) {
+    if (workPlace?.work?.let { worldState.hour.toInt() in it.coreWorkingHours } == true) {
       // Work within core working hours
       return Working(1.0, workPlace!!)
     } else if (needs.workFreeTime.amount < 0.9) {
@@ -126,6 +126,6 @@ inline fun <reified T : Place> Actor.getNearestPlace(world: World): T? {
 
 inline fun <reified T : Place> Actor.getNearestOpenPlace(world: World, worldState: WorldState): T? {
   // TODO optimize so we don't need to filter ever time and iterate over all places every time
-  return world.places[T::class]!!.filter { worldState.time.toInt() in it.openHours }
+  return world.places[T::class]!!.filter { worldState.hour.toInt() in it.openHours }
     .minByOrNull { it.position.distanceTo(currentPosition) } as T?
 }

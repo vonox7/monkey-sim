@@ -70,6 +70,19 @@ class Actor(
     class Commuting(val direction: Direction) : State() {
       override fun toString(): String = "Commuting to $direction"
     }
+
+    companion object {
+      val allStates = listOf(
+        DurationalState.Working::class,
+        DurationalState.Shopping::class,
+        DurationalState.Sleeping::class,
+        DurationalState.Eating::class,
+        DurationalState.Socializing::class,
+        DurationalState.Educating::class,
+        DurationalState.Fun::class,
+        Commuting::class
+      )
+    }
   }
 
   companion object {
