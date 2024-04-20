@@ -11,7 +11,10 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
+import kotlin.time.measureTime
 
 val game = Game() // TODO where to put?!?
 
@@ -20,21 +23,34 @@ val game = Game() // TODO where to put?!?
 fun App() {
   MaterialTheme {
     val tick = remember { mutableStateOf(0) }
+    val lastTickDuration = remember { mutableStateOf(Duration.ZERO) }
+    val maxTickDuration = remember { mutableStateOf(Duration.ZERO) }
 
     val scope = rememberCoroutineScope()
     scope.launch {
+      var lastTime = TimeSource.Monotonic.markNow()
       while (true) {
-        val startTime = TimeSource.Monotonic.markNow()
-        game.tick()
-        tick.value += 1
+        val renderTime = measureTime {
+          game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 300_000.0)
+          tick.value += 1
+          lastTime = TimeSource.Monotonic.markNow()
+        }
+
+        lastTickDuration.value = renderTime
+        maxTickDuration.value = maxOf(maxTickDuration.value, renderTime)
+
         // 60 FPS, but sleep at least 3ms to avoid 100% CPU
-        delay((1000.0 / 60 - startTime.elapsedNow().inWholeMilliseconds).toLong().coerceAtLeast(3))
+        delay((1000.0 / 60 - renderTime.inWholeMilliseconds).toLong().coerceAtLeast(3))
       }
     }
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
       Row {
-        Text("${game.worldState} - ${tick.value}")
+        Text(
+          "${game.worldState} - ${tick.value} - " +
+              "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)} - " +
+              "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0)}"
+        )
       }
       Box(
         modifier = Modifier

@@ -6,8 +6,8 @@ class Game {
   val world = generateSimpleGraz()
   val worldState = WorldState(time = 6.9, day = 0)
 
-  fun tick() {
-    worldState.tick()
-    world.actors.forEach { it.tick(world, worldState) }
+  fun tick(elapsedHours: Double) {
+    worldState.tick(elapsedHours)
+    world.actors.forEach { it.tick(world, worldState, elapsedHours) }
   }
 }

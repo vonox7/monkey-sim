@@ -105,4 +105,8 @@ sealed class Need(
   class Sleep(amount: Double) : Need(amount)
   class Social(amount: Double) : Need(amount)
   class Fun(amount: Double) : Need(amount)
+
+  fun add(amountPerHour: Double, elapsedHours: Double) {
+    amount = (amount + amountPerHour * elapsedHours).coerceIn(0.0, 1.0)
+  }
 }

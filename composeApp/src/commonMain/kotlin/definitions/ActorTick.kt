@@ -2,8 +2,8 @@ package definitions
 
 import definitions.Actor.State.DurationalState.*
 
-fun Actor.tick(world: World, worldState: WorldState) {
-  decreaseNeeds()
+fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
+  decreaseNeeds(elapsedHours)
 
   // Commute
   if (this.targetState.targetPlace.position != this.currentPosition) {
@@ -42,9 +42,14 @@ fun Actor.tick(world: World, worldState: WorldState) {
   this.targetState = generateTargetState(world, worldState)
 }
 
-private fun Actor.decreaseNeeds() {
-  this.needs.food.amount = (this.needs.food.amount - 0.000003).coerceAtLeast(0.0)
-  this.needs.sleep.amount = (this.needs.sleep.amount - 0.000001).coerceAtLeast(0.0)
+private fun Actor.decreaseNeeds(elapsedHours: Double) {
+  if (this.perceivedState is Sleeping) {
+    this.needs.food.add(-0.1, elapsedHours)
+    this.needs.sleep.add(0.125, elapsedHours)
+  } else {
+    this.needs.food.add(-0.2, elapsedHours)
+    this.needs.sleep.add(-0.04, elapsedHours)
+  }
 }
 
 private fun Actor.generateTargetState(world: World, worldState: WorldState): Actor.State.DurationalState {

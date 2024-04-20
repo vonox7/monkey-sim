@@ -10,8 +10,8 @@ class WorldState(
   val isShopOpenHours: Boolean get() = time >= 8 && time < 20
   val isSleepTime: Boolean get() = time >= 22 || time < 6
 
-  fun tick() {
-    time += 0.0002
+  fun tick(elapsedHours: Double) {
+    time += elapsedHours
     if (time >= 24) {
       time = 0.0
       day = (day + 1) % 7
