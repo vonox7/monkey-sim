@@ -230,8 +230,8 @@ fun DrawWorldOnCanvas(
 
       fun drawSocialConnections(world: World) {
         world.actors.forEach { actor ->
-          actor.socialConnections.connections.forEach { (otherActor, strength) ->
-            if (strength < 0.1) return@forEach
+          actor.socialConnections.connections.forEach connectionLoop@{ (otherActor, strength) ->
+            if (strength < 0.1) return@connectionLoop
             val position = actor.currentPosition
             val topLeft = position.toOffset()
 
