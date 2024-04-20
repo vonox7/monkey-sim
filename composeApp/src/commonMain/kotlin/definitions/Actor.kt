@@ -38,7 +38,7 @@ class Actor(
           else -> Sex.Other
         },
         needs = Needs.default(),
-        yearsOfEducation = if (age < 6) 0 else random.nextInt(1, age - 6), // TODO better education system
+        yearsOfEducation = if (age <= 6) 0 else random.nextInt(0, age - 5), // TODO better education system
         age = age,
         currentPosition = home.position,
         home = home,
