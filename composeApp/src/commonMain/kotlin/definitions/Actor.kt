@@ -1,5 +1,6 @@
 package definitions
 
+import androidx.compose.ui.graphics.Color
 import kotlin.random.Random
 
 class Actor(
@@ -33,32 +34,69 @@ class Actor(
 
   var targetState: State.DurationalState = State.DurationalState.Sleeping(0.0, home)
 
-  sealed class State(val socializeFactor: Double = 0.0) {
-    abstract override fun toString(): String;
+  sealed class State(
+    val socializeFactor: Double = 0.0,
+  ) {
 
-    sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place, formSocialConnectionsPerHour: Double = 0.0) :
-      State(formSocialConnectionsPerHour) {
+    abstract override fun toString(): String
+
+    sealed class DurationalState(
+      var hoursLeft: Double,
+      val targetPlace: Place,
+      formSocialConnectionsPerHour: Double = 0.0,
+    ) : State(formSocialConnectionsPerHour) {
+
       override fun toString(): String = "${this::class.simpleName!!} at $targetPlace"
 
-      class Working(hoursLeft: Double, targetPlace: Place) :
-        DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.001)
+      class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(
+        hoursLeft,
+        targetPlace,
+        formSocialConnectionsPerHour = 0.001,
+      )
 
-      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(
+        hoursLeft,
+        targetPlace,
+      )
 
-      class Sleeping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      class Sleeping(hoursLeft: Double, targetPlace: Place) : DurationalState(
+        hoursLeft,
+        targetPlace,
+      )
 
-      class Eating(hoursLeft: Double, targetPlace: Place) :
-        DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.001)
+      class Eating(hoursLeft: Double, targetPlace: Place) : DurationalState(
+        hoursLeft,
+        targetPlace,
+        formSocialConnectionsPerHour = 0.001,
+      )
 
-      class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.004)
+      class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(
+        hoursLeft,
+        targetPlace, formSocialConnectionsPerHour = 0.004,
+      )
 
-      class InThePark(hoursLeft: Double, targetPlace: Park) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.006)
+      class InThePark(hoursLeft: Double, targetPlace: Park) : DurationalState(
+        hoursLeft,
+        targetPlace,
+        formSocialConnectionsPerHour = 0.006,
+      )
 
-      class AtTheClub(hoursLeft: Double, targetPlace: Club) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.010)
+      class AtTheClub(hoursLeft: Double, targetPlace: Club) : DurationalState(
+        hoursLeft,
+        targetPlace,
+        formSocialConnectionsPerHour = 0.010,
+      )
 
-      class AtTheGym(hoursLeft: Double, targetPlace: Gym) : DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.002)
+      class AtTheGym(hoursLeft: Double, targetPlace: Gym) : DurationalState(
+        hoursLeft,
+        targetPlace,
+        formSocialConnectionsPerHour = 0.002,
+      )
 
-      class WatchTv(hoursLeft: Double, targetPlace: Home) : DurationalState(hoursLeft, targetPlace)
+      class WatchTv(hoursLeft: Double, targetPlace: Home) : DurationalState(
+        hoursLeft,
+        targetPlace,
+      )
     }
 
     class Commuting(val direction: Direction) : State() {
@@ -77,6 +115,18 @@ class Actor(
         DurationalState.AtTheClub::class,
         DurationalState.AtTheGym::class,
         DurationalState.WatchTv::class
+      )
+      val colors = mapOf(
+        DurationalState.Working::class to Color(0xAB4e4553),
+        DurationalState.Shopping::class to Color(0xAB359750),
+        DurationalState.Sleeping::class to Color(0xAB94bdf8),
+        DurationalState.Eating::class to Color(0xAB108e5e),
+        DurationalState.Educating::class to Color(0xABf8e394),
+        Commuting::class to Color(0xAB302137),
+        DurationalState.InThePark::class to Color(0xAB94f8b5),
+        DurationalState.AtTheClub::class to Color(0xABf8b594),
+        DurationalState.AtTheGym::class to Color(0xAB94f8e3),
+        DurationalState.WatchTv::class to Color(0x882739f0),
       )
     }
   }
