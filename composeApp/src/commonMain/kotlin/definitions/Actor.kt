@@ -1,6 +1,5 @@
 package definitions
 
-import display
 import kotlin.random.Random
 
 class Actor(
@@ -39,7 +38,7 @@ class Actor(
 
     sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place, formSocialConnectionsPerHour: Double = 0.0) :
       State(formSocialConnectionsPerHour) {
-      override fun toString(): String = "${this::class.simpleName!!} at ${targetPlace}, hours left: ${hoursLeft.display()}"
+      override fun toString(): String = "${this::class.simpleName!!} at $targetPlace"
 
       class Working(hoursLeft: Double, targetPlace: Place) :
         DurationalState(hoursLeft, targetPlace, formSocialConnectionsPerHour = 0.001)
@@ -63,7 +62,7 @@ class Actor(
     }
 
     class Commuting(val direction: Direction) : State() {
-      override fun toString(): String = "Commuting to $direction"
+      override fun toString(): String = "Commuting..."
     }
 
     companion object {
@@ -83,7 +82,6 @@ class Actor(
   }
 
   companion object {
-    // TODO name corresponding to sex
     private val firstNames = mapOf(
       Sex.Male to listOf(
         "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Daniel", "Matthew", "Anthony",
@@ -126,7 +124,7 @@ class Actor(
         age = age,
         currentPosition = home.position,
         home = home,
-        money = 1000.0 * age
+        money = 100.0 * age
       )
     }
   }

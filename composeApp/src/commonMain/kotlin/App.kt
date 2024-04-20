@@ -43,7 +43,7 @@ fun App() {
     val lastTickDuration = remember { mutableStateOf(Duration.ZERO) }
     val maxTickDuration = remember { mutableStateOf(Duration.ZERO) }
 
-    val inspectingActor = remember { mutableStateOf<Actor?>(null) }
+    val inspectingActor = remember { mutableStateOf<Actor?>(game.world.actors.first()) }
 
     LaunchedEffect(key1 = game) {
       println("Launching...")
@@ -51,7 +51,7 @@ fun App() {
       while (true) {
         if (!paused.value) {
           val renderTime = measureTime {
-            game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 1000.0) // TODO after pausing, this will do a big jump
+            game.tick(elapsedHours = lastTime.elapsedNow().inWholeMilliseconds / 1000.0)
             tick.value += 1
             lastTime = TimeSource.Monotonic.markNow()
           }
@@ -84,7 +84,7 @@ fun App() {
               
               Age: ${actor.age}
               
-              Money: ${actor.money.display()}
+              Money: ${actor.money.display()}€
               
               Sex: ${actor.sex}
               
@@ -154,9 +154,9 @@ fun App() {
           }
 
           Text(
-            "${game.worldState} - ${tick.value.toString().padStart(5, '0')} - " +
-                "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(2, '0')} - " +
-                "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(2, '0')}",
+            "${game.worldState} - Simulation duration per tick: " +
+                "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')} - " +
+                "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')}",
             style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
           )
         }

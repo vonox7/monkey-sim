@@ -10,7 +10,7 @@ sealed class Place(
   val color: Color,
 ) {
   override fun toString(): String {
-    return "${this::class.simpleName} at $position"
+    return "${this::class.simpleName}"
   }
 
   init {
