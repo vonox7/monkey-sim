@@ -99,7 +99,7 @@ fun App() {
             
             Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "-"}
             
-            Sex: ${actor.sex}
+            Gender: ${actor.gender}
             
             Years of education: ${actor.yearsOfEducation.display()}
             
@@ -196,7 +196,7 @@ fun App() {
           )
         }
         Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
-          WorldView(game)
+          WorldView(inspectingActor.value, game)
         }
       }
     }
@@ -204,6 +204,6 @@ fun App() {
 }
 
 @Composable
-fun WorldView(game: Game) {
-  DrawWorldOnCanvas(game, game.world.width, game.world.height)
+fun WorldView(inspectingActor: Actor, game: Game) {
+  DrawWorldOnCanvas(inspectingActor, game, game.world.width, game.world.height)
 }

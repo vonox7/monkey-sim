@@ -22,6 +22,7 @@ import kotlin.math.sqrt
 
 @Composable
 fun DrawWorldOnCanvas(
+  inspectingActor: Actor,
   game: Game,
   worldWidth: Int,
   worldHeight: Int,
@@ -47,15 +48,15 @@ fun DrawWorldOnCanvas(
       fun drawBackground() {
         // Daytime: brightness 1, nighttime: 0.2, dawn/dusk: inter
         val brightness = when (val hour = game.worldState.hour) {
-          in 6.0..7.0 -> 0.2 + (hour - 6) * 0.8
-          in 18.0..19.0 -> 0.2 + (19 - hour) * 0.8
+          in 6.0..7.0 -> hour - 6
+          in 18.0..19.0 -> 19 - hour
           in 7.0..18.0 -> 1.0
-          else -> 0.2
+          else -> 0.0
         }
 
-        val color: Long = 0xFF000000 + (0xFF * brightness).toLong() * 0x010101
+
         drawRect(
-          color = Color(color),
+          color = Color((0xFF * (brightness * 0.8 + 0.2)).toLong() * 0x1000000),
           topLeft = Offset(0f, 0f),
           size = Size(worldBottomRight.x, worldBottomRight.y)
         )
@@ -204,6 +205,8 @@ fun DrawWorldOnCanvas(
             val groupAxisSize = sqrt(actorsOnSameSpot.size.toDouble()).toInt()
 
             actorsOnSameSpot.forEachIndexed { index, actor ->
+              if (actor == inspectingActor) return@forEachIndexed
+
               val reverseIndex = actorsOnSameSpot.size - index - 1
               var position = actor.currentPosition
               position += Position(
@@ -226,6 +229,23 @@ fun DrawWorldOnCanvas(
               )
             }
           }
+
+        run {
+          val topLeft = inspectingActor.currentPosition.toOffset()
+          val center = topLeft + Position(0.5, 0.5).toOffset()
+          val outline = 2f
+          val size = 4f
+          drawCircle(
+            color = Color(0xFFfb928b),
+            center = center,
+            radius = (size + outline).dp.toPx(),
+          )
+          drawCircle(
+            color = Color(0xFFFFFFFF),
+            center = center,
+            radius = size.dp.toPx(),
+          )
+        }
       }
 
       fun drawSocialConnections(world: World) {
@@ -255,7 +275,7 @@ fun DrawWorldOnCanvas(
           else -> 1.0
         }
 
-        val color: Long = (0x98 * overlayStrength).toLong() * 0x1000000
+        val color: Long = (0x60 * overlayStrength).toLong() * 0x1000000
         drawRect(
           color = Color(color),
           topLeft = Offset(0f, 0f),

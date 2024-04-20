@@ -10,7 +10,7 @@ class Actor(
 
   var yearsOfEducation: Double,
   val age: Int,
-  val sex: Sex,
+  val gender: Gender,
   var money: Double,
 
   var currentPosition: Position,
@@ -20,7 +20,7 @@ class Actor(
 ) {
   val socialConnections: SocialConnections = SocialConnections()
 
-  val preferences = Preferences(random)
+  val preferences = Preferences(gender, random)
 
   val perceivedState: State
     get() {
@@ -133,15 +133,15 @@ class Actor(
 
   companion object {
     private val firstNames = mapOf(
-      Sex.Male to listOf(
+      Gender.Male to listOf(
         "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Daniel", "Matthew", "Anthony",
         "Donald", "Mark", "Paul", "Steven", "Andrew", "Kenneth", "Joshua", "George", "Kevin", "Brian", "Edward", "Ronald", "Timothy"
       ),
-      Sex.Female to listOf(
+      Gender.Female to listOf(
         "Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen", "Nancy", "Lisa", "Betty",
         "Dorothy", "Sandra", "Ashley", "Kimberly", "Donna", "Emily", "Michelle", "Carol", "Amanda", "Melissa", "Deborah", "Stephanie",
       ),
-      Sex.Other to listOf(
+      Gender.Other to listOf(
         "Alex", "Ali",
       )
     )
@@ -160,15 +160,15 @@ class Actor(
         4 -> random.nextInt(80, 100)
         else -> throw IllegalArgumentException("Can't happen")
       }
-      val sex = when (random.nextFloat()) {
-        in 0.0..0.48 -> Sex.Male
-        in 0.48..0.95 -> Sex.Female
-        else -> Sex.Other
+      val gender = when (random.nextFloat()) {
+        in 0.0..0.48 -> Gender.Male
+        in 0.48..0.95 -> Gender.Female
+        else -> Gender.Other
       }
       return Actor(
         random,
-        name = "${firstNames[sex]!!.random(random)} ${lastNames.random(random)}",
-        sex = sex,
+        name = "${firstNames[gender]!!.random(random)} ${lastNames.random(random)}",
+        gender = gender,
         needs = Needs.default(),
         yearsOfEducation = if (age <= 6) 0.0 else random.nextDouble(0.0, age - 5.0), // TODO better education system
         age = age,
@@ -180,7 +180,7 @@ class Actor(
   }
 }
 
-enum class Sex {
+enum class Gender {
   Male, Female, Other;
 }
 

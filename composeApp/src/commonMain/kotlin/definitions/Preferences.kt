@@ -2,7 +2,7 @@ package definitions
 
 import kotlin.random.Random
 
-class Preferences(random: Random) {
+class Preferences(gender: Gender, random: Random) {
   companion object {
     fun basicRandom(random: Random) = (random.nextDouble() * random.nextDouble()).coerceIn(0.0, 1.0)
   }
@@ -15,5 +15,15 @@ class Preferences(random: Random) {
   )
 
   val minConnectionStrengthSum = random.nextDouble() * 70
+
+  val partnerGenderPreference = if (random.nextFloat() > 0.9) {
+    when (gender) {
+      Gender.Male -> Gender.Female
+      Gender.Female -> Gender.Male
+      Gender.Other -> Gender.entries.random(random)
+    }
+  } else {
+    Gender.entries.random(random)
+  }
 }
 
