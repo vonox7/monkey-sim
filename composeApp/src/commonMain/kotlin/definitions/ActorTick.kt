@@ -39,17 +39,13 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
         money -= 30 * elapsedHours
       }
 
-      is Shopping -> {
-        money -= 200 * elapsedHours
-      }
-
       is Sleeping -> needs.sleep.add(0.125, elapsedHours)
       is Working -> {
         money += 20 * elapsedHours
         needs.workFreeTime.add(0.125, elapsedHours)
       }
 
-      is LookingForWork -> {
+      is JobHunt -> {
         if (worldState.hour.toInt() in targetState.targetPlace.openHours) {
           val work = targetState.targetPlace.work
           if (work != null && work.maxPeople < work.currentWorkingPeople && yearsOfEducation >= work.minEducationYears) {
@@ -178,7 +174,7 @@ private fun Actor.generateTargetState(
         )
       .filterNotNull()
 
-    return LookingForWork(1.0, potentialWorkPlace.random())
+    return JobHunt(1.0, potentialWorkPlace.random())
   }
 
   if (social.connections.entries.sumOf { it.value } < preferences.minConnectionStrengthSum) {

@@ -66,12 +66,7 @@ class Actor(
         formSocialConnectionsPerHour = 0.5,
       )
 
-      class LookingForWork(hoursLeft: Double, targetPlace: Place) : DurationalState(
-        hoursLeft,
-        targetPlace,
-      )
-
-      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(
+      class JobHunt(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
         targetPlace,
       )
@@ -123,8 +118,7 @@ class Actor(
     companion object {
       val allStates = listOf(
         DurationalState.Working::class,
-        DurationalState.LookingForWork::class,
-        DurationalState.Shopping::class,
+        DurationalState.JobHunt::class,
         DurationalState.Sleeping::class,
         DurationalState.Eating::class,
         DurationalState.Educating::class,
@@ -136,8 +130,7 @@ class Actor(
       )
       val colors = mapOf(
         DurationalState.Working::class to Color(0xAB4e4553),
-        DurationalState.LookingForWork::class to Color(0xAB2e2523),
-        DurationalState.Shopping::class to Color(0xAB359750),
+        DurationalState.JobHunt::class to Color(0xAB2e2523),
         DurationalState.Sleeping::class to Color(0xAB94bdf8),
         DurationalState.Eating::class to Color(0xAB108e5e),
         DurationalState.Educating::class to Color(0xABf8e394),
