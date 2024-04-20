@@ -93,7 +93,7 @@ fun App() {
 
           Text(
             """
-            Age: ${actor.age}
+            Age: ${actor.age.display()}
             Money: ${actor.money.display()}€
             Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "-"}
             Gender: ${actor.gender}

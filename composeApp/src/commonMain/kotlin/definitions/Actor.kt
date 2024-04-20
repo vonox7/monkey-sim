@@ -9,7 +9,7 @@ class Actor(
   val needs: Needs,
 
   var yearsOfEducation: Double,
-  val age: Int,
+  var age: Double, // In years
   val gender: Gender,
   var money: Double,
 
@@ -55,6 +55,11 @@ class Actor(
         hoursLeft,
         targetPlace,
         formSocialConnectionsPerHour = 0.01,
+      )
+
+      class LookingForWork(hoursLeft: Double, targetPlace: Place) : DurationalState(
+        hoursLeft,
+        targetPlace,
       )
 
       class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(
@@ -109,6 +114,7 @@ class Actor(
     companion object {
       val allStates = listOf(
         DurationalState.Working::class,
+        DurationalState.LookingForWork::class,
         DurationalState.Shopping::class,
         DurationalState.Sleeping::class,
         DurationalState.Eating::class,
@@ -121,6 +127,7 @@ class Actor(
       )
       val colors = mapOf(
         DurationalState.Working::class to Color(0xAB4e4553),
+        DurationalState.LookingForWork::class to Color(0xAB2e2523),
         DurationalState.Shopping::class to Color(0xAB359750),
         DurationalState.Sleeping::class to Color(0xAB94bdf8),
         DurationalState.Eating::class to Color(0xAB108e5e),
@@ -174,7 +181,7 @@ class Actor(
         gender = gender,
         needs = Needs.default(),
         yearsOfEducation = if (age <= 6) 0.0 else random.nextDouble(0.0, age - 5.0), // TODO better education system
-        age = age,
+        age = age.toDouble(),
         currentPosition = home.position,
         home = home,
         money = 100.0 * age

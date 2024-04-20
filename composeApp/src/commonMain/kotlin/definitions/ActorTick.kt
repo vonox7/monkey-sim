@@ -6,6 +6,8 @@ import kotlin.reflect.KClass
 fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
   decreaseNeeds(elapsedHours)
 
+  handleAge(elapsedHours)
+
   // Commute
   if (targetState.targetPlace.position != currentPosition) {
     val commuteSpeed = (if (money > 3_000) 600 else 200) * elapsedHours // TODO travel speed more than just by money
@@ -23,7 +25,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
         money -= 20 * elapsedHours
       }
 
-      is Educating -> yearsOfEducation += 0.001
+      is Educating -> yearsOfEducation += 0.1 * elapsedHours
 
       is InThePark -> {
         money -= 3 * elapsedHours
@@ -47,6 +49,16 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
         needs.workFreeTime.add(0.125, elapsedHours)
       }
 
+      is LookingForWork -> {
+        if (worldState.hour.toInt() in targetState.targetPlace.openHours) {
+          val work = targetState.targetPlace.work
+          if (work != null && work.maxPeople < work.currentWorkingPeople && yearsOfEducation >= work.minEducationYears) {
+            workPlace = targetState.targetPlace
+            work.currentWorkingPeople += 1
+          }
+        }
+      }
+
       is WatchTv -> {
         // Do nothing
       }
@@ -55,7 +67,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
   }
 
   // Generate next state
-  targetState = generateTargetState(world, worldState)
+  targetState = generateTargetState(world, worldState, elapsedHours)
 }
 
 private fun Actor.decreaseNeeds(elapsedHours: Double) {
@@ -71,7 +83,21 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
   }
 }
 
-private fun Actor.generateTargetState(world: World, worldState: WorldState): Actor.State.DurationalState {
+private fun Actor.handleAge(elapsedHours: Double) {
+  age += elapsedHours / 24 / 7 // 1 year has 7 days to make simulation faster
+
+  if (age > 70) {
+    // Retire
+    workPlace?.work?.let { it.currentWorkingPeople -= 1 }
+    workPlace = null
+  }
+}
+
+private fun Actor.generateTargetState(
+  world: World,
+  worldState: WorldState,
+  elapsedHours: Double,
+): Actor.State.DurationalState {
   // Satisfy "immediate needs": food, sleep
 
   if (needs.food.amount < 0.5 && currentPosition == home.position) {
@@ -89,7 +115,7 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
     return Sleeping((8 * (1.0 - needs.sleep.amount)).coerceAtLeast(1.0), home)
   }
 
-  // Do things because it is time to do so: work, sleep
+  // Do things because it is time to do so: work, education, sleep
 
   if (worldState.isWorkDay && workPlace?.work?.let { worldState.hour.toInt() in it.workableHours } == true) {
     if (needs.food.amount < 0.7 && worldState.isLunchTime) {
@@ -108,13 +134,20 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
     }
   }
 
+  if (worldState.isWorkDay && workPlace == null && age.toInt() in 6..25) {
+    val nearestSchool = getNearestOpenPlace<University>(world, worldState)
+    if (nearestSchool != null) {
+      return Educating(6.0, nearestSchool)
+    }
+  }
+
   if (worldState.isSleepTime) {
     val sleepHours = when (age) {
-      in 0..8 -> 10.0
-      in 9..14 -> 9.0
-      in 15..30 -> 8.0
-      in 30..60 -> 7.5
-      in 30..60 -> 7.0
+      in 0.0..8.0 -> 10.0
+      in 9.0..14.0 -> 9.0
+      in 15.0..30.0 -> 8.0
+      in 30.0..60.0 -> 7.5
+      in 30.0..60.0 -> 7.0
       else -> 6.5
     }
     return Sleeping(sleepHours, home)
@@ -128,21 +161,44 @@ private fun Actor.generateTargetState(world: World, worldState: WorldState): Act
     }
   }
 
+  // Find a job if you don't have one (and have at least 3 friends)
+  if (age in 18.0..70.0 && workPlace == null && social.connections.count() >= 3 && worldState.isWorkDay) {
+    val potentialWorkPlace = (
+        // Near places people know
+        listOf(
+          getNearestPlace<Industry>(world),
+          getNearestOpenPlace<Industry>(world, worldState),
+          getNearestPlace<FoodShop>(world),
+          getNearestOpenPlace<FoodShop>(world, worldState),
+        ) +
+            // Places where friends work
+            social.connections.keys.mapNotNull { it.workPlace } +
+            // Random places they find in the world
+            world.places.values.map { it.random() }
+        )
+      .filterNotNull()
+
+    return LookingForWork(1.0, potentialWorkPlace.random())
+  }
+
   if (social.connections.entries.sumOf { it.value } < preferences.minConnectionStrengthSum) {
-    val place = listOf(Club::class, Gym::class, Park::class)
-        .flatMap { clazz ->
-          val places = getNearestOpenPlaces(clazz, world, worldState)
-          val preference = preferences.places[clazz]!!
-          places.map { place -> place to preference }
-        }
-        .maxByOrNull { (place, preference) -> preference * place.position.distanceTo(currentPosition) }
-        ?.first
+    val place = (listOf(Club::class, Gym::class, Park::class) +
+        if (age.toInt() in 6..50 && workPlace == null && worldState.isWorkDay) listOf(University::class) else emptyList()
+        )
+      .flatMap { clazz ->
+        val places = getNearestOpenPlaces(clazz, world, worldState)
+        val preference = preferences.places[clazz]!!
+        places.map { place -> place to preference }
+      }
+      .maxByOrNull { (place, preference) -> preference * place.position.distanceTo(currentPosition) }
+      ?.first
 
 
     return when (place) {
       is Club -> AtTheClub(2.5, place)
       is Gym -> AtTheGym(2.0, place)
       is Park -> InThePark(1.5, place)
+      is University -> Educating(6.0, place)
       else -> throw Exception("Can't happen")
     }
   }

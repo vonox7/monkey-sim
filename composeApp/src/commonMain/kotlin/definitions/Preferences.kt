@@ -12,6 +12,7 @@ class Preferences(gender: Gender, random: Random) {
     Gym::class to basicRandom(random),
     Club::class to basicRandom(random),
     Park::class to basicRandom(random),
+    University::class to basicRandom(random),
   )
 
   val minConnectionStrengthSum = random.nextDouble() * 70
