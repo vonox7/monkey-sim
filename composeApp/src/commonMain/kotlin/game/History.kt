@@ -1,6 +1,7 @@
 package game
 
 import definitions.Actor
+import definitions.WorkingCategory
 import definitions.World
 import definitions.WorldState
 import kotlin.reflect.KClass
@@ -10,6 +11,8 @@ class History {
     val stateToPeopleCount: Map<KClass<out Actor.State>, Int>,
     val worldPopulation: Int,
     val time: Double,
+    val peopleWithPartner: Int,
+    val workingInfo: Map<WorkingCategory, Int>,
   )
 
   private val _entries: MutableList<Entry> = mutableListOf()
@@ -25,6 +28,8 @@ class History {
         Actor.State.allStates.associateWith { currentStates[it]?.size ?: 0 },
         world.actors.size,
         worldState.timestamp,
+        world.actors.count { it.social.partner != null },
+        workingInfo = world.actors.groupBy { it.workingCategory }.mapValues { it.value.size }
       )
     )
 

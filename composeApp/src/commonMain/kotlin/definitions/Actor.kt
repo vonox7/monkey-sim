@@ -1,6 +1,7 @@
 package definitions
 
 import androidx.compose.ui.graphics.Color
+import definitions.WorkingCategory.*
 import kotlin.random.Random
 
 class Actor(
@@ -33,6 +34,14 @@ class Actor(
 
   var targetState: State.DurationalState = State.DurationalState.Sleeping(0.0, home)
 
+  val workingCategory
+    get(): WorkingCategory = when (age) {
+      in AgeCategory.CHILD.startAge..AgeCategory.CHILD.endAge -> CHILD
+      in AgeCategory.ADULT.startAge..AgeCategory.ADULT.endAge -> if (workPlace != null) HAS_JOB else UNEMPLOYED
+      in AgeCategory.SENIOR.startAge..AgeCategory.SENIOR.endAge -> RETIRED
+      else -> UNEMPLOYED
+    }
+
   override fun toString(): String {
     return name
   }
@@ -54,7 +63,7 @@ class Actor(
       class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.01,
+        formSocialConnectionsPerHour = 0.5,
       )
 
       class LookingForWork(hoursLeft: Double, targetPlace: Place) : DurationalState(
@@ -192,6 +201,19 @@ class Actor(
 
 enum class Gender {
   Male, Female, Other;
+}
+
+enum class AgeCategory(val startAge: Double, val endAge: Double) {
+  CHILD(startAge = 0.0, endAge = 18.0),
+  ADULT(startAge = 18.0, endAge = 70.0),
+  SENIOR(startAge = 70.0, endAge = 100.00)
+}
+
+enum class WorkingCategory {
+  CHILD,
+  HAS_JOB,
+  UNEMPLOYED,
+  RETIRED;
 }
 
 class Needs(

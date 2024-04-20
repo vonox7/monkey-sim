@@ -17,13 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import definitions.Actor
 import game.Game
-import io.github.koalaplot.core.line.AreaBaseline
-import io.github.koalaplot.core.line.StackedAreaPlot
-import io.github.koalaplot.core.line.StackedAreaPlotDataAdapter
-import io.github.koalaplot.core.line.StackedAreaStyle
+import io.github.koalaplot.core.line.*
 import io.github.koalaplot.core.style.AreaStyle
 import io.github.koalaplot.core.style.LineStyle
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.xygraph.Point
 import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberLinearAxisModel
 import kotlinx.coroutines.delay
@@ -110,7 +108,56 @@ fun App() {
 
           Divider(Modifier.padding(vertical = 16.dp))
 
-          // History
+          val lastEntry = game.history.entries.last()
+
+          // Long-time charts
+
+          // Partner percentage
+          val partnerPercentageData = game.history.entries.map { entry ->
+            Point(
+              entry.time.toFloat(),
+              100f * entry.peopleWithPartner.toFloat() / entry.worldPopulation.toFloat()
+            )
+          }
+          Row(modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 8.dp)) {
+            Text("Partner percentage")
+            Spacer(Modifier.weight(1f))
+            Text(
+              "${lastEntry.peopleWithPartner} / ${lastEntry.worldPopulation} (${(100 * lastEntry.peopleWithPartner.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt()}%)",
+              style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
+            )
+          }
+          Box(Modifier.height(200.dp).padding(end = 8.dp)) {
+            XYGraph(
+              rememberLinearAxisModel(
+                game.history.entries.first().time.toFloat()..lastEntry.time.toFloat() + 0.001f
+              ),
+              rememberLinearAxisModel(0f..100.0f),
+              xAxisTitle = { },
+              yAxisTitle = { },
+              xAxisLabels = { timestamp ->
+                Text(
+                  (timestamp.toDouble() % 24).roundToInt().toString() + "h",
+                  color = MaterialTheme.colors.onBackground,
+                  style = MaterialTheme.typography.body2,
+                  modifier = Modifier.padding(top = 2.dp)
+                )
+              },
+              yAxisLabels = { }
+            ) {
+              LinePlot(
+                partnerPercentageData,
+                lineStyle = LineStyle(SolidColor(Color.Black), strokeWidth = 1.5.dp),
+              )
+            }
+          }
+
+          Divider(Modifier.padding(vertical = 16.dp))
+
+          // States
+          Box(modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 8.dp)) {
+            Text("State distribution")
+          }
           val gameHistory = game.history.entries
               .map { entry -> entry.stateToPeopleCount.values.map { it / entry.worldPopulation.toFloat() }.toList() }
           val transposedGameHistory = gameHistory[0].indices.map { i -> gameHistory.map { it[i] } }
@@ -126,7 +173,6 @@ fun App() {
             )
           }
 
-          val lastEntry = game.history.entries.last()
           Box(Modifier.height(200.dp).padding(end = 8.dp)) {
             XYGraph(
               rememberLinearAxisModel(
