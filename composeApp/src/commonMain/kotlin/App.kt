@@ -120,7 +120,7 @@ fun App() {
             )
           }
           Row(modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 8.dp)) {
-            Text("Partner percentage")
+            Text("People with partner")
             Spacer(Modifier.weight(1f))
             Text(
               "${lastEntry.peopleWithPartner} / ${lastEntry.worldPopulation} (${(100 * lastEntry.peopleWithPartner.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt()}%)",
@@ -159,7 +159,7 @@ fun App() {
             Text("State distribution")
           }
           val gameHistory = game.history.entries
-              .map { entry -> entry.stateToPeopleCount.values.map { it / entry.worldPopulation.toFloat() }.toList() }
+            .map { entry -> entry.stateToPeopleCount.values.map { it / entry.worldPopulation.toFloat() }.toList() }
           val transposedGameHistory = gameHistory[0].indices.map { i -> gameHistory.map { it[i] } }
 
           val stackData: StackedAreaPlotDataAdapter<Float> = StackedAreaPlotDataAdapter(
@@ -201,31 +201,37 @@ fun App() {
 
           val statesList = lastEntry.stateToPeopleCount.entries.reversed()
           Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            val splitColumns = 3
-            val size = statesList.size / splitColumns
-            repeat(splitColumns) { index ->
-              val subList = statesList.subList(index * size, (index + 1) * size)
-              Column(Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
-                subList.forEach { (clazz, count) ->
-                  val color = Actor.State.colors[clazz]!!
-                  Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(16.dp).clip(CircleShape).background(color))
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                      clazz.simpleName!!,
-                      style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                      (100 * count.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt().toString() + "%",
-                      style = LocalTextStyle.current.copy(fontSize = 14.sp, fontFeatureSettings = "tnum"),
-                    )
+            statesList.windowed(
+              size = (statesList.size + 2) / 3,
+              step = (statesList.size + 2) / 3,
+              partialWindows = true
+            )
+              .forEach { subList ->
+
+                Column(Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
+                  subList.forEach { (clazz, count) ->
+                    val color = Actor.State.colors[clazz]!!
+                    Row(
+                      Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                      verticalAlignment = Alignment.CenterVertically
+                    ) {
+                      Box(Modifier.size(16.dp).clip(CircleShape).background(color))
+                      Spacer(Modifier.width(8.dp))
+                      Text(
+                        clazz.simpleName!!,
+                        style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                      )
+                      Spacer(Modifier.width(8.dp))
+                      Spacer(Modifier.weight(1f))
+                      Text(
+                        (100 * count.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt().toString() + "%",
+                        style = LocalTextStyle.current.copy(fontSize = 14.sp, fontFeatureSettings = "tnum"),
+                      )
+                    }
+                    Spacer(Modifier.height(8.dp))
                   }
-                  Spacer(Modifier.height(8.dp))
                 }
               }
-            }
           }
         }
       }
