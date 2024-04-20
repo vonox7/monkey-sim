@@ -30,7 +30,8 @@ kotlin {
     
     sourceSets {
         val desktopMain by getting
-        
+        val wasmJsMain by getting
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -42,6 +43,8 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+        }
+        wasmJsMain.dependencies {
         }
     }
 }
