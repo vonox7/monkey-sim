@@ -1,5 +1,6 @@
 package definitions
 
+import display
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -47,9 +48,9 @@ class Position(
   }
 
   override fun toString(): String {
-    return "(x=$x, y=$y)"
+    return "(x=${x.display()}, y=${y.display()})"
   }
 }
 
 
-class Direction(val dx: Double, val dy: Double)
+data class Direction(val dx: Double, val dy: Double)

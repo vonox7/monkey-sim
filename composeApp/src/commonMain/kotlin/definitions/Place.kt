@@ -6,7 +6,11 @@ sealed class Place(
   val position: Position,
   val zIndex: Int,
   val color: Color,
-)
+) {
+  override fun toString(): String {
+    return "${this::class.simpleName} at $position"
+  }
+}
 
 class Work(position: Position, val maxPeople: Int) : Place(position, zIndex = 1, color = Color(0xFF4e4553))
 

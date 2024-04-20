@@ -31,17 +31,44 @@ class Actor(
   var targetState: State.DurationalState = State.DurationalState.Sleeping(0.0, home)
 
   sealed class State {
+    abstract override fun toString(): String;
+
     sealed class DurationalState(var hoursLeft: Double, val targetPlace: Place) : State() {
-      class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
-      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
-      class Sleeping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
-      class Eating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
-      class Socializing(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
-      class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
-      class Fun(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace)
+      override fun toString(): String = "${mainToString()}, hours left: $hoursLeft"
+      abstract fun mainToString(): String
+
+      class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+        override fun mainToString(): String = "Working at $targetPlace"
+      }
+
+      class Shopping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+        override fun mainToString(): String = "Shopping at $targetPlace"
+      }
+
+      class Sleeping(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+        override fun mainToString(): String = "Sleeping at $targetPlace"
+      }
+
+      class Eating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+        override fun mainToString(): String = "Eating at $targetPlace"
+      }
+
+      class Socializing(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+        override fun mainToString(): String = "Socializing at $targetPlace"
+      }
+
+      class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+        override fun mainToString(): String = "Educating at $targetPlace"
+      }
+
+      class Fun(hoursLeft: Double, targetPlace: Place) : DurationalState(hoursLeft, targetPlace) {
+        override fun mainToString(): String = "Having fun at $targetPlace"
+      }
     }
 
-    class Commuting(val direction: Direction) : State()
+    class Commuting(val direction: Direction) : State() {
+      override fun toString(): String = "Commuting to $direction"
+    }
   }
 
   companion object {
