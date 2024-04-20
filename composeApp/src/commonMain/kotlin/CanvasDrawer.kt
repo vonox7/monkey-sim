@@ -28,7 +28,7 @@ class CanvasDrawer(
         }
 
         // Background
-        val worldBottomRight = Position(worldWidth, worldHeight).toOffset()
+        val worldBottomRight = Position(worldWidth.toDouble(), worldHeight.toDouble()).toOffset()
         drawRect(
           color = Color(0xFFFFFFFF),
           topLeft = Offset(0f, 0f),
@@ -48,7 +48,7 @@ class CanvasDrawer(
             .forEach { place ->
               val position = place.position
               val topLeft = position.toOffset()
-              val center = topLeft + (Position(1, 1).toOffset() * 0.5f)
+              val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
               val outline = 1.dp.toPx()
               val size = 7.dp.toPx()
               val resizedTopLeft = center - Offset(size, size) * 0.5f
@@ -129,7 +129,7 @@ class CanvasDrawer(
 
         world.actors.forEach { actor ->
           val topLeft = actor.currentPosition.toOffset()
-          val center = topLeft + (Position(1, 1).toOffset() * 0.5f)
+          val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
           val size = 2.4f
           drawCircle(
             color = Color(0xFFceb28b),
@@ -154,7 +154,7 @@ class CanvasDrawer(
             drawLine(
               color = Color.Black,
               start = Offset(topLeft.x + size.width / 2, topLeft.y + size.height / 2),
-              end = Offset(otherTopLeft.x + size.width / 2, otherTopLeft.y + size.height / 2),
+              end = Offset((otherTopLeft.x + size.width / 2).toFloat(), (otherTopLeft.y + size.height / 2).toFloat()),
               strokeWidth = 2f,
             )
           }

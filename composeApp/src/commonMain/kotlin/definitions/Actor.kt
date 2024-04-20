@@ -16,6 +16,32 @@ class Actor(
 ) {
   val socialConnections: SocialConnections = SocialConnections()
 
+  val perceivedState: State
+    get() {
+      return if (currentPosition == targetState.targetPlace.position) {
+        targetState
+      } else {
+        // TODO multiple commuting modes (car, bike, walk - depending on money & distance)
+        State.Commuting(direction = currentPosition.directionTo(targetState.targetPlace.position, maxTravelSpeed = 1.0))
+      }
+    }
+
+  var targetState: State.DurationalState = State.DurationalState.Sleeping(0, home)
+
+  sealed class State {
+    sealed class DurationalState(var durationLeft: Int, val targetPlace: Place) : State() {
+      class Working(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+      class Shopping(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+      class Sleeping(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+      class Eating(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+      class Socializing(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+      class Educating(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+      class Fun(durationLeft: Int, targetPlace: Place) : DurationalState(durationLeft, targetPlace)
+    }
+
+    class Commuting(val direction: Direction) : State()
+  }
+
   companion object {
     // TODO name corresponding to sex
     private val firstNames = listOf(
