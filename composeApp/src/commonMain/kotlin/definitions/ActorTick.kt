@@ -59,7 +59,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
       is JobHunt -> {
         if (worldState.hour.toInt() in targetState.targetPlace.openHours) {
           val work = targetState.targetPlace.work
-          if (work != null && work.maxPeople < work.currentWorkingPeople && yearsOfEducation >= work.minEducationYears) {
+          if (work != null && work.currentWorkingPeople < work.maxPeople && yearsOfEducation >= work.minEducationYears) {
             workPlace = targetState.targetPlace
             work.currentWorkingPeople += 1
             println("$name got hired at ${targetState.targetPlace} $work, yeah")
