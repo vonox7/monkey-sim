@@ -157,22 +157,30 @@ inline fun <reified T : Place> Actor.getNearestPlace(world: World): T? {
   return world.places[T::class]!!.minByOrNull { it.position.distanceTo(currentPosition) } as T?
 }
 
-fun <T : Place> Actor.getNearestOpenPlaces(clazz: KClass<out T>, world: World, worldState: WorldState, k: Int = 5): List<T> {
+fun <T : Place> Actor.getNearestOpenPlaces(
+  clazz: KClass<out T>,
+  world: World,
+  worldState: WorldState,
+  limit: Int = 5,
+): List<T> {
   // TODO optimize so we don't need to filter ever time and iterate over all places every time
   @Suppress("UNCHECKED_CAST") val places = world.places[clazz]!! as List<T>
   return places.filter { worldState.hour.toInt() in it.openHours }
       .sortedBy { it.position.distanceTo(currentPosition) }
-      .take(k)
+    .take(limit)
 }
 
-inline fun <reified T : Place> Actor.getNearestOpenPlaces(world: World, worldState: WorldState, k: Int = 5): List<T> {
-  // TODO optimize so we don't need to filter ever time and iterate over all places every time
-  @Suppress("UNCHECKED_CAST") val places = world.places[T::class]!! as List<T>
-  return places.filter { worldState.hour.toInt() in it.openHours }
-      .sortedBy { it.position.distanceTo(currentPosition) }
-      .take(k)
+inline fun <reified T : Place> Actor.getNearestOpenPlaces(
+  world: World,
+  worldState: WorldState,
+  limit: Int = 5,
+): List<T> {
+  return getNearestOpenPlaces(T::class, world, worldState, limit)
 }
 
 inline fun <reified T : Place> Actor.getNearestOpenPlace(world: World, worldState: WorldState): T? {
-  return getNearestOpenPlaces<T>(world, worldState, k = 1).firstOrNull()
+  // TODO optimize so we don't need to filter ever time and iterate over all places every time
+  @Suppress("UNCHECKED_CAST") val places = world.places[T::class]!! as List<T>
+  return places.filter { worldState.hour.toInt() in it.openHours }
+    .minByOrNull { it.position.distanceTo(currentPosition) }
 }
