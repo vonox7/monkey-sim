@@ -123,6 +123,7 @@ class Needs(
     )
   }
 }
+// isn't money a need? and should we remove fun and use social instead?
 
 sealed class Need(
   /** Between [0;1] */
