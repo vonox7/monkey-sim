@@ -27,6 +27,7 @@ class Actor(
       return minAge..maxAge
     }
 
+  var alive = true
   val social: SocialConnections = SocialConnections()
 
   val preferences = Preferences(gender, random)

@@ -12,5 +12,7 @@ fun Actor.lovePotential(other: Actor): Boolean {
       social.partner == null &&
       other.social.partner == null &&
       partnerAgePreference?.let { other.age.toInt() in it } == true &&
-      other.partnerAgePreference?.let { age.toInt() in it } == true
+      other.partnerAgePreference?.let { age.toInt() in it } == true &&
+      alive &&
+      other.alive
 }

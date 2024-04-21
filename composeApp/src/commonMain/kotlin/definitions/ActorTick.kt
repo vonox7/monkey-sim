@@ -6,7 +6,7 @@ import game.Game
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
-private val simulationYearInHours = 7 * 24 // 1 year has 7 days to make simulation faster
+private const val simulationYearInHours = 7 * 24 // 1 year has 7 days to make simulation faster
 
 fun Actor.tick(
   world: World,
@@ -16,7 +16,7 @@ fun Actor.tick(
 ) {
   decreaseNeeds(elapsedHours)
 
-  handleAge(elapsedHours)
+  handleAge(elapsedHours, actorModifications)
 
   // Commute
   if (targetState.targetPlace.position != currentPosition) {
@@ -113,7 +113,7 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
   }
 }
 
-private fun Actor.handleAge(elapsedHours: Double) {
+private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.ActorModifications) {
   age += elapsedHours / simulationYearInHours
 
   val work = workPlace?.work
@@ -130,7 +130,42 @@ private fun Actor.handleAge(elapsedHours: Double) {
     preferences.minConnectionStrengthSum += elapsedHours * 0.2
   }
 
-  // TODO Death: Remove from work, remove from partner, keep social connections by others (will fade out over time - but what if there was a almost-love connection to him? maybe set dead=true, so there is no lovePotential any more) (add finalizer to say "everyone forgot xxx, even the JVM/JS-VM"),
+  val deathProbabilityPerHour = when (age) {
+    in 0.0..60.0 -> 0.000001
+    in 60.0..70.0 -> 0.000005
+    in 70.0..80.0 -> 0.00001
+    in 80.0..85.0 -> 0.00005
+    in 85.0..90.0 -> 0.0001
+    in 85.0..95.0 -> 0.0005
+    in 95.0..Double.MAX_VALUE -> 0.001
+    else -> throw Exception("Can't happen")
+  }
+
+  // Death
+  if (Random.nextDouble() < deathProbabilityPerHour * elapsedHours) {
+    println("$name died at age ${age.display()}")
+
+    actorModifications.deaths.add(this)
+
+    // Remove from work
+    workPlace?.work?.let { it.currentWorkingPeople -= 1 }
+    workPlace = null
+
+    // Remove from partner
+    social.partner?.let { partner ->
+      partner.social.partner = null
+      partner.preferences.minConnectionStrengthSum *= 2 // Other person want's to find new partner
+    }
+
+    // Make sure we remove any references so we can GC actors
+    social.partner = null
+    social.connections.clear()
+
+    // Make sure the actor has no lovePotential any more
+    alive = false
+
+    // Don't clean social connections to the actor ... they will fade out over time
+  }
 }
 
 private fun Actor.generateTargetState(
