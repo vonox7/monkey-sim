@@ -4,18 +4,16 @@ import definitions.Actor
 import definitions.lovePotential
 import kotlin.random.Random
 
-
 fun Game.buildSocialConnections(elapsedHours: Double) {
   this.world.actors
-      .groupBy { it.currentPosition.x to it.currentPosition.y }
-      .forEach { (_, actors) ->
-        val socializableActors = actors.filter { it.perceivedState.formSocialConnectionsPerHour > 0.0 }
-        if (socializableActors.count() > 1) {
-          buildSocialConnections(socializableActors, elapsedHours)
-        }
+    .groupBy { it.currentPosition }
+    .forEach { (_, actors) ->
+      val socializableActors = actors.filter { it.perceivedState.formSocialConnectionsPerHour > 0.0 }
+      if (socializableActors.count() > 1) {
+        buildSocialConnections(socializableActors, elapsedHours)
       }
+    }
 }
-
 
 private fun buildSocialConnections(actors: List<Actor>, elapsedHours: Double) {
   actors.forEach { actor ->

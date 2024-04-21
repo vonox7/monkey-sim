@@ -25,17 +25,17 @@ class History {
 
   fun add(world: World, worldState: WorldState) {
 
-    val currentStates: Map<KClass<out Actor.State>, List<Actor>> =
-      world.actors.groupBy { actor -> actor.perceivedState::class }
+    val currentStates: Map<KClass<out Actor.State>, Int> =
+      world.actors.groupingBy { actor -> actor.perceivedState::class }.eachCount()
 
-    val currentWorkingCategory = world.actors.groupBy { it.workingCategory }
+    val currentWorkingCategory = world.actors.groupingBy { it.workingCategory }.eachCount()
 
     val newEntry = Entry(
-      Actor.State.allStates.associateWith { currentStates[it]?.size ?: 0 },
+      Actor.State.allStates.associateWith { currentStates[it] ?: 0 },
       world.actors.size,
       worldState.timestamp,
       world.actors.count { it.social.partner != null },
-      workingInfo = WorkingCategory.entries.associateWith { currentWorkingCategory[it]?.size ?: 0 }
+      workingInfo = WorkingCategory.entries.associateWith { currentWorkingCategory[it] ?: 0 }
     )
     _tickEntries.add(newEntry)
 
