@@ -18,9 +18,20 @@ class Actor(
   var home: Home,
   var workPlace: Place? = null, // Needs to be manually synchronized with Place.Work.currentWorkingPeople
 ) {
+  val partnerAgePreference: IntRange?
+    get() {
+      if (age <= 18) return null
+      // XKCD Dating Pools https://xkcd.com/314/
+      val minAge = (age / 2.0 + 7).toInt().coerceAtLeast(18)
+      val maxAge = (age + (age - 10) * 0.7).toInt().coerceIn(minAge, 100)
+      return minAge..maxAge
+    }
+
   val social: SocialConnections = SocialConnections()
 
   val preferences = Preferences(gender, random)
+
+  val isReproductive: Boolean get() = if (gender == Gender.Male) age.toInt() in 18..50 else age.toInt() in 18..35
 
   val perceivedState: State
     get() {
@@ -62,7 +73,7 @@ class Actor(
       class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.5,
+        formSocialConnectionsPerHour = 1.0,
       )
 
       class JobHunt(hoursLeft: Double, targetPlace: Place) : DurationalState(
@@ -78,35 +89,36 @@ class Actor(
       class Eating(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.05,
+        formSocialConnectionsPerHour = 0.1,
       )
 
       class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
-        targetPlace, formSocialConnectionsPerHour = 0.1,
+        targetPlace, formSocialConnectionsPerHour = 1.0,
       )
 
       class InThePark(hoursLeft: Double, targetPlace: Park) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.1,
+        formSocialConnectionsPerHour = 0.3,
       )
 
       class AtTheClub(hoursLeft: Double, targetPlace: Club) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 1.2,
+        formSocialConnectionsPerHour = 5.0,
       )
 
       class AtTheGym(hoursLeft: Double, targetPlace: Gym) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 0.05,
+        formSocialConnectionsPerHour = 0.1,
       )
 
       class WatchTv(hoursLeft: Double, targetPlace: Home) : DurationalState(
         hoursLeft,
         targetPlace,
+        formSocialConnectionsPerHour = 3.0,
       )
     }
 

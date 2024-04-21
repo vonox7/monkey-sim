@@ -96,7 +96,17 @@ fun App() {
             Money: ${actor.money.display()}€
             Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "[${actor.workingCategory.chartName}]"}
             Gender: ${actor.gender}
-            ${if (actor.social.partner == null) "Preferred partner: ${actor.preferences.partnerGenderPreference}" else "Partner: ${actor.social.partner}"}            
+            ${
+              if (actor.social.partner == null) {
+                if (actor.partnerAgePreference == null) {
+                  "No preferred partner yet"
+                } else {
+                  "Preferred partner: ${actor.preferences.partnerGenderPreference} with age ${actor.partnerAgePreference}"
+                }
+              } else {
+                "Partner: ${actor.social.partner}"
+              }
+            }            
             Years of education: ${actor.yearsOfEducation.display()}
             State: ${actor.perceivedState}
             Strongest connection: ${
