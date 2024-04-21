@@ -30,7 +30,6 @@ class History {
       } else {
         // Draw at most 250 entries for performance reasons. Drawing more wouldn't bring more information
         val takeEvery = _longTermEntries.size / 250
-        println("Taking every $takeEvery, total ${_longTermEntries.size} entries")
         _longTermEntries.filterIndexed { index, _ -> index % takeEvery == 0 || index == _longTermEntries.size - 1 }
       }
     }

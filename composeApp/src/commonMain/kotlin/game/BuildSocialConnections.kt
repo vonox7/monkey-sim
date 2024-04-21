@@ -43,11 +43,17 @@ private fun Actor.socializeWith(other: Actor) {
     preferences.minConnectionStrengthSum /= 2
     other.preferences.minConnectionStrengthSum /= 2
 
+    // Move to the place with the higher income
     if (other.money > this.money) {
       this.home.residents.remove(other)
       this.home = other.home
       other.home.residents.add(this)
+    } else {
+      other.home.residents.remove(this)
+      other.home = this.home
+      this.home.residents.add(other)
     }
+
     val newLastName = if (other.age > age) other.lastName else lastName
     println("LOVE!!! $this and $other are now partners and are now the $newLastName family")
 
