@@ -59,7 +59,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
       is JobHunt -> {
         if (worldState.hour.toInt() in targetState.targetPlace.openHours) {
           val work = targetState.targetPlace.work
-          if (work != null && work.currentWorkingPeople < work.maxPeople && yearsOfEducation >= work.minEducationYears) {
+          if (workPlace == null && work != null && work.currentWorkingPeople < work.maxPeople && yearsOfEducation >= work.minEducationYears) {
             workPlace = targetState.targetPlace
             work.currentWorkingPeople += 1
             println("$name got hired at ${targetState.targetPlace} $work, yeah")
@@ -169,8 +169,8 @@ private fun Actor.generateTargetState(
     }
   }
 
-  // Find a job if you don't have one (and have at least 3 friends)
-  if (age in 18.0..70.0 && workPlace == null && social.connections.count() >= 3 && worldState.isWorkDay) {
+  // Find a job if you don't have one (and have less money than initial money)
+  if (age in 18.0..70.0 && workPlace == null && money < age * 100 && worldState.isWorkDay) {
     val potentialWorkPlace = (
         // Near places people know
         listOf(

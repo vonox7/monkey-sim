@@ -5,6 +5,8 @@ class WorldState(
   var day: Int, // Time in hours between 0 (monday) and 6 (sunday)
 ) {
   var timestamp: Double = hour + day * 24
+  private var simulationDay: Int = 1
+
   val isWorkDay: Boolean get() = day < 5
   val isWeekend: Boolean get() = day >= 5
   val isLunchTime: Boolean get() = hour >= 12 && hour < 14
@@ -17,6 +19,7 @@ class WorldState(
     if (hour >= 24) {
       hour = 0.0
       day = (day + 1) % 7
+      simulationDay += 1
     }
   }
 
@@ -35,6 +38,6 @@ class WorldState(
     val hours = hour.toInt().toString().padStart(2, '0')
     val minutes = ((hour % 1) * 60).toInt().toString().padStart(2, '0')
 
-    return "$day $hours:$minutes"
+    return "$day $hours:$minutes (day $simulationDay)"
   }
 }

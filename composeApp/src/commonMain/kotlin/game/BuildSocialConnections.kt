@@ -33,7 +33,7 @@ private fun Actor.socializeWith(other: Actor) {
   val connection = social.connections[other]
   social.connections[other] = (connection ?: 0.0) + 1
 
-  if (connection != null && social.partner == null && connection > datingThreshold && this.lovePotential(other)) {
+  if (connection != null && connection > datingThreshold && this.lovePotential(other)) {
     social.connections.remove(other)
     social.connections.remove(this)
     social.partner = other
