@@ -6,7 +6,7 @@ import kotlin.random.Random
 
 class Actor(
   random: Random,
-  val name: String,
+  val name: String, // TODO split first+last; marry take name (fix also at children name generation)
   val needs: Needs,
 
   var yearsOfEducation: Double,
@@ -174,8 +174,8 @@ class Actor(
       "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", "Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall",
     )
 
-    fun create(random: Random, home: Home): Actor {
-      val age = when (random.nextInt(0, 5)) {
+    fun create(random: Random, home: Home, lastNameOverride: String? = null, ageOverride: Int? = null): Actor {
+      val age = ageOverride ?: when (random.nextInt(0, 5)) {
         0 -> random.nextInt(0, 35)
         1 -> random.nextInt(35, 50)
         2 -> random.nextInt(50, 62)
@@ -190,7 +190,7 @@ class Actor(
       }
       return Actor(
         random,
-        name = "${firstNames[gender]!!.random(random)} ${lastNames.random(random)}",
+        name = "${firstNames[gender]!!.random(random)} ${lastNameOverride ?: lastNames.random(random)}",
         gender = gender,
         needs = Needs.default(),
         yearsOfEducation = if (age <= 6) 0.0 else random.nextDouble(0.0, age - 5.0), // TODO better education system

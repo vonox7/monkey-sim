@@ -2,12 +2,18 @@ package definitions
 
 import definitions.Actor.State.DurationalState.*
 import display
+import game.Game
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
 private val simulationYearInHours = 7 * 24 // 1 year has 7 days to make simulation faster
 
-fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
+fun Actor.tick(
+  world: World,
+  worldState: WorldState,
+  elapsedHours: Double,
+  actorModifications: Game.ActorModifications,
+) {
   decreaseNeeds(elapsedHours)
 
   handleAge(elapsedHours)
@@ -73,6 +79,18 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
 
       is WatchTv -> {
         // Do nothing
+        val partner = social.partner
+        val place = targetState.targetPlace
+        if ((partner?.perceivedState as? WatchTv)?.targetPlace == targetState.targetPlace && place is Home) {
+          if (isReproductive && partner.isReproductive && gender != partner.gender) {
+            // Decide to reproduce instead of watching TV. But no time for pregnancy, create baby instantly
+            if (Random.nextDouble() < elapsedHours * 0.1) {
+              val baby = Actor.create(Random, place, ageOverride = 0, lastNameOverride = this.name.split(" ").last())
+              println("$name (${age.display()}) and ${partner.name} (${partner.age.display()}) got a baby: $baby")
+              actorModifications.babies.add(baby)
+            }
+          }
+        }
       }
     }
     return
@@ -111,6 +129,8 @@ private fun Actor.handleAge(elapsedHours: Double) {
     // We have no partner ... with increase age we should look more for them
     preferences.minConnectionStrengthSum += elapsedHours * 0.01
   }
+
+  // TODO Death: Remove from work, remove from partner, keep social connections by others (will fade out over time) (add finalizer to say "everyone forgot xxx, even the JVM/JS-VM"),
 }
 
 private fun Actor.generateTargetState(

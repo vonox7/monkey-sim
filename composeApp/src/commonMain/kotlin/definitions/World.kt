@@ -6,5 +6,5 @@ open class World(
   val width: Int,
   val height: Int,
   val places: Map<KClass<out Place>, List<Place>>,
-  val actors: List<Actor>,
+  val actors: MutableList<Actor>,
 )
