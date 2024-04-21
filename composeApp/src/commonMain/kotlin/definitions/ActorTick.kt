@@ -130,7 +130,7 @@ private fun Actor.handleAge(elapsedHours: Double) {
     preferences.minConnectionStrengthSum += elapsedHours * 0.01
   }
 
-  // TODO Death: Remove from work, remove from partner, keep social connections by others (will fade out over time) (add finalizer to say "everyone forgot xxx, even the JVM/JS-VM"),
+  // TODO Death: Remove from work, remove from partner, keep social connections by others (will fade out over time - but what if there was a almost-love connection to him? maybe set dead=true, so there is no lovePotential any more) (add finalizer to say "everyone forgot xxx, even the JVM/JS-VM"),
 }
 
 private fun Actor.generateTargetState(

@@ -279,10 +279,13 @@ fun DrawWorldOnCanvas(
             val otherPosition = otherActor.currentPosition
             val otherTopLeft = otherPosition.toOffset()
             drawLine(
+              // Draw red lines for "love coming soon" connections
               color = if (strength > 8.0) Color(0x33FF3333) else Color(0x33000000),
               start = topLeft,
               end = otherTopLeft,
-              strokeWidth = strength.toFloat(),
+              // Strength might be way > 10, if people got to know each other while one was too young.
+              // And then they are both in dating range, but didn't meet yet to finally marry.
+              strokeWidth = strength.coerceAtMost(10.0).toFloat(),
             )
           }
         }

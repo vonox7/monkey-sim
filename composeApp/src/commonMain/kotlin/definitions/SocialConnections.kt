@@ -6,7 +6,6 @@ class SocialConnections {
   var partner: Actor? = null
 }
 
-// Return false for the partner, as there it is not only potential but it must be true love
 fun Actor.lovePotential(other: Actor): Boolean {
   return gender == other.preferences.partnerGenderPreference &&
       preferences.partnerGenderPreference == other.gender &&
