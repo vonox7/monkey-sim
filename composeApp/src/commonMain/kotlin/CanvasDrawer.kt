@@ -330,11 +330,12 @@ fun DrawWorldOnCanvas(
 
       fun drawPlaceTooltip() {
         if (mousePosition.value != null) {
-          val mouseCanvasPosition = mousePosition.value!!
+          // Move by 12px to top left corner so we can lookup the places by topLeft position and not by center drawn position
           val mouseWorldPosition = Position(
-            mouseCanvasPosition.x.toDouble() / size.width * worldWidth,
-            mouseCanvasPosition.y.toDouble() / size.height * worldHeight
+            (mousePosition.value!!.x - 12).toDouble() / size.width * worldWidth,
+            (mousePosition.value!!.y - 12).toDouble() / size.height * worldHeight
           )
+
           val place = world.places.values.flatten().minByOrNull {
             it.position.distanceTo(mouseWorldPosition)
           }
