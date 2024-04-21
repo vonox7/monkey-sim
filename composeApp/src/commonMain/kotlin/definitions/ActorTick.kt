@@ -1,6 +1,7 @@
 package definitions
 
 import definitions.Actor.State.DurationalState.*
+import display
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
@@ -62,7 +63,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
           if (workPlace == null && work != null && work.currentWorkingPeople < work.maxPeople && yearsOfEducation >= work.minEducationYears) {
             workPlace = targetState.targetPlace
             work.currentWorkingPeople += 1
-            println("$name got hired at ${targetState.targetPlace} $work, yeah")
+            println("$name got hired at ${targetState.targetPlace} $work, yeah. workPlace=$workPlace, work=$work")
           }
         }
       }
@@ -94,9 +95,12 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
 private fun Actor.handleAge(elapsedHours: Double) {
   age += elapsedHours / 24 / 7 // 1 year has 7 days to make simulation faster
 
-  if (age >= AgeCategory.SENIOR.startAge) {
+  val work = workPlace?.work
+
+  if (age.toInt() !in AgeCategory.ADULT.range && work != null) {
     // Retire
-    workPlace?.work?.let { it.currentWorkingPeople -= 1 }
+    println("$name is retiring at ${age.display()} from $workPlace $work")
+    work.currentWorkingPeople -= 1
     workPlace = null
   }
 }
