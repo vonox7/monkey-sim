@@ -21,7 +21,19 @@ class History {
 
   // Long term entries are stored every few minutes, but infinite (so memory grows here linearly)
   private val _longTermEntries: MutableList<Entry> = mutableListOf()
-  val longTermEntries get(): List<Entry> = _longTermEntries
+  val longTermEntries
+    get(): List<Entry> {
+      return if (_longTermEntries.last().timestamp - _longTermEntries.first().timestamp < 24) {
+        _tickEntries // Not enough longterm data, so provide finer resolution
+      } else if (_longTermEntries.size < 500) {
+        _longTermEntries
+      } else {
+        // Draw at most 250 entries for performance reasons. Drawing more wouldn't bring more information
+        val takeEvery = _longTermEntries.size / 250
+        println("Taking every $takeEvery, total ${_longTermEntries.size} entries")
+        _longTermEntries.filterIndexed { index, _ -> index % takeEvery == 0 || index == _longTermEntries.size - 1 }
+      }
+    }
 
   fun add(world: World, worldState: WorldState) {
 

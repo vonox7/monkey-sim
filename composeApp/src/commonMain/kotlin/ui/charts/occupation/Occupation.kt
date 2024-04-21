@@ -28,8 +28,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun OccupationChart(history: History) {
-  val historyEntries =
-    history.longTermEntries.takeIf { it.last().timestamp - it.first().timestamp > 24 } ?: history.tickEntries
+  val historyEntries = history.longTermEntries
   val lastEntry = historyEntries.last()
 
   Box(modifier = Modifier.fillMaxWidth().padding(start = 6.dp, bottom = 8.dp)) {
