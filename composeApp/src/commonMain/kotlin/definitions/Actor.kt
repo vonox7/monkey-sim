@@ -27,8 +27,7 @@ class Actor(
       return if (currentPosition == targetState.targetPlace.position) {
         targetState
       } else {
-        // TODO multiple commuting modes (car, bike, walk - depending on money & distance)
-        State.Commuting(direction = currentPosition.directionTo(targetState.targetPlace.position, maxTravelSpeed = 1.0))
+        State.Commuting
       }
     }
 
@@ -111,7 +110,7 @@ class Actor(
       )
     }
 
-    class Commuting(val direction: Direction) : State() {
+    object Commuting : State() {
       override fun toString(): String = "Commuting..."
     }
 
