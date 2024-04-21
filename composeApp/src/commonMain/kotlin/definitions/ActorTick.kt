@@ -127,7 +127,7 @@ private fun Actor.handleAge(elapsedHours: Double) {
 
   if (social.partner == null && age.toInt() in AgeCategory.ADULT.range) {
     // We have no partner ... with increase age we should look more for them
-    preferences.minConnectionStrengthSum += elapsedHours * 0.01
+    preferences.minConnectionStrengthSum += elapsedHours * 0.2
   }
 
   // TODO Death: Remove from work, remove from partner, keep social connections by others (will fade out over time - but what if there was a almost-love connection to him? maybe set dead=true, so there is no lovePotential any more) (add finalizer to say "everyone forgot xxx, even the JVM/JS-VM"),

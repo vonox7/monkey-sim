@@ -141,14 +141,14 @@ class Actor(
       )
       val colors = mapOf(
         DurationalState.Working::class to Color(0xAB4e4553),
-        DurationalState.JobHunt::class to Color(0xAB2e2523),
+        DurationalState.JobHunt::class to Color(0xAB825d56),
         DurationalState.Sleeping::class to Color(0xAB94bdf8),
         DurationalState.Eating::class to Color(0xAB108e5e),
         DurationalState.Educating::class to Color(0xABf8e394),
         Commuting::class to Color(0xAB302137),
         DurationalState.InThePark::class to Color(0xAB94f8b5),
         DurationalState.AtTheClub::class to Color(0xABf8b594),
-        DurationalState.AtTheGym::class to Color(0xAB94f8e3),
+        DurationalState.AtTheGym::class to Color(0xAB6e45a8),
         DurationalState.WatchTv::class to Color(0x882739f0),
       )
     }
@@ -224,10 +224,10 @@ enum class WorkingCategory(val chartName: String) {
 
   companion object {
     val colors = mapOf(
-      CHILD to Color(0xFFf8e394),
-      EMPLOYED to Color(0xFF108e5e),
-      UNEMPLOYED to Color(0xFF2e2523),
-      RETIRED to Color(0xFF94bdf8),
+      CHILD to Color(0xABf8e394),
+      EMPLOYED to Color(0xAB4e4553),
+      UNEMPLOYED to Color(0xAB825d56),
+      RETIRED to Color(0xAB94bdf8),
     )
   }
 }
