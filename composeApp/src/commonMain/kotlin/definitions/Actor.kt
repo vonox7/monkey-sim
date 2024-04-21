@@ -121,6 +121,12 @@ class Actor(
         targetPlace,
         formSocialConnectionsPerHour = 3.0,
       )
+
+      class VisitFriend(hoursLeft: Double, targetPlace: Home) : DurationalState(
+        hoursLeft,
+        targetPlace,
+        formSocialConnectionsPerHour = 10.0,
+      )
     }
 
     object Commuting : State() {
@@ -138,7 +144,8 @@ class Actor(
         DurationalState.InThePark::class,
         DurationalState.AtTheClub::class,
         DurationalState.AtTheGym::class,
-        DurationalState.WatchTv::class
+        DurationalState.WatchTv::class,
+        DurationalState.VisitFriend::class,
       )
       val colors = mapOf(
         DurationalState.Working::class to Color(0xAB4e4553),
@@ -151,6 +158,7 @@ class Actor(
         DurationalState.AtTheClub::class to Color(0xABf8b594),
         DurationalState.AtTheGym::class to Color(0xAB6e45a8),
         DurationalState.WatchTv::class to Color(0x882739f0),
+        DurationalState.VisitFriend::class to Color(0xABde2f7b),
       )
     }
   }

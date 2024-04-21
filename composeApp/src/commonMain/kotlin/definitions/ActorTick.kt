@@ -3,6 +3,7 @@ package definitions
 import definitions.Actor.State.DurationalState.*
 import display
 import game.Game
+import kotlin.math.absoluteValue
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
@@ -79,6 +80,8 @@ fun Actor.tick(
 
       is WatchTv -> {
         // Do nothing
+
+        // Except watching TV at home with partner ... this could lead to babies ;)
         val partner = social.partner
         val place = targetState.targetPlace
         if ((partner?.perceivedState as? WatchTv)?.targetPlace == targetState.targetPlace && place is Home) {
@@ -91,6 +94,10 @@ fun Actor.tick(
             }
           }
         }
+      }
+
+      is VisitFriend -> {
+        // Do nothing
       }
     }
     return
@@ -254,6 +261,16 @@ private fun Actor.generateTargetState(
       .filterNotNull()
 
     return JobHunt(1.0, potentialWorkPlace.random())
+  }
+
+  val friendToVisit = social.connections.entries.filter { (friend, strength) ->
+    strength >= 3 && // Visit people we already met a few times in public
+        friend.targetState.targetPlace == friend.home && // Visit friend if he is currently at home or traveling home
+        friend.targetState !is Sleeping && // Visit friends who are not sleeping
+        (age - friend.age).absoluteValue < 10 // Visit only friends who have roughly the same age
+  }.randomOrNull()?.key
+  if (friendToVisit != null) {
+    return VisitFriend(2.0, friendToVisit.home)
   }
 
   if (social.connections.entries.sumOf { it.value } < preferences.minConnectionStrengthSum) {
