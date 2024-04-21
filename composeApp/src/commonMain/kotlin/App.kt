@@ -36,8 +36,9 @@ fun App() {
     val paused = remember { mutableStateOf(false) }
     val speed = remember { mutableStateOf(Speed.NORMAL) }
     val tick = remember { mutableStateOf(0) }
-    val lastTimeSimulationTookTooLong: MutableState<TimeSource.Monotonic.ValueTimeMark?> =
-      remember { mutableStateOf(null) }
+    val lastTimesSimulationTookTooLong: MutableState<MutableList<TimeSource.Monotonic.ValueTimeMark>> =
+      remember { mutableStateOf(mutableListOf()) }
+    val lastTimesSimulationTookTooLongSize = 5
     val lastTickDuration = remember { mutableStateOf(Duration.ZERO) }
     val maxTickDuration = remember { mutableStateOf(Duration.ZERO) }
 
@@ -60,7 +61,11 @@ fun App() {
           lastTickDuration.value = renderTime
           maxTickDuration.value = maxOf(maxTickDuration.value, renderTime)
           if (renderTime.inWholeMilliseconds >= (1000.0 / 60 - 3)) {
-            lastTimeSimulationTookTooLong.value = lastTime
+            lastTimesSimulationTookTooLong.value.add(lastTime)
+            // Make sure we don't keep all the values forever
+            if (lastTimesSimulationTookTooLong.value.size > lastTimesSimulationTookTooLongSize) {
+              lastTimesSimulationTookTooLong.value.removeAt(0)
+            }
           }
 
           // 60 FPS, but sleep at least 3ms to avoid 100% CPU
@@ -147,7 +152,11 @@ fun App() {
 
           Spacer(Modifier.weight(1f))
 
-          if (lastTimeSimulationTookTooLong.value?.let { it.elapsedNow().inWholeSeconds > 1 } == true) {
+          if (lastTimesSimulationTookTooLong.value
+              .takeIf { it.count() == lastTimesSimulationTookTooLongSize }
+              ?.all { it.elapsedNow().inWholeSeconds < 2 } == true
+          ) {
+            // We skipped at least `lastTimesSimulationTookTooLongSize` ticks within the last 2 seconds
             Text(
               "${game.worldState} - ${tick.value} ticks - " +
                   "Too fast, please run the simulation slower.",
