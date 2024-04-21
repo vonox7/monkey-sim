@@ -89,6 +89,9 @@ fun App() {
             ${if (actor.social.partner == null) "Preferred partner: ${actor.preferences.partnerGenderPreference}" else "Partner: ${actor.social.partner}"}            
             Years of education: ${actor.yearsOfEducation.display()}
             State: ${actor.perceivedState}
+            Strongest connection: ${
+              actor.social.connections.maxByOrNull { it.value }?.let { "${it.key}: ${it.value.display()}" } ?: "-"
+            }
             Connection sum: ${
               actor.social.connections.entries.sumOf { it.value }.display()
             } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})

@@ -94,7 +94,7 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
 private fun Actor.handleAge(elapsedHours: Double) {
   age += elapsedHours / 24 / 7 // 1 year has 7 days to make simulation faster
 
-  if (age > 70) {
+  if (age >= AgeCategory.SENIOR.startAge) {
     // Retire
     workPlace?.work?.let { it.currentWorkingPeople -= 1 }
     workPlace = null
@@ -170,7 +170,7 @@ private fun Actor.generateTargetState(
   }
 
   // Find a job if you don't have one (and have less money than initial money)
-  if (age in 18.0..70.0 && workPlace == null && money < age * 100 && worldState.isWorkDay) {
+  if (age.toInt() in AgeCategory.ADULT.range && workPlace == null && money < age * 100 && worldState.isWorkDay) {
     val potentialWorkPlace = (
         // Near places people know
         listOf(
