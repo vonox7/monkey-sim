@@ -30,9 +30,10 @@ import kotlin.math.roundToInt
 fun OccupationChart(history: History) {
   val lastEntry = history.entries.last()
 
-  Box(modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 8.dp)) {
+  Box(modifier = Modifier.fillMaxWidth().padding(start = 6.dp, bottom = 8.dp)) {
     Text("Occupation")
   }
+
   val workingHistory = history.entries
       .map { entry -> entry.workingInfo.values.map { it / entry.worldPopulation.toFloat() }.toList() }
   val transposedWorkingHistory = workingHistory[0].indices.map { i -> workingHistory.map { it[i] } }
@@ -59,8 +60,7 @@ fun OccupationChart(history: History) {
         Text(
           (timestamp.toDouble() % 24).roundToInt().toString() + "h",
           color = MaterialTheme.colors.onBackground,
-          style = MaterialTheme.typography.body2,
-          modifier = Modifier.padding(top = 2.dp)
+          style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, lineHeight = 12.sp),
         )
       },
       yAxisLabels = { }
@@ -74,31 +74,33 @@ fun OccupationChart(history: History) {
   }
 
   val workingList = lastEntry.workingInfo.entries.reversed()
-  Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+  Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
     workingList.windowed(
-      size = (workingList.size + 2) / 3,
-      step = (workingList.size + 2) / 3,
+      size = (workingList.size + 3) / 4,
+      step = (workingList.size + 3) / 4,
       partialWindows = true
     ).forEach { categories ->
       Column(Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
         categories.forEach { (category, count) ->
           Row(
-            Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+            Modifier.fillMaxWidth().padding(horizontal = 6.dp),
             verticalAlignment = Alignment.CenterVertically
           ) {
-            Box(Modifier.size(16.dp).clip(CircleShape).background(WorkingCategory.colors[category]!!))
-            Spacer(Modifier.width(8.dp))
+            Box(Modifier.size(12.dp).clip(CircleShape).background(WorkingCategory.colors[category]!!))
+            Spacer(Modifier.width(6.dp))
             Text(
-              category.name,
-              style = LocalTextStyle.current.copy(fontSize = 14.sp),
+              category.chartName,
+              style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 12.sp),
             )
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(4.dp))
             Spacer(Modifier.weight(1f))
             Text(
               (100 * count.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt().toString() + "%",
-              style = LocalTextStyle.current.copy(fontSize = 14.sp, fontFeatureSettings = "tnum"),
+              maxLines = 1,
+              style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 12.sp, fontFeatureSettings = "tnum"),
             )
           }
+          Spacer(Modifier.height(6.dp))
         }
       }
     }

@@ -37,7 +37,7 @@ class Actor(
   val workingCategory
     get(): WorkingCategory = when (age) {
       in AgeCategory.CHILD.startAge..AgeCategory.CHILD.endAge -> CHILD
-      in AgeCategory.ADULT.startAge..AgeCategory.ADULT.endAge -> if (workPlace != null) HAS_JOB else UNEMPLOYED
+      in AgeCategory.ADULT.startAge..AgeCategory.ADULT.endAge -> if (workPlace != null) EMPLOYED else UNEMPLOYED
       in AgeCategory.SENIOR.startAge..AgeCategory.SENIOR.endAge -> RETIRED
       else -> UNEMPLOYED
     }
@@ -202,16 +202,16 @@ enum class AgeCategory(val startAge: Double, val endAge: Double) {
   SENIOR(startAge = 70.0, endAge = 100.00)
 }
 
-enum class WorkingCategory {
-  CHILD,
-  HAS_JOB,
-  UNEMPLOYED,
-  RETIRED;
+enum class WorkingCategory(val chartName: String) {
+  CHILD("Child"),
+  EMPLOYED("Employed"),
+  UNEMPLOYED("Unemployed"),
+  RETIRED("Retired");
 
   companion object {
     val colors = mapOf(
       CHILD to Color(0xFFf8e394),
-      HAS_JOB to Color(0xFF108e5e),
+      EMPLOYED to Color(0xFF108e5e),
       UNEMPLOYED to Color(0xFF2e2523),
       RETIRED to Color(0xFF94bdf8),
     )

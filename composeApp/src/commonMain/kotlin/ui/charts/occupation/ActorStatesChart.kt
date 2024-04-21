@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 @Composable
 fun ActorStatesChart(history: History) {
   val lastEntry = history.entries.last()
-  Box(modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 8.dp)) {
+  Box(modifier = Modifier.fillMaxWidth().padding(start = 6.dp, bottom = 6.dp)) {
     Text("State distribution")
   }
   val gameHistory = history.entries
@@ -59,8 +59,7 @@ fun ActorStatesChart(history: History) {
         Text(
           (timestamp.toDouble() % 24).roundToInt().toString() + "h",
           color = MaterialTheme.colors.onBackground,
-          style = MaterialTheme.typography.body2,
-          modifier = Modifier.padding(top = 2.dp)
+          style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, lineHeight = 12.sp),
         )
       },
       yAxisLabels = { }
@@ -74,33 +73,34 @@ fun ActorStatesChart(history: History) {
   }
 
   val statesList = lastEntry.stateToPeopleCount.entries.reversed()
-  Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+  Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
     statesList.windowed(
-      size = (statesList.size + 2) / 3,
-      step = (statesList.size + 2) / 3,
+      size = (statesList.size + 3) / 4,
+      step = (statesList.size + 3) / 4,
       partialWindows = true
     ).forEach { subList ->
       Column(Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
         subList.forEach { (clazz, count) ->
           val color = Actor.State.colors[clazz]!!
           Row(
-            Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+            Modifier.fillMaxWidth().padding(horizontal = 6.dp),
             verticalAlignment = Alignment.CenterVertically
           ) {
-            Box(Modifier.size(16.dp).clip(CircleShape).background(color))
-            Spacer(Modifier.width(8.dp))
+            Box(Modifier.size(12.dp).clip(CircleShape).background(color))
+            Spacer(Modifier.width(6.dp))
             Text(
               clazz.simpleName!!,
-              style = LocalTextStyle.current.copy(fontSize = 14.sp),
+              style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 12.sp),
             )
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(4.dp))
             Spacer(Modifier.weight(1f))
             Text(
               (100 * count.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt().toString() + "%",
-              style = LocalTextStyle.current.copy(fontSize = 14.sp, fontFeatureSettings = "tnum"),
+              maxLines = 1,
+              style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 12.sp, fontFeatureSettings = "tnum"),
             )
           }
-          Spacer(Modifier.height(8.dp))
+          Spacer(Modifier.height(6.dp))
         }
       }
     }

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import game.History
 import io.github.koalaplot.core.line.LinePlot
 import io.github.koalaplot.core.style.LineStyle
@@ -27,7 +28,7 @@ fun PartnerChart(history: History) {
       100f * entry.peopleWithPartner.toFloat() / entry.worldPopulation.toFloat()
     )
   }
-  Row(modifier = Modifier.fillMaxWidth().padding(start = 12.dp, bottom = 8.dp)) {
+  Row(modifier = Modifier.fillMaxWidth().padding(start = 6.dp, bottom = 4.dp)) {
     Text("People with partner")
     Spacer(Modifier.weight(1f))
     Text(
@@ -47,8 +48,7 @@ fun PartnerChart(history: History) {
         Text(
           (timestamp.toDouble() % 24).roundToInt().toString() + "h",
           color = MaterialTheme.colors.onBackground,
-          style = MaterialTheme.typography.body2,
-          modifier = Modifier.padding(top = 2.dp)
+          style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, lineHeight = 12.sp),
         )
       },
       yAxisLabels = { }
