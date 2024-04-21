@@ -10,13 +10,18 @@ class History {
   class Entry(
     val stateToPeopleCount: Map<KClass<out Actor.State>, Int>,
     val worldPopulation: Int,
-    val time: Double,
+    val timestamp: Double,
     val peopleWithPartner: Int,
     val workingInfo: Map<WorkingCategory, Int>,
   )
 
-  private val _entries: MutableList<Entry> = mutableListOf()
-  val entries get(): List<Entry> = _entries
+  // TickEntries are stored for the last 24 hours, but one per simulation tick
+  private val _tickEntries: MutableList<Entry> = mutableListOf()
+  val tickEntries get(): List<Entry> = _tickEntries
+
+  // Long term entries are stored every few minutes, but infinite (so memory grows here linearly)
+  private val _longTermEntries: MutableList<Entry> = mutableListOf()
+  val longTermEntries get(): List<Entry> = _longTermEntries
 
   fun add(world: World, worldState: WorldState) {
 
@@ -25,17 +30,21 @@ class History {
 
     val currentWorkingCategory = world.actors.groupBy { it.workingCategory }
 
-    _entries.add(
-      Entry(
-        Actor.State.allStates.associateWith { currentStates[it]?.size ?: 0 },
-        world.actors.size,
-        worldState.timestamp,
-        world.actors.count { it.social.partner != null },
-        workingInfo = WorkingCategory.entries.associateWith { currentWorkingCategory[it]?.size ?: 0 }
-      )
+    val newEntry = Entry(
+      Actor.State.allStates.associateWith { currentStates[it]?.size ?: 0 },
+      world.actors.size,
+      worldState.timestamp,
+      world.actors.count { it.social.partner != null },
+      workingInfo = WorkingCategory.entries.associateWith { currentWorkingCategory[it]?.size ?: 0 }
     )
+    _tickEntries.add(newEntry)
 
-    // We only keep the last 24 hours
-    _entries.removeAll { it.time < worldState.timestamp - 24 }
+    // We only keep the last 24 hours for the tick entries
+    _tickEntries.removeAll { it.timestamp < worldState.timestamp - 24 }
+
+    // Add an entry every few minutes to the long term entries
+    if (_longTermEntries.isEmpty() || _longTermEntries.last().timestamp < worldState.timestamp - 0.1) {
+      _longTermEntries.add(newEntry)
+    }
   }
 }

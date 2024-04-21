@@ -20,11 +20,13 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PartnerChart(history: History) {
-  val lastEntry = history.entries.last()
+  val historyEntries =
+    history.longTermEntries.takeIf { it.last().timestamp - it.first().timestamp > 24 } ?: history.tickEntries
+  val lastEntry = historyEntries.last()
 
-  val partnerPercentageData = history.entries.map { entry ->
+  val partnerPercentageData = historyEntries.map { entry ->
     Point(
-      entry.time.toFloat(),
+      entry.timestamp.toFloat(),
       100f * entry.peopleWithPartner.toFloat() / entry.worldPopulation.toFloat()
     )
   }
@@ -39,14 +41,18 @@ fun PartnerChart(history: History) {
   Box(Modifier.height(100.dp).padding(end = 8.dp)) {
     XYGraph(
       rememberLinearAxisModel(
-        history.entries.first().time.toFloat()..lastEntry.time.toFloat() + 0.001f
+        historyEntries.first().timestamp.toFloat()..lastEntry.timestamp.toFloat() + 0.001f
       ),
       rememberLinearAxisModel(0f..100.0f),
       xAxisTitle = { },
       yAxisTitle = { },
       xAxisLabels = { timestamp ->
         Text(
-          (timestamp.toDouble() % 24).roundToInt().toString() + "h",
+          if (historyEntries.last().timestamp - historyEntries.first().timestamp < 24) {
+            (timestamp.toDouble() % 24).roundToInt().toString() + "h"
+          } else {
+            "day " + ((timestamp.toDouble() / 24).toInt() + 1)
+          },
           color = MaterialTheme.colors.onBackground,
           style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, lineHeight = 12.sp),
         )

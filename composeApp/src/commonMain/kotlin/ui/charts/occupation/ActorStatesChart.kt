@@ -28,19 +28,20 @@ import kotlin.math.roundToInt
 
 @Composable
 fun ActorStatesChart(history: History) {
-  val lastEntry = history.entries.last()
+  val historyEntries = history.tickEntries
+  val lastEntry = historyEntries.last()
   Box(modifier = Modifier.fillMaxWidth().padding(start = 6.dp, bottom = 6.dp)) {
     Text("State distribution")
   }
-  val gameHistory = history.entries
+  val gameHistory = historyEntries
       .map { entry -> entry.stateToPeopleCount.values.map { it / entry.worldPopulation.toFloat() }.toList() }
   val transposedGameHistory = gameHistory[0].indices.map { i -> gameHistory.map { it[i] } }
 
   val stackData: StackedAreaPlotDataAdapter<Float> = StackedAreaPlotDataAdapter(
-    history.entries.map { it.time.toFloat() },
+    historyEntries.map { it.timestamp.toFloat() },
     transposedGameHistory
   )
-  val stateHistoryStyle = history.entries.first().stateToPeopleCount.keys.map { stateClass ->
+  val stateHistoryStyle = historyEntries.first().stateToPeopleCount.keys.map { stateClass ->
     StackedAreaStyle(
       LineStyle(SolidColor(Color.Black), strokeWidth = 1.5.dp),
       AreaStyle(SolidColor(Actor.State.colors[stateClass]!!))
@@ -50,7 +51,7 @@ fun ActorStatesChart(history: History) {
   Box(Modifier.height(200.dp).padding(end = 8.dp)) {
     XYGraph(
       rememberLinearAxisModel(
-        history.entries.first().time.toFloat()..lastEntry.time.toFloat() + 0.001f
+        historyEntries.first().timestamp.toFloat()..lastEntry.timestamp.toFloat() + 0.001f
       ),
       rememberLinearAxisModel(0f..1.0f),
       xAxisTitle = { },

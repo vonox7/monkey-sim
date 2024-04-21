@@ -28,20 +28,22 @@ import kotlin.math.roundToInt
 
 @Composable
 fun OccupationChart(history: History) {
-  val lastEntry = history.entries.last()
+  val historyEntries =
+    history.longTermEntries.takeIf { it.last().timestamp - it.first().timestamp > 24 } ?: history.tickEntries
+  val lastEntry = historyEntries.last()
 
   Box(modifier = Modifier.fillMaxWidth().padding(start = 6.dp, bottom = 8.dp)) {
     Text("Occupation")
   }
 
-  val workingHistory = history.entries
-      .map { entry -> entry.workingInfo.values.map { it / entry.worldPopulation.toFloat() }.toList() }
+  val workingHistory = historyEntries
+    .map { entry -> entry.workingInfo.values.map { it / entry.worldPopulation.toFloat() }.toList() }
   val transposedWorkingHistory = workingHistory[0].indices.map { i -> workingHistory.map { it[i] } }
   val workingInfoData: StackedAreaPlotDataAdapter<Float> = StackedAreaPlotDataAdapter(
-    history.entries.map { it.time.toFloat() },
+    historyEntries.map { it.timestamp.toFloat() },
     transposedWorkingHistory
   )
-  val workingInfoStyle = history.entries.first().workingInfo.keys.map { category ->
+  val workingInfoStyle = historyEntries.first().workingInfo.keys.map { category ->
     StackedAreaStyle(
       LineStyle(SolidColor(Color.Black), strokeWidth = 1.5.dp),
       AreaStyle(SolidColor(WorkingCategory.colors[category]!!))
@@ -51,14 +53,18 @@ fun OccupationChart(history: History) {
   Box(Modifier.height(100.dp).padding(end = 8.dp)) {
     XYGraph(
       rememberLinearAxisModel(
-        history.entries.first().time.toFloat()..lastEntry.time.toFloat() + 0.001f
+        historyEntries.first().timestamp.toFloat()..lastEntry.timestamp.toFloat() + 0.001f
       ),
       rememberLinearAxisModel(0f..1.0f),
       xAxisTitle = { },
       yAxisTitle = { },
       xAxisLabels = { timestamp ->
         Text(
-          (timestamp.toDouble() % 24).roundToInt().toString() + "h",
+          if (historyEntries.last().timestamp - historyEntries.first().timestamp < 24) {
+            (timestamp.toDouble() % 24).roundToInt().toString() + "h"
+          } else {
+            "day " + ((timestamp.toDouble() / 24).toInt() + 1)
+          },
           color = MaterialTheme.colors.onBackground,
           style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, lineHeight = 12.sp),
         )
