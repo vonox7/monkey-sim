@@ -1,4 +1,4 @@
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -32,6 +32,8 @@ import kotlin.time.measureTime
 fun App() {
   MaterialTheme {
     val game = remember { Game() }
+
+    val leftSideScrollState = rememberScrollState()
 
     val paused = remember { mutableStateOf(false) }
     val speed = remember { mutableStateOf(Speed.NORMAL) }
@@ -78,7 +80,7 @@ fun App() {
     }
 
     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-      Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {
+      Box(Modifier.fillMaxWidth(0.35f).padding(16.dp).verticalScroll(leftSideScrollState)) {
         Column(Modifier.fillMaxSize()) {
           val actor = inspectingActor.value
 
@@ -133,7 +135,11 @@ fun App() {
         }
       }
 
-      VerticalDivider()
+      VerticalScrollbar(
+        modifier = Modifier.align(Alignment.CenterVertically)
+          .fillMaxHeight(),
+        adapter = rememberScrollbarAdapter(leftSideScrollState)
+      )
 
       Column(
         Modifier.fillMaxWidth().padding(16.dp),
