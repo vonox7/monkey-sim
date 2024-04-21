@@ -198,7 +198,7 @@ enum class Gender {
 enum class AgeCategory(val startAge: Double, val endAge: Double) {
   CHILD(startAge = 0.0, endAge = 18.0),
   ADULT(startAge = 18.0, endAge = 70.0),
-  SENIOR(startAge = 70.0, endAge = 100.00);
+  SENIOR(startAge = 70.0, endAge = Double.MAX_VALUE);
 
   val range: IntRange
     get() = startAge.toInt()..endAge.toInt()

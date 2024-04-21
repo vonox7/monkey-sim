@@ -220,7 +220,7 @@ fun generateSimpleGraz(): World {
 
   parkAreas.forEach { parkArea ->
     repeat(parkArea.density) {
-      places += Park(parkArea.toPosition(random))
+      places += Park(parkArea.toPosition(random), openHours = 6..22) // Don't go into parks when it is too dark
     }
   }
 

@@ -5,6 +5,8 @@ import display
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
+private val simulationYearInHours = 7 * 24 // 1 year has 7 days to make simulation faster
+
 fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
   decreaseNeeds(elapsedHours)
 
@@ -27,7 +29,8 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
         money -= 20 * elapsedHours
       }
 
-      is Educating -> yearsOfEducation += 0.1 * elapsedHours
+      // x4, as 6 hours of education = 1 day of education
+      is Educating -> yearsOfEducation += elapsedHours / simulationYearInHours * 4
 
       is InThePark -> {
         money -= 3 * elapsedHours
@@ -93,7 +96,7 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
 }
 
 private fun Actor.handleAge(elapsedHours: Double) {
-  age += elapsedHours / 24 / 7 // 1 year has 7 days to make simulation faster
+  age += elapsedHours / simulationYearInHours
 
   val work = workPlace?.work
 

@@ -95,7 +95,7 @@ fun App() {
             """
             Age: ${actor.age.display()}
             Money: ${actor.money.display()}€
-            Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "-"}
+            Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "[${actor.workingCategory.chartName}]"}
             Gender: ${actor.gender}
             ${if (actor.social.partner == null) "Preferred partner: ${actor.preferences.partnerGenderPreference}" else "Partner: ${actor.social.partner}"}            
             Years of education: ${actor.yearsOfEducation.display()}
@@ -164,7 +164,7 @@ fun App() {
             )
           } else {
             Text(
-              "${game.worldState} - ${tick.value} ticks - Simulation duration per tick: " +
+              "${game.worldState} - ${tick.value} ticks - Simulation duration per ${speed.value.factor} ${if (speed.value.factor == 1) "tick" else "ticks"}: " +
                   "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')} - " +
                   "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')}",
               style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
