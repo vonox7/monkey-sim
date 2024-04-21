@@ -263,17 +263,20 @@ private fun Actor.generateTargetState(
     return JobHunt(1.0, potentialWorkPlace.random())
   }
 
-  val friendToVisit = social.connections.entries.filter { (friend, strength) ->
-    strength >= 3 && // Visit people we already met a few times in public
-        friend.targetState.targetPlace == friend.home && // Visit friend if he is currently at home or traveling home
-        friend.targetState !is Sleeping && // Visit friends who are not sleeping
-        (age - friend.age).absoluteValue < 10 // Visit only friends who have roughly the same age
-  }.randomOrNull()?.key
-  if (friendToVisit != null) {
-    return VisitFriend(2.0, friendToVisit.home)
-  }
-
+  // Socialize
   if (social.connections.entries.sumOf { it.value } < preferences.minConnectionStrengthSum) {
+    // Either visit a friend
+    val friendToVisit = social.connections.entries.filter { (friend, strength) ->
+      strength > 1 && // Visit people we already met more than once in public
+          friend.targetState.targetPlace == friend.home && // Visit friend if he is currently at home or traveling home
+          friend.targetState !is Sleeping && // Visit friends who are not sleeping
+          (age - friend.age).absoluteValue < 10 // Visit only friends who have roughly the same age
+    }.randomOrNull()?.key
+    if (friendToVisit != null) {
+      return VisitFriend(2.0, friendToVisit.home)
+    }
+
+    // Or go to a public place
     val place = (listOf(Club::class, Gym::class, Park::class) +
         if (age.toInt() in 6..50 && workPlace == null && worldState.isWorkDay) listOf(University::class) else emptyList()
         )
