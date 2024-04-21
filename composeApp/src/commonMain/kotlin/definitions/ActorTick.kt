@@ -26,7 +26,7 @@ fun Actor.tick(world: World, worldState: WorldState, elapsedHours: Double) {
     when (targetState) {
       is Eating -> {
         needs.food.add(2.0, elapsedHours)
-        money -= 20 * elapsedHours
+        money -= if (targetState.targetPlace == home) 10 * elapsedHours else 20 * elapsedHours
       }
 
       // x4, as 6 hours of education = 1 day of education
