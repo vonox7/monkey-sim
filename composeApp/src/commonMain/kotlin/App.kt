@@ -132,7 +132,7 @@ fun App() {
           }
 
           Text(
-            "${game.worldState} - Simulation duration per tick: " +
+            "${game.worldState} - ${tick.value} ticks - Simulation duration per tick: " +
                 "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')} - " +
                 "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')}",
             style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
