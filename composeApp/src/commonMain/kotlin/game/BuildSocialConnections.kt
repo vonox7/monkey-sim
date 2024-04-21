@@ -48,6 +48,10 @@ private fun Actor.socializeWith(other: Actor) {
       this.home = other.home
       other.home.residents.add(this)
     }
-    println("LOVE!!! $this and $other are now partners")
+    val newLastName = if (other.age > age) other.lastName else lastName
+    println("LOVE!!! $this and $other are now partners and are now the $newLastName family")
+
+    lastName = newLastName
+    other.lastName = newLastName
   }
 }
