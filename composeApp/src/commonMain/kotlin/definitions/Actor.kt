@@ -6,7 +6,8 @@ import kotlin.random.Random
 
 class Actor(
   random: Random,
-  val name: String, // TODO split first+last; marry take name (fix also at children name generation)
+  val firstName: String,
+  var lastName: String,
   val needs: Needs,
 
   var yearsOfEducation: Double,
@@ -18,6 +19,8 @@ class Actor(
   var home: Home, // Needs to be manually synchronized with Home.residents
   var workPlace: Place? = null, // Needs to be manually synchronized with Place.Work.currentWorkingPeople
 ) {
+  val name: String get() = "$firstName $lastName"
+
   val partnerAgePreference: IntRange?
     get() {
       if (age <= 18) return null
@@ -164,25 +167,6 @@ class Actor(
   }
 
   companion object {
-    private val firstNames = mapOf(
-      Gender.Male to listOf(
-        "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles", "Daniel", "Matthew", "Anthony",
-        "Donald", "Mark", "Paul", "Steven", "Andrew", "Kenneth", "Joshua", "George", "Kevin", "Brian", "Edward", "Ronald", "Timothy"
-      ),
-      Gender.Female to listOf(
-        "Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen", "Nancy", "Lisa", "Betty",
-        "Dorothy", "Sandra", "Ashley", "Kimberly", "Donna", "Emily", "Michelle", "Carol", "Amanda", "Melissa", "Deborah", "Stephanie",
-      ),
-      Gender.Other to listOf(
-        "Alex", "Ali",
-      )
-    )
-
-    private val lastNames = listOf(
-      "Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson",
-      "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", "Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall",
-    )
-
     fun create(random: Random, home: Home, lastNameOverride: String? = null, ageOverride: Int? = null): Actor {
       val age = ageOverride ?: when (random.nextInt(0, 5)) {
         0 -> random.nextInt(0, 35)
@@ -199,10 +183,11 @@ class Actor(
       }
       return Actor(
         random,
-        name = "${firstNames[gender]!!.random(random)} ${lastNameOverride ?: lastNames.random(random)}",
+        firstName = ActorNames.firstNames[gender]!!.random(random),
+        lastName = lastNameOverride ?: ActorNames.lastNames.random(random),
         gender = gender,
         needs = Needs.default(),
-        yearsOfEducation = if (age <= 6) 0.0 else random.nextDouble(0.0, age - 5.0), // TODO better education system
+        yearsOfEducation = if (age <= 6) 0.0 else random.nextDouble(0.0, age - 5.0),
         age = age.toDouble(),
         currentPosition = home.position,
         home = home,
