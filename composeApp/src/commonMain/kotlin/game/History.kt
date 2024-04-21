@@ -23,13 +23,15 @@ class History {
     val currentStates: Map<KClass<out Actor.State>, List<Actor>> =
       world.actors.groupBy { actor -> actor.perceivedState::class }
 
+    val currentWorkingCategory = world.actors.groupBy { it.workingCategory }
+
     _entries.add(
       Entry(
         Actor.State.allStates.associateWith { currentStates[it]?.size ?: 0 },
         world.actors.size,
         worldState.timestamp,
         world.actors.count { it.social.partner != null },
-        workingInfo = world.actors.groupBy { it.workingCategory }.mapValues { it.value.size }
+        workingInfo = WorkingCategory.entries.associateWith { currentWorkingCategory[it]?.size ?: 0 }
       )
     )
 

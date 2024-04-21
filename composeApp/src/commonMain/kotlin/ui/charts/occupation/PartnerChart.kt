@@ -33,7 +33,7 @@ fun PartnerChart(history: History) {
     Spacer(Modifier.weight(1f))
     Text(
       "${lastEntry.peopleWithPartner} / ${lastEntry.worldPopulation} (${(100 * lastEntry.peopleWithPartner.toDouble() / lastEntry.worldPopulation.toDouble()).roundToInt()}%)",
-      style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
+      style = LocalTextStyle.current.copy(fontSize = 14.sp, fontFeatureSettings = "tnum"),
     )
   }
   Box(Modifier.height(100.dp).padding(end = 8.dp)) {
