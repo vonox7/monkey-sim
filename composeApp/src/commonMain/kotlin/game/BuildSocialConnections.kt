@@ -34,8 +34,14 @@ private fun Actor.socializeWith(other: Actor) {
   if (connection != null && connection > datingThreshold && this.lovePotential(other)) {
     social.connections.remove(other)
     social.connections.remove(this)
+
     social.partner = other
     other.social.partner = this
+
+    // We found a partner (which doesn't count into the social connection sum), so we don't need so much other connections any more
+    preferences.minConnectionStrengthSum /= 2
+    other.preferences.minConnectionStrengthSum /= 2
+
     if (other.money > this.money) {
       this.home = other.home
     }

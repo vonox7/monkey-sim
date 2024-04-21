@@ -106,6 +106,11 @@ private fun Actor.handleAge(elapsedHours: Double) {
     work.currentWorkingPeople -= 1
     workPlace = null
   }
+
+  if (social.partner == null && age.toInt() in AgeCategory.ADULT.range) {
+    // We have no partner ... with increase age we should look more for them
+    preferences.minConnectionStrengthSum += elapsedHours * 0.01
+  }
 }
 
 private fun Actor.generateTargetState(

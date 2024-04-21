@@ -77,7 +77,6 @@ fun App() {
       }
     }
 
-    //WeekView(game)
     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
       Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {
         Column(Modifier.fillMaxSize()) {
