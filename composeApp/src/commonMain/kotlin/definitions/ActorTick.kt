@@ -176,6 +176,16 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
       partner.preferences.minConnectionStrengthSum *= 2 // Other person want's to find new partner
     }
 
+    // Remove from parents/children
+    social.children.forEach { child ->
+      child.social.parents = child.social.parents.filter { it != this }
+    }
+    social.children.clear()
+    social.parents.forEach { parent ->
+      parent.social.children.removeAll { it == this }
+    }
+    social.parents = emptyList()
+
     // Make sure we remove any references so we can GC actors
     social.partner = null
     social.connections.clear()
