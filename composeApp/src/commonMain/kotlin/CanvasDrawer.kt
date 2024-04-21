@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.drawText
@@ -166,14 +165,11 @@ fun DrawWorldOnCanvas(
                 }
 
                 is Park -> {
-                  rotate(degrees = 45f) {
-                    drawRect(
-                      color = place.color,
-                      topLeft = resizedTopLeft - Offset(outline, outline),
-                      size = Size(size + outline * 2, size + outline * 2),
-                    )
-                  }
-
+                  drawRect(
+                    color = place.color,
+                    topLeft = resizedTopLeft - Offset(3.dp.toPx(), 3.dp.toPx()),
+                    size = Size(size + 6.dp.toPx(), size + 6.dp.toPx()),
+                  )
                 }
 
                 is Gym -> {
