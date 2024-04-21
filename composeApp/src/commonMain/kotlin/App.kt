@@ -115,6 +115,7 @@ fun App() {
             Connection sum: ${
               actor.social.connections.entries.sumOf { it.value }.display()
             } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
+            ${if (actor.social.children.isNotEmpty()) "${actor.social.children.count()} Children with ages: ${actor.social.children.map { it.age.display() }}" else ""}
             """.trimIndent().trim(),
             style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 17.sp),
           )
