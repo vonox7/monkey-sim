@@ -90,6 +90,7 @@ fun Actor.tick(
             // Decide to reproduce instead of watching TV. But no time for pregnancy, create baby instantly
             if (Random.nextDouble() < elapsedHours * 0.1) {
               val baby = Actor.create(Random, place, ageOverride = 0, lastNameOverride = this.name.split(" ").last())
+              home.residents.add(baby)
               baby.social.parents = listOf(this, partner)
               println("$name (${age.display()}) and ${partner.name} (${partner.age.display()}) got a baby: $baby")
               social.children.add(baby)
@@ -159,6 +160,9 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
     // Remove from work
     workPlace?.work?.let { it.currentWorkingPeople -= 1 }
     workPlace = null
+
+    // Remove from home
+    home.residents.remove(this)
 
     // Distribute inheritance between partner, children and grandchildren
     var inheritancePeople: List<Actor> =

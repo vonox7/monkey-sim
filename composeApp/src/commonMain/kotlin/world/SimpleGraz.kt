@@ -138,7 +138,9 @@ fun generateSimpleGraz(): World {
       val homePlace = Home(homeArea.toPosition(random))
       places += homePlace
       repeat(random.nextInt(1, 3)) {
-        actors += Actor.create(random, homePlace)
+        val newActor = Actor.create(random, homePlace)
+        actors += newActor
+        homePlace.residents += newActor
       }
     }
   }

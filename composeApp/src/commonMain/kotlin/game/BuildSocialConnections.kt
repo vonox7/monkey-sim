@@ -44,7 +44,9 @@ private fun Actor.socializeWith(other: Actor) {
     other.preferences.minConnectionStrengthSum /= 2
 
     if (other.money > this.money) {
+      this.home.residents.remove(other)
       this.home = other.home
+      other.home.residents.add(this)
     }
     println("LOVE!!! $this and $other are now partners")
   }

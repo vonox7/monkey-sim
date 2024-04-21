@@ -15,7 +15,7 @@ class Actor(
   var money: Double,
 
   var currentPosition: Position,
-  var home: Home,
+  var home: Home, // Needs to be manually synchronized with Home.residents
   var workPlace: Place? = null, // Needs to be manually synchronized with Place.Work.currentWorkingPeople
 ) {
   val partnerAgePreference: IntRange?

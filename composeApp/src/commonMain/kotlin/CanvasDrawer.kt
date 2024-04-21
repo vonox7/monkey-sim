@@ -90,124 +90,136 @@ fun DrawWorldOnCanvas(
       )
 
       fun drawPlaces() {
+        fun drawPlace(place: Place, placeColor: Color = place.color) {
+          val position = place.position
+          val topLeft = position.toOffset()
+          val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
+          val outline = 1.dp.toPx()
+          val size = 7.dp.toPx()
+          val resizedTopLeft = center - Offset(size, size) * 0.5f
+
+          fun DrawScope.drawBoxWithLeftSideShort() {
+            drawRect(
+              color = Color.White,
+              topLeft = resizedTopLeft - Offset(outline, outline),
+              size = Size(size + outline * 2, size + outline * 2),
+            )
+            val path = Path()
+            path.moveTo(resizedTopLeft.x, resizedTopLeft.y + size * 0.2f)
+            path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y)
+            path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y + size)
+            path.lineTo(resizedTopLeft.x, resizedTopLeft.y + size)
+            path.close()
+
+            drawPath(path, color = placeColor)
+          }
+
+          when (place) {
+            is Home -> {
+              drawRect(
+                color = Color.White,
+                topLeft = resizedTopLeft - Offset(outline, 0f),
+                size = Size(size + outline * 2, size + outline),
+              )
+              drawRect(
+                color = placeColor,
+                topLeft = resizedTopLeft,
+                size = Size(size, size),
+              )
+
+              // Draw house roof
+              val outlinePath = Path()
+              outlinePath.moveTo(resizedTopLeft.x - outline, resizedTopLeft.y)
+              outlinePath.lineTo(resizedTopLeft.x + size / 2, resizedTopLeft.y - size / 2 - outline)
+              outlinePath.lineTo(resizedTopLeft.x + size + outline, resizedTopLeft.y)
+              outlinePath.close()
+              drawPath(outlinePath, color = Color.White)
+
+              val path = Path()
+              path.moveTo(resizedTopLeft.x, resizedTopLeft.y)
+              path.lineTo(resizedTopLeft.x + size / 2, resizedTopLeft.y - size / 2)
+              path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y)
+              path.close()
+              drawPath(path, color = placeColor)
+            }
+
+            is FoodShop -> {
+              drawBoxWithLeftSideShort()
+            }
+
+            is Industry -> {
+              drawBoxWithLeftSideShort()
+
+              // Draw chimney
+              val chimneyPath = Path()
+              chimneyPath.moveTo(resizedTopLeft.x + size, resizedTopLeft.y + size * 0.1f)
+              chimneyPath.relativeLineTo(0f, -size * 0.5f)
+              chimneyPath.relativeLineTo(-size * 0.3f, 0f)
+              chimneyPath.relativeLineTo(0f, size * 0.5f)
+              chimneyPath.close()
+              drawPath(chimneyPath, color = placeColor)
+            }
+
+            is Park -> {
+              drawRect(
+                color = placeColor,
+                topLeft = resizedTopLeft - Offset(3.dp.toPx(), 3.dp.toPx()),
+                size = Size(size + 6.dp.toPx(), size + 6.dp.toPx()),
+              )
+            }
+
+            is Gym -> {
+              drawCircle(
+                color = Color.White,
+                center = center,
+                radius = size / 2 + outline,
+              )
+
+              drawText("🏋️", topLeft = resizedTopLeft, size = size)
+            }
+
+            is University -> {
+              drawCircle(
+                color = Color.White,
+                center = center,
+                radius = size / 2 + outline,
+              )
+
+              drawText("🎓", topLeft = resizedTopLeft, size = size)
+            }
+
+            is Club -> {
+              drawCircle(
+                color = Color.White,
+                center = center,
+                radius = size / 2 + outline,
+              )
+
+              drawText("🎉", topLeft = resizedTopLeft, size = size)
+            }
+          }
+        }
+
+        // Draw all places
         world.places
           .entries
           .sortedBy { it.value.first().zIndex }
           .forEach { (_, places) ->
             places.forEach { place ->
-              val position = place.position
-              val topLeft = position.toOffset()
-              val center = topLeft + (Position(1.0, 1.0).toOffset() * 0.5f)
-              val outline = 1.dp.toPx()
-              val size = 7.dp.toPx()
-              val resizedTopLeft = center - Offset(size, size) * 0.5f
-
-              fun DrawScope.drawBoxWithLeftSideShort() {
-                drawRect(
-                  color = Color.White,
-                  topLeft = resizedTopLeft - Offset(outline, outline),
-                  size = Size(size + outline * 2, size + outline * 2),
-                )
-                val path = Path()
-                path.moveTo(resizedTopLeft.x, resizedTopLeft.y + size * 0.2f)
-                path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y)
-                path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y + size)
-                path.lineTo(resizedTopLeft.x, resizedTopLeft.y + size)
-                path.close()
-
-                drawPath(path, color = place.color)
-              }
-
-              when (place) {
-                is Home -> {
-                  drawRect(
-                    color = Color.White,
-                    topLeft = resizedTopLeft - Offset(outline, 0f),
-                    size = Size(size + outline * 2, size + outline),
-                  )
-                  drawRect(
-                    color = place.color,
-                    topLeft = resizedTopLeft,
-                    size = Size(size, size),
-                  )
-
-                  // Draw house roof
-                  val outlinePath = Path()
-                  outlinePath.moveTo(resizedTopLeft.x - outline, resizedTopLeft.y)
-                  outlinePath.lineTo(resizedTopLeft.x + size / 2, resizedTopLeft.y - size / 2 - outline)
-                  outlinePath.lineTo(resizedTopLeft.x + size + outline, resizedTopLeft.y)
-                  outlinePath.close()
-                  drawPath(outlinePath, color = Color.White)
-
-                  val path = Path()
-                  path.moveTo(resizedTopLeft.x, resizedTopLeft.y)
-                  path.lineTo(resizedTopLeft.x + size / 2, resizedTopLeft.y - size / 2)
-                  path.lineTo(resizedTopLeft.x + size, resizedTopLeft.y)
-                  path.close()
-                  drawPath(path, color = place.color)
-                }
-
-                is FoodShop -> {
-                  drawBoxWithLeftSideShort()
-                }
-
-                is Industry -> {
-                  drawBoxWithLeftSideShort()
-
-                  // Draw chimney
-                  val chimneyPath = Path()
-                  chimneyPath.moveTo(resizedTopLeft.x + size, resizedTopLeft.y + size * 0.1f)
-                  chimneyPath.relativeLineTo(0f, -size * 0.5f)
-                  chimneyPath.relativeLineTo(-size * 0.3f, 0f)
-                  chimneyPath.relativeLineTo(0f, size * 0.5f)
-                  chimneyPath.close()
-                  drawPath(chimneyPath, color = place.color)
-                }
-
-                is Park -> {
-                  drawRect(
-                    color = place.color,
-                    topLeft = resizedTopLeft - Offset(3.dp.toPx(), 3.dp.toPx()),
-                    size = Size(size + 6.dp.toPx(), size + 6.dp.toPx()),
-                  )
-                }
-
-                is Gym -> {
-                  drawCircle(
-                    color = Color.White,
-                    center = center,
-                    radius = size / 2 + outline,
-                  )
-
-                  drawText("🏋️", topLeft = resizedTopLeft, size = size)
-                }
-
-                is University -> {
-                  drawCircle(
-                    color = Color.White,
-                    center = center,
-                    radius = size / 2 + outline,
-                  )
-
-                  drawText("🎓", topLeft = resizedTopLeft, size = size)
-                }
-
-                is Club -> {
-                  drawCircle(
-                    color = Color.White,
-                    center = center,
-                    radius = size / 2 + outline,
-                  )
-
-                  drawText("🎉", topLeft = resizedTopLeft, size = size)
-                }
+              if (place != inspectingActor.home && place != inspectingActor.workPlace) {
+                drawPlace(place)
               }
             }
           }
+
+        // Draw highlighted home & work
+        run {
+          drawPlace(inspectingActor.home, placeColor = Color(0xFFfb4332))
+          inspectingActor.workPlace?.let { drawPlace(it, placeColor = Color(0xFFfb4332)) }
+        }
       }
 
       fun drawActors() {
-
         world.actors
           .groupBy { it.currentPosition }
           .values
@@ -347,6 +359,36 @@ fun DrawWorldOnCanvas(
             val text = StringBuilder(place.toString())
             if (place !is Home && place.openHours != 0..0) {
               text.append("\nOpen hours: ${place.openHours}")
+            }
+            if (place is Home) {
+              text.append("\n${place.residents.count()} Residents:")
+
+              // Graph the residents by family relationship
+              val remainingResidents = place.residents.toMutableList()
+
+              fun handleFamily(actor: Actor, childLayer: Int) {
+                remainingResidents.remove(actor)
+
+                text.append("\n" + "  ".repeat(childLayer))
+
+                if (actor.social.partner in remainingResidents) {
+                  remainingResidents.remove(actor.social.partner)
+                  text.append("${actor.name} (${actor.age.display()}) & ${actor.social.partner!!.name} (${actor.social.partner!!.age.display()})")
+                } else {
+                  text.append("${actor.name} (${actor.age.display()})")
+                }
+
+                actor.social.children.forEach { child ->
+                  if (child.home == place && child in remainingResidents) {
+                    handleFamily(child, childLayer = childLayer + 1)
+                  }
+                }
+              }
+
+              while (remainingResidents.isNotEmpty()) {
+                val oldest = remainingResidents.maxBy { it.age }
+                handleFamily(oldest, childLayer = 0)
+              }
             }
             place.work?.let { work ->
               text.append("\nWork: $work")

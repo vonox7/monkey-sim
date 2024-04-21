@@ -64,4 +64,6 @@ class Park(position: Position, openHours: IntRange) :
   Place(position, openHours, work = null, zIndex = 6, color = Color(0xFF94f8b5)) // bright green
 
 class Home(position: Position) :
-  Place(position, openHours = 0..23, work = null, zIndex = 7, color = Color(0xFF94bdf8))
+  Place(position, openHours = 0..23, work = null, zIndex = 7, color = Color(0xFF94bdf8)) {
+  val residents: MutableList<Actor> = mutableListOf() // Needs to be manually synchronized with Actor.home
+}
