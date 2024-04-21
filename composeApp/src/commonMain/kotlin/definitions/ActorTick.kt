@@ -36,8 +36,9 @@ fun Actor.tick(
         money -= if (targetState.targetPlace == home) 10 * elapsedHours else 20 * elapsedHours
       }
 
-      // x4, as 6 hours of education = 1 day of education
-      is Educating -> yearsOfEducation += elapsedHours / simulationYearInHours * 4
+      // *4, as 6 hours of education = 1 day of education
+      // *7/5, as education doesn't happen on weekends
+      is Educating -> yearsOfEducation += elapsedHours / simulationYearInHours * 4 * 7 / 5
 
       is InThePark -> {
         money -= 3 * elapsedHours
