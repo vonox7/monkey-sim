@@ -2,6 +2,7 @@
 
 Try a live demo at [https://vonox7.github.io/monkey-sim/](https://vonox7.github.io/monkey-sim/).
 You might need a strong computer to run the whole simulation without frame drops.
+JVM desktop application is faster, see building section for instructions.
 
 ## Features
 
