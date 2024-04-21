@@ -90,7 +90,10 @@ fun Actor.tick(
             // Decide to reproduce instead of watching TV. But no time for pregnancy, create baby instantly
             if (Random.nextDouble() < elapsedHours * 0.1) {
               val baby = Actor.create(Random, place, ageOverride = 0, lastNameOverride = this.name.split(" ").last())
+              baby.social.parents = listOf(this, partner)
               println("$name (${age.display()}) and ${partner.name} (${partner.age.display()}) got a baby: $baby")
+              social.children.add(baby)
+              partner.social.children.add(baby)
               actorModifications.babies.add(baby)
             }
           }
@@ -151,13 +154,17 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
 
   // Death
   if (Random.nextDouble() < deathProbabilityPerHour * elapsedHours) {
-    println("$name died at age ${age.display()}")
-
     actorModifications.deaths.add(this)
 
     // Remove from work
     workPlace?.work?.let { it.currentWorkingPeople -= 1 }
     workPlace = null
+
+    // Distribute inheritance between partner, children and grandchildren
+    val inheritancePeople: List<Actor> =
+      listOfNotNull(social.partner) + social.children + social.children.flatMap { it.social.children }
+    val inheritancePerPerson = (money / inheritancePeople.size).coerceAtLeast(0.0)
+    inheritancePeople.forEach { it.money += inheritancePerPerson }
 
     // Remove from partner
     social.partner?.let { partner ->
@@ -173,6 +180,8 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
     alive = false
 
     // Don't clean social connections to the actor ... they will fade out over time
+
+    println("$name died at age ${age.display()} and gave ${money.display()}€ as inheritance to $inheritancePeople")
   }
 }
 

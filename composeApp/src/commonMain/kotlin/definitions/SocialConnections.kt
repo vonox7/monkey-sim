@@ -4,6 +4,8 @@ class SocialConnections {
   /** Map of actor to connection strength */
   val connections: MutableMap<Actor, Double> = mutableMapOf()
   var partner: Actor? = null
+  val children: MutableList<Actor> = mutableListOf()
+  var parents: List<Actor> = mutableListOf()
 }
 
 fun Actor.lovePotential(other: Actor): Boolean {
