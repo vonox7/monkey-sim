@@ -161,8 +161,12 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
     workPlace = null
 
     // Distribute inheritance between partner, children and grandchildren
-    val inheritancePeople: List<Actor> =
+    var inheritancePeople: List<Actor> =
       listOfNotNull(social.partner) + social.children + social.children.flatMap { it.social.children }
+    // Give inheritance to the first person they know who would need it
+    if (inheritancePeople.isEmpty()) {
+      inheritancePeople = listOfNotNull(social.connections.keys.firstOrNull { it.money < 0 })
+    }
     val inheritancePerPerson = (money / inheritancePeople.size).coerceAtLeast(0.0)
     inheritancePeople.forEach { it.money += inheritancePerPerson }
 
