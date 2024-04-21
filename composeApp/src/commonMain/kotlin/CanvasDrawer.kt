@@ -2,6 +2,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -11,15 +15,18 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import definitions.*
 import game.Game
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DrawWorldOnCanvas(
   inspectingActor: Actor,
@@ -27,19 +34,25 @@ fun DrawWorldOnCanvas(
   worldWidth: Int,
   worldHeight: Int,
 ) {
+  val mousePosition: MutableState<Offset?> = remember { mutableStateOf(null) }
   val textMeasurer = rememberTextMeasurer()
   val textStyle = LocalTextStyle.current
   val world = game.world
 
-  Canvas(modifier = Modifier.fillMaxSize()) {
+  Canvas(modifier = Modifier.fillMaxSize().onPointerEvent(PointerEventType.Move) {
+    val position = it.changes.first().position
+    mousePosition.value = position
+  }.onPointerEvent(PointerEventType.Exit) {
+    mousePosition.value = null
+  }) {
     inset(
       5.dp.toPx(),
     ) {
       val scope = this@inset
       fun Position.toOffset(): Offset {
         return Offset(
-          x.roundToInt().toFloat() / worldWidth * scope.size.width,
-          y.roundToInt().toFloat() / worldHeight * scope.size.height
+          (x / worldWidth * scope.size.width).toFloat(),
+          (y / worldHeight * scope.size.height).toFloat()
         )
       }
 
@@ -319,6 +332,42 @@ fun DrawWorldOnCanvas(
         }
       }
 
+      fun drawPlaceTooltip() {
+        if (mousePosition.value != null) {
+          val mouseCanvasPosition = mousePosition.value!!
+          val mouseWorldPosition = Position(
+            mouseCanvasPosition.x.toDouble() / size.width * worldWidth,
+            mouseCanvasPosition.y.toDouble() / size.height * worldHeight
+          )
+          val place = world.places.values.flatten().minByOrNull {
+            it.position.distanceTo(mouseWorldPosition)
+          }
+
+          if (place != null && place.position.distanceTo(mouseWorldPosition) < 10) {
+            val text = StringBuilder(place.toString())
+            if (place !is Home && place.openHours != 0..0) {
+              text.append("\nOpen hours: ${place.openHours}")
+            }
+            place.work?.let { work ->
+              text.append("\nWork: $work")
+              text.append("\nWorking hours: ${work.workableHours}")
+              if (work.coreWorkingHours != work.workableHours) {
+                text.append(" (core: ${work.coreWorkingHours})")
+              }
+            }
+
+            drawText(
+              textMeasurer,
+              text.toString(),
+              style = textStyle.copy(fontSize = 10.sp, lineHeight = 12.sp, background = Color(0xDDDDDDDD)),
+              topLeft = place.position.toOffset() + Offset(16.0f, 8.0f),
+              padding = 10.0f,
+              borderColor = Color(0xFF000000),
+            )
+          }
+        }
+      }
+
 
       drawBackground()
 
@@ -329,6 +378,8 @@ fun DrawWorldOnCanvas(
       drawSocialConnections(world)
 
       drawNighttimeOverlay()
+
+      drawPlaceTooltip()
     }
   }
 }

@@ -173,8 +173,8 @@ private fun Actor.generateTargetState(
     }
   }
 
-  // Find a job if you don't have one (and have less money than initial money)
-  if (age.toInt() in AgeCategory.ADULT.range && workPlace == null && money < age * 100 && worldState.isWorkDay) {
+  // Find a job if you don't have one (and have less than twice the initial money)
+  if (age.toInt() in AgeCategory.ADULT.range && workPlace == null && money < age * 100 * 2 && worldState.isWorkDay) {
     val potentialWorkPlace = (
         // Near places people know
         listOf(
