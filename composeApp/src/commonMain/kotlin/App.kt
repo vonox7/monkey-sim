@@ -129,14 +129,6 @@ fun App() {
           horizontalArrangement = Arrangement.Center,
           verticalAlignment = Alignment.CenterVertically
         ) {
-          OutlinedButton(onClick = { speed.value = speed.value.next }, modifier = Modifier.padding(end = 16.dp)) {
-            when (speed.value) {
-              Speed.NORMAL -> Text("1x")
-              Speed.DOUBLE -> Text("2x")
-              Speed.QUADRUPLE -> Text("4x")
-            }
-          }
-
           OutlinedButton(onClick = { paused.value = !paused.value }, modifier = Modifier.padding(end = 16.dp)) {
             if (paused.value) {
               Image(vectorResource(Res.drawable.play), null, Modifier.width(16.dp).height(16.dp))
@@ -145,6 +137,15 @@ fun App() {
             }
           }
 
+          OutlinedButton(onClick = { speed.value = speed.value.next }, modifier = Modifier.padding(end = 16.dp)) {
+            when (speed.value) {
+              Speed.NORMAL -> Text("1x")
+              Speed.DOUBLE -> Text("2x")
+              Speed.QUADRUPLE -> Text("4x")
+            }
+          }
+
+          Spacer(Modifier.weight(1f))
 
           if (lastTimeSimulationTookTooLong.value?.let { it.elapsedNow().inWholeSeconds > 1 } == true) {
             Text(
@@ -160,6 +161,8 @@ fun App() {
               style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
             )
           }
+
+          Spacer(Modifier.weight(2f))
         }
         Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
           WorldView(inspectingActor.value, game)
