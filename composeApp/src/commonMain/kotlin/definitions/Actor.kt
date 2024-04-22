@@ -15,7 +15,7 @@ class Actor(
   val gender: Gender,
   var money: Double,
 
-  var currentPosition: Position,
+  var currentPosition: Position, // Needs to be manually synchronized with World.actorsGroupedByPosition
   var home: Home, // Needs to be manually synchronized with Home.residents
   var workPlace: Place? = null, // Needs to be manually synchronized with Place.Work.currentWorkingPeople
 ) {

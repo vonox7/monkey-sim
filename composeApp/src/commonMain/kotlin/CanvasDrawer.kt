@@ -220,8 +220,7 @@ fun DrawWorldOnCanvas(
       }
 
       fun drawActors() {
-        world.actors
-          .groupBy { it.currentPosition }
+        world.actorsGroupedByPosition
           .values
           .forEach { actorsOnSameSpot ->
             val groupAxisSize = sqrt(actorsOnSameSpot.size.toDouble()).toInt()

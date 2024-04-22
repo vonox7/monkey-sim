@@ -23,7 +23,22 @@ fun Actor.tick(
   if (targetState.targetPlace.position != currentPosition) {
     val commuteSpeed = (if (money > 3_000) 600 else 200) * elapsedHours // TODO travel speed more than just by money
     val direction = currentPosition.directionTo(targetState.targetPlace.position, maxTravelSpeed = commuteSpeed)
+    val previousPosition = currentPosition
     currentPosition += Position(direction.dx, direction.dy)
+
+    // Update world.actorsGroupedByPosition
+    val previousPositionActors = world.actorsGroupedByPosition[previousPosition]!!
+    previousPositionActors.remove(this)
+    if (previousPositionActors.isEmpty()) {
+      world.actorsGroupedByPosition.remove(previousPosition)
+    }
+    val currentPositionActors = world.actorsGroupedByPosition[currentPosition]
+    if (currentPositionActors == null) {
+      world.actorsGroupedByPosition[currentPosition] = mutableListOf(this)
+    } else {
+      currentPositionActors.add(this)
+    }
+
     return
   }
 
@@ -130,7 +145,7 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
 
   val work = workPlace?.work
 
-  if (age !in AgeCategory.ADULT.range && work != null) {
+  if (age in AgeCategory.SENIOR.range && work != null) {
     // Retire
     world.log("$name is retiring at ${age.display()} from $workPlace $work")
     work.currentWorkingPeople -= 1

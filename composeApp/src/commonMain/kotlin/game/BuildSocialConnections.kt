@@ -6,8 +6,7 @@ import definitions.lovePotential
 import kotlin.random.Random
 
 fun Game.buildSocialConnections(elapsedHours: Double, world: World) {
-  this.world.actors
-    .groupBy { it.currentPosition }
+  this.world.actorsGroupedByPosition
     .forEach { (_, actors) ->
       val socializableActors = actors.filter { it.perceivedState.formSocialConnectionsPerHour > 0.0 }
       if (socializableActors.count() > 1) {

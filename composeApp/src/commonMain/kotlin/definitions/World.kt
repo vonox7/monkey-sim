@@ -15,4 +15,11 @@ open class World(
   }
 
   val settings = Settings()
+
+  // Needs to be manually synchronized with Actor.currentPosition
+  val actorsGroupedByPosition: MutableMap<Position, MutableList<Actor>> = actors
+    .groupingBy { it.currentPosition }
+    .aggregateTo(mutableMapOf()) { _, accumulator, element, _ ->
+      (accumulator ?: mutableListOf()).apply { add(element) }
+    }
 }
