@@ -23,16 +23,22 @@ private fun buildSocialConnections(actors: List<Actor>, elapsedHours: Double) {
 
       actor.socializeWith(randomOtherActor)
       randomOtherActor.socializeWith(actor)
+
+      // We socialized with max 1 person, that's enough for this tick.
+      // This favours actors that are at the beginning of the actor list more - but that's fine.
+      return@buildSocialConnections
     }
   }
 }
 
 private const val datingThreshold = 10
 private fun Actor.socializeWith(other: Actor) {
-  val connection = social.connections[other]
-  social.connections[other] = (connection ?: 0.0) + 1
+  val existingConnection = social.connections[other] ?: 0.0
+  // Build connections up to datingThreshold faster, then slower to not have 1 connection that is too strong and prevents from being social
+  val newConnection = existingConnection + (if (existingConnection > 10) 0.1 else 1.0)
+  social.connections[other] = newConnection
 
-  if (connection != null && connection > datingThreshold && this.lovePotential(other)) {
+  if (newConnection > datingThreshold && this.lovePotential(other)) {
     social.connections.remove(other)
     social.connections.remove(this)
 
