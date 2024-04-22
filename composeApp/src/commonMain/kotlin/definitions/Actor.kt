@@ -50,6 +50,7 @@ class Actor(
 
   val workingCategory
     get(): WorkingCategory = when (age) {
+      in AgeCategory.TODDLER.startAge..AgeCategory.TODDLER.endAge -> TODDLER
       in AgeCategory.CHILD.startAge..AgeCategory.CHILD.endAge -> CHILD
       in AgeCategory.ADULT.startAge..AgeCategory.ADULT.endAge -> if (workPlace != null) EMPLOYED else UNEMPLOYED
       in AgeCategory.SENIOR.startAge..AgeCategory.SENIOR.endAge -> RETIRED
@@ -157,7 +158,7 @@ class Actor(
         DurationalState.Eating::class to Color(0xAB108e5e),
         DurationalState.Educating::class to Color(0xABf8e394),
         Commuting::class to Color(0xAB302137),
-        DurationalState.InThePark::class to Color(0xAB94f8b5),
+        DurationalState.InThePark::class to Color(0xAB68b35b),
         DurationalState.AtTheClub::class to Color(0xABf8b594),
         DurationalState.AtTheGym::class to Color(0xAB6e45a8),
         DurationalState.WatchTv::class to Color(0x882739f0),
@@ -202,7 +203,8 @@ enum class Gender {
 }
 
 enum class AgeCategory(val startAge: Double, val endAge: Double) {
-  CHILD(startAge = 0.0, endAge = 18.0),
+  TODDLER(startAge = 0.0, endAge = 6.0),
+  CHILD(startAge = 6.0, endAge = 18.0),
   ADULT(startAge = 18.0, endAge = 70.0),
   SENIOR(startAge = 70.0, endAge = Double.MAX_VALUE);
 
@@ -211,6 +213,7 @@ enum class AgeCategory(val startAge: Double, val endAge: Double) {
 }
 
 enum class WorkingCategory(val chartName: String) {
+  TODDLER("Toddler"),
   CHILD("Child"),
   EMPLOYED("Employed"),
   UNEMPLOYED("Unemployed"),
@@ -218,10 +221,11 @@ enum class WorkingCategory(val chartName: String) {
 
   companion object {
     val colors = mapOf(
+      TODDLER to Color(0xAB94bdf8),
       CHILD to Color(0xABf8e394),
       EMPLOYED to Color(0xAB4e4553),
       UNEMPLOYED to Color(0xAB825d56),
-      RETIRED to Color(0xAB94bdf8),
+      RETIRED to Color(0xAB68b35b),
     )
   }
 }

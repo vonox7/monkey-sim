@@ -21,10 +21,11 @@ JVM desktop application is faster, see building section for instructions.
     - Lunch time is favoured by working actors between 12:00 and 14:00
     - Sleep time during the night. You can watch actors turn off the light when they go to sleep at night.
   - Day of the week: Education and work are only available on weekdays
-  - Age: Actors have 3 stages of life: Child, Adult, Senior.
-    - Children go to school (> 6 years) or just have fun (< 6 years)
-    - Adults work
-    - Seniors are retired from work
+  - Age: Actors have 4 stages of life: Toddler, Child, Adult, Senior.
+    - Toddler (<6 years): Can only stay at home and eat, sleep and watch TV
+    - Children (6-18 years): go to school and pursue daily life (except work)
+    - Adults (6-70 years): work and pursue daily life
+    - Seniors (70+): can retire from work and pursue daily life
 - Ageing and reproduction:
   - Actors look for a partner (based on their gender preference and age)
   - Actors can have children (if they have a partner and are in a fertile age)

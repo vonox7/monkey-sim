@@ -61,7 +61,7 @@ class University(position: Position, openHours: IntRange, work: Work) :
   Place(position, openHours, work, zIndex = 5, Color(0xFFf8e394)) // yellow
 
 class Park(position: Position, openHours: IntRange) :
-  Place(position, openHours, work = null, zIndex = 6, color = Color(0xFF94f8b5)) // bright green
+  Place(position, openHours, work = null, zIndex = 6, color = Color(0xAB68b35b)) // saturated light green
 
 class Home(position: Position) :
   Place(position, openHours = 0..23, work = null, zIndex = 7, color = Color(0xFF94bdf8)) {
