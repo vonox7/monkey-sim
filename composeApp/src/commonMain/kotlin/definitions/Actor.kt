@@ -50,10 +50,10 @@ class Actor(
 
   val workingCategory
     get(): WorkingCategory = when (age) {
-      in AgeCategory.TODDLER.startAge..AgeCategory.TODDLER.endAge -> TODDLER
-      in AgeCategory.CHILD.startAge..AgeCategory.CHILD.endAge -> CHILD
-      in AgeCategory.ADULT.startAge..AgeCategory.ADULT.endAge -> if (workPlace != null) EMPLOYED else UNEMPLOYED
-      in AgeCategory.SENIOR.startAge..AgeCategory.SENIOR.endAge -> RETIRED
+      in AgeCategory.TODDLER.range -> TODDLER
+      in AgeCategory.CHILD.range -> CHILD
+      in AgeCategory.ADULT.range -> if (workPlace != null) EMPLOYED else UNEMPLOYED
+      in AgeCategory.SENIOR.range -> RETIRED
       else -> UNEMPLOYED
     }
 
@@ -202,7 +202,7 @@ enum class Gender {
   Male, Female, Other;
 }
 
-enum class AgeCategory(val startAge: Double, val endAge: Double) {
+enum class AgeCategory(private val startAge: Double, private val endAge: Double) {
   TODDLER(startAge = 0.0, endAge = 6.0),
   CHILD(startAge = 6.0, endAge = 18.0),
   ADULT(startAge = 18.0, endAge = 70.0),
