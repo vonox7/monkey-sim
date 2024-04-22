@@ -23,7 +23,7 @@ class Game {
     actorModifications.deaths.forEach { world.actors.remove(it) }
 
     buildSocialConnections(elapsedHours)
-    decaySocialConnections(elapsedHours)
+    decaySocialConnections(elapsedHours, world)
     history.add(world, worldState)
   }
 }

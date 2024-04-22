@@ -61,7 +61,7 @@ fun App() {
           }
 
           lastTickDuration.value = renderTime
-          if (tick.value > 10) { // Let JIT optimize before starting "real" performance measurements
+          if (tick.value > 100) { // Let JIT optimize before starting "real" performance measurements
             maxTickDuration.value = maxOf(maxTickDuration.value ?: Duration.ZERO, renderTime)
           }
           if (renderTime.inWholeMilliseconds >= (1000.0 / 60 - 3)) {
