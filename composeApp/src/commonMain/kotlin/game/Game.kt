@@ -22,7 +22,7 @@ class Game {
     actorModifications.babies.forEach { world.actors.add(it) }
     actorModifications.deaths.forEach { world.actors.remove(it) }
 
-    buildSocialConnections(elapsedHours)
+    buildSocialConnections(elapsedHours, world)
     decaySocialConnections(elapsedHours, world)
     history.add(world, worldState)
   }

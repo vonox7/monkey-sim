@@ -17,7 +17,7 @@ fun Actor.tick(
 ) {
   decreaseNeeds(elapsedHours)
 
-  handleAge(elapsedHours, actorModifications)
+  handleAge(elapsedHours, actorModifications, world)
 
   // Commute
   if (targetState.targetPlace.position != currentPosition) {
@@ -62,7 +62,7 @@ fun Actor.tick(
           work?.let { it.currentWorkingPeople > it.maxPeople / 2 } == true
         ) {
           // You just got fired
-          println("$name got fired at $workPlace $work, oh no")
+          world.log("$name got fired at $workPlace $work, oh no")
           work.currentWorkingPeople -= 1
           workPlace = null
         }
@@ -74,7 +74,7 @@ fun Actor.tick(
           if (workPlace == null && work != null && work.currentWorkingPeople < work.maxPeople && yearsOfEducation >= work.minEducationYears) {
             workPlace = targetState.targetPlace
             work.currentWorkingPeople += 1
-            println("$name got hired at ${targetState.targetPlace} $work, yeah. workPlace=$workPlace, work=$work")
+            world.log("$name got hired at ${targetState.targetPlace} $work, yeah. workPlace=$workPlace, work=$work")
           }
         }
       }
@@ -92,7 +92,7 @@ fun Actor.tick(
               val baby = Actor.create(Random, place, ageOverride = 0, lastNameOverride = this.lastName)
               home.residents.add(baby)
               baby.social.parents = listOf(this, partner)
-              println("$name (${age.display()}) and ${partner.name} (${partner.age.display()}) got a baby: $baby")
+              world.log("$name (${age.display()}) and ${partner.name} (${partner.age.display()}) got a baby: $baby")
               social.children.add(baby)
               partner.social.children.add(baby)
               actorModifications.babies.add(baby)
@@ -125,14 +125,14 @@ private fun Actor.decreaseNeeds(elapsedHours: Double) {
   }
 }
 
-private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.ActorModifications) {
+private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.ActorModifications, world: World) {
   age += elapsedHours / simulationYearInHours
 
   val work = workPlace?.work
 
   if (age !in AgeCategory.ADULT.range && work != null) {
     // Retire
-    println("$name is retiring at ${age.display()} from $workPlace $work")
+    world.log("$name is retiring at ${age.display()} from $workPlace $work")
     work.currentWorkingPeople -= 1
     workPlace = null
   }
@@ -199,7 +199,7 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
 
     // Don't clean social connections to the actor ... they will fade out over time
 
-    println("$name died at age ${age.display()} and gave ${money.display()}€ as inheritance to $inheritancePeople")
+    world.log("$name died at age ${age.display()} and gave ${money.display()}€ as inheritance to $inheritancePeople")
   }
 }
 

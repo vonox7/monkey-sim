@@ -165,6 +165,7 @@ fun App() {
               Speed.NORMAL -> Text("1x")
               Speed.DOUBLE -> Text("2x")
               Speed.QUADRUPLE -> Text("4x")
+              Speed.TEN_X -> Text("10x")
             }
           }
 
@@ -207,13 +208,14 @@ fun WorldView(inspectingActor: Actor, game: Game) {
 }
 
 enum class Speed {
-  NORMAL, DOUBLE, QUADRUPLE;
+  NORMAL, DOUBLE, QUADRUPLE, TEN_X;
 
   val next: Speed
     get() = when (this) {
       NORMAL -> DOUBLE
       DOUBLE -> QUADRUPLE
-      QUADRUPLE -> NORMAL
+      QUADRUPLE -> TEN_X
+      TEN_X -> NORMAL
     }
 
   val factor: Int
@@ -221,5 +223,6 @@ enum class Speed {
       NORMAL -> 1
       DOUBLE -> 2
       QUADRUPLE -> 4
+      TEN_X -> 10
     }
 }

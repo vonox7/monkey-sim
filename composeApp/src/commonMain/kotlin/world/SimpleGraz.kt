@@ -239,12 +239,14 @@ fun generateSimpleGraz(): World {
     }
   }
 
-  println("All people: ${actors.count()}, working people: ${workPlaces.sumOf { it.work!!.currentWorkingPeople }}, available work places: ${workPlaces.sumOf { it.work!!.maxPeople }}")
-
-  return World(
+  val world = World(
     width = 1000,
     height = 1000,
     places = places.groupBy { it::class },
     actors = actors,
   )
+
+  world.log("All people: ${actors.count()}, working people: ${workPlaces.sumOf { it.work!!.currentWorkingPeople }}, available work places: ${workPlaces.sumOf { it.work!!.maxPeople }}")
+
+  return world
 }

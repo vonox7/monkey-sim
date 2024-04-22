@@ -1,28 +1,29 @@
 package game
 
 import definitions.Actor
+import definitions.World
 import definitions.lovePotential
 import kotlin.random.Random
 
-fun Game.buildSocialConnections(elapsedHours: Double) {
+fun Game.buildSocialConnections(elapsedHours: Double, world: World) {
   this.world.actors
     .groupBy { it.currentPosition }
     .forEach { (_, actors) ->
       val socializableActors = actors.filter { it.perceivedState.formSocialConnectionsPerHour > 0.0 }
       if (socializableActors.count() > 1) {
-        buildSocialConnections(socializableActors, elapsedHours)
+        buildSocialConnections(socializableActors, elapsedHours, world)
       }
     }
 }
 
-private fun buildSocialConnections(actors: List<Actor>, elapsedHours: Double) {
+private fun buildSocialConnections(actors: List<Actor>, elapsedHours: Double, world: World) {
   actors.forEach { actor ->
     if (Random.nextDouble() < actor.perceivedState.formSocialConnectionsPerHour * elapsedHours) {
       // Partners (and family house members) do not get a social connection, they are treated differently.
       val randomOtherActor = actors.random().takeIf { it != actor && it.home != actor.home } ?: return@forEach
 
-      actor.socializeWith(randomOtherActor)
-      randomOtherActor.socializeWith(actor)
+      actor.socializeWith(randomOtherActor, world)
+      randomOtherActor.socializeWith(actor, world)
 
       // We socialized with max 1 person, that's enough for this tick.
       // This favours actors that are at the beginning of the actor list more - but that's fine.
@@ -32,7 +33,7 @@ private fun buildSocialConnections(actors: List<Actor>, elapsedHours: Double) {
 }
 
 private const val datingThreshold = 10
-private fun Actor.socializeWith(other: Actor) {
+private fun Actor.socializeWith(other: Actor, world: World) {
   val existingConnection = social.connections[other] ?: 0.0
   // Build connections up to datingThreshold faster, then slower to not have 1 connection that is too strong and prevents from being social
   val newConnection = existingConnection + (if (existingConnection > 10) 0.1 else 1.0)
@@ -61,7 +62,7 @@ private fun Actor.socializeWith(other: Actor) {
     }
 
     val newLastName = if (other.age > age) other.lastName else lastName
-    println("LOVE!!! $this and $other are now partners and are now the $newLastName family")
+    world.log("LOVE!!! $this and $other are now partners and are now the $newLastName family")
 
     lastName = newLastName
     other.lastName = newLastName
