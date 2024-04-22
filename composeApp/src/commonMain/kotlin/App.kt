@@ -82,27 +82,48 @@ fun App() {
       }
     }
 
-    // Measure window size
     val windowWith = remember { mutableStateOf(0.0f) }
     val windowHeight = remember { mutableStateOf(0.0f) }
     BoxWithConstraints(Modifier.fillMaxSize(), propagateMinConstraints = true) {
       windowWith.value = this.maxWidth.value
       windowHeight.value = this.maxHeight.value
-    }
 
-    val segment = remember { mutableStateOf(0) }
+      val segment = remember { mutableStateOf(0) }
 
-    if (windowWith.value >= 900.0) {
-      // Desktop layout
-      Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-        Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {
-          SideMenu(game, inspectingActor, tick)
+      if (windowWith.value >= 900.0) {
+        // Desktop layout
+        Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+          Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {
+            SideMenu(game, inspectingActor, tick)
+          }
+
+          Column(
+            Modifier.fillMaxWidth().padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+          ) {
+            Row(
+              Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.Center,
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+              PauseButton(paused)
+
+              SpeedButton(speed)
+
+              Spacer(Modifier.weight(1f))
+
+              TickAndTimeInfo(lastTimesSimulationTookTooLong, game, tick, speed, lastTickDuration, maxTickDuration)
+
+              Spacer(Modifier.weight(2f))
+            }
+            Box(Modifier.weight(0.5f).aspectRatio(1f)) {
+              WorldView(inspectingActor.value, game)
+            }
+          }
         }
-
-        Column(
-          Modifier.fillMaxWidth().padding(16.dp),
-          horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+      } else {
+        // Mobile layout
+        Column(Modifier.fillMaxSize().padding(16.dp)) {
           Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -118,53 +139,31 @@ fun App() {
 
             Spacer(Modifier.weight(2f))
           }
-          Box(Modifier.weight(0.5f).aspectRatio(1f)) {
-            WorldView(inspectingActor.value, game)
-          }
-        }
-      }
-    } else {
-      // Mobile layout
-      Column(Modifier.fillMaxSize().padding(16.dp)) {
-        Row(
-          Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-          PauseButton(paused)
-
-          SpeedButton(speed)
-
-          Spacer(Modifier.weight(1f))
-
-          TickAndTimeInfo(lastTimesSimulationTookTooLong, game, tick, speed, lastTickDuration, maxTickDuration)
-
-          Spacer(Modifier.weight(2f))
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-          // Segmented buttons, they don't exist in the compose library - https://m3.material.io/components/segmented-buttons/overview
-          OutlinedButton(
-            onClick = { segment.value = 0 },
-            shape = RoundedCornerShape(topStart = 32.dp, bottomStart = 32.dp),
-            colors = if (segment.value == 0) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
-          ) {
-            Text("Map")
-          }
-          OutlinedButton(
-            onClick = { segment.value = 1 },
-            shape = RoundedCornerShape(topEnd = 32.dp, bottomEnd = 32.dp),
-            colors = if (segment.value == 1) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
-          ) {
-            Text("Charts")
-          }
-        }
-        Row {
-          if (segment.value == 0) {
-            Box(Modifier.fillMaxWidth().aspectRatio(1f, matchHeightConstraintsFirst = true)) {
-              WorldView(inspectingActor.value, game)
+          Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            // Segmented buttons, they don't exist in the compose library - https://m3.material.io/components/segmented-buttons/overview
+            OutlinedButton(
+              onClick = { segment.value = 0 },
+              shape = RoundedCornerShape(topStart = 32.dp, bottomStart = 32.dp),
+              colors = if (segment.value == 0) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
+            ) {
+              Text("Map")
             }
-          } else {
-            SideMenu(game, inspectingActor, tick)
+            OutlinedButton(
+              onClick = { segment.value = 1 },
+              shape = RoundedCornerShape(topEnd = 32.dp, bottomEnd = 32.dp),
+              colors = if (segment.value == 1) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
+            ) {
+              Text("Charts")
+            }
+          }
+          Row {
+            if (segment.value == 0) {
+              Box(Modifier.fillMaxWidth().aspectRatio(1f, matchHeightConstraintsFirst = true)) {
+                WorldView(inspectingActor.value, game)
+              }
+            } else {
+              SideMenu(game, inspectingActor, tick)
+            }
           }
         }
       }
