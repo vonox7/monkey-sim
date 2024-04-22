@@ -77,7 +77,7 @@ class Actor(
       class Working(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 1.0,
+        formSocialConnectionsPerHour = 0.1,
       )
 
       class JobHunt(hoursLeft: Double, targetPlace: Place) : DurationalState(
@@ -98,7 +98,7 @@ class Actor(
 
       class Educating(hoursLeft: Double, targetPlace: Place) : DurationalState(
         hoursLeft,
-        targetPlace, formSocialConnectionsPerHour = 1.0,
+        targetPlace, formSocialConnectionsPerHour = 0.1,
       )
 
       class InThePark(hoursLeft: Double, targetPlace: Park) : DurationalState(
@@ -122,7 +122,7 @@ class Actor(
       class WatchTv(hoursLeft: Double, targetPlace: Home) : DurationalState(
         hoursLeft,
         targetPlace,
-        formSocialConnectionsPerHour = 3.0,
+        formSocialConnectionsPerHour = 0.01,
       )
 
       class VisitFriend(hoursLeft: Double, targetPlace: Home) : DurationalState(

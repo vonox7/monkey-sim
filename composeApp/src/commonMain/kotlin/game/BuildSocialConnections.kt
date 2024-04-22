@@ -18,8 +18,8 @@ fun Game.buildSocialConnections(elapsedHours: Double) {
 private fun buildSocialConnections(actors: List<Actor>, elapsedHours: Double) {
   actors.forEach { actor ->
     if (Random.nextDouble() < actor.perceivedState.formSocialConnectionsPerHour * elapsedHours) {
-      // Partners do not get a social connection, they are treated differently.
-      val randomOtherActor = actors.random().takeIf { it != actor && it != actor.social.partner } ?: return@forEach
+      // Partners (and family house members) do not get a social connection, they are treated differently.
+      val randomOtherActor = actors.random().takeIf { it != actor && it.home != actor.home } ?: return@forEach
 
       actor.socializeWith(randomOtherActor)
       randomOtherActor.socializeWith(actor)
