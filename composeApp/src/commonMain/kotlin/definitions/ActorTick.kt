@@ -88,7 +88,7 @@ fun Actor.tick(
         if ((partner?.perceivedState as? WatchTv)?.targetPlace == targetState.targetPlace && place is Home) {
           if (isReproductive && partner.isReproductive && gender != partner.gender && social.children.none { it.age < 2 }) {
             // Decide to reproduce instead of watching TV. But no time for pregnancy, create baby instantly
-            if (Random.nextDouble() < elapsedHours * 0.1) {
+            if (Random.nextDouble() < elapsedHours * world.settings.fertilityRate) {
               val baby = Actor.create(Random, place, ageOverride = 0, lastNameOverride = this.lastName)
               home.residents.add(baby)
               baby.social.parents = listOf(this, partner)

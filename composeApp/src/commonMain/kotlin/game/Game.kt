@@ -1,12 +1,13 @@
 package game
 
 import definitions.Actor
+import definitions.World
 import definitions.WorldState
 import definitions.tick
 import world.generateSimpleGraz
 
 class Game {
-  val world = generateSimpleGraz()
+  val world: World = generateSimpleGraz()
   val worldState = WorldState(hour = 6.9, day = 0)
   val history = History().apply { add(world, worldState) }
 
