@@ -1,9 +1,16 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,22 +32,20 @@ import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
 import kotlin.time.measureTime
 
+private const val lastTimesSimulationTookTooLongSize = 10
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 @Preview
 fun App() {
   MaterialTheme {
     val game = remember { Game() }
 
-    val leftSideScrollState = rememberScrollState()
-
     val paused = remember { mutableStateOf(false) }
     val speed = remember { mutableStateOf(Speed.NORMAL) }
     val tick = remember { mutableStateOf(0) }
     val lastTimesSimulationTookTooLong: MutableState<MutableList<TimeSource.Monotonic.ValueTimeMark>> =
       remember { mutableStateOf(mutableListOf()) }
-    val lastTimesSimulationTookTooLongSize = 10
     val lastTickDuration = remember { mutableStateOf(Duration.ZERO) }
     val maxTickDuration: MutableState<Duration?> = remember { mutableStateOf(null) }
 
@@ -81,124 +86,206 @@ fun App() {
       }
     }
 
-    Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-      Box(Modifier.fillMaxWidth(0.35f).padding(16.dp).verticalScroll(leftSideScrollState)) {
-        Column(Modifier.fillMaxSize()) {
-          val actor = inspectingActor.value
+    val windowSizeClass = calculateWindowSizeClass()
+    val segment = remember { mutableStateOf(0) }
 
-          Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(actor.name, style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold))
+    if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
+      // Desktop layout
+      Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {
+          SideMenu(game, inspectingActor, tick)
+        }
+
+        Column(
+          Modifier.fillMaxWidth().padding(16.dp),
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+          ) {
+            PauseButton(paused)
+
+            SpeedButton(speed)
+
             Spacer(Modifier.weight(1f))
-            OutlinedButton(onClick = { inspectingActor.value = game.world.actors.random() }) {
-              Image(vectorResource(Res.drawable.refresh), null, Modifier.width(16.dp).height(16.dp))
-            }
+
+            TickAndTimeInfo(lastTimesSimulationTookTooLong, game, tick, speed, lastTickDuration, maxTickDuration)
+
+            Spacer(Modifier.weight(2f))
           }
-
-          Text(
-            """
-            Age: ${actor.age.display()}
-            Money: ${actor.money.display()}€
-            Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "[${actor.workingCategory.chartName}]"}
-            Gender: ${actor.gender}
-            ${
-              if (actor.social.partner == null) {
-                if (actor.partnerAgePreference == null) {
-                  "No preferred partner yet"
-                } else {
-                  "Preferred partner: ${actor.preferences.partnerGenderPreference} with age ${actor.partnerAgePreference!!.display()}"
-                }
-              } else {
-                "Partner: ${actor.social.partner}"
-              }
-            }            
-            Years of education: ${actor.yearsOfEducation.display()}
-            State: ${actor.perceivedState}
-            Strongest connection: ${
-              actor.social.connections.maxByOrNull { it.value }?.let { "${it.key}: ${it.value.display()}" } ?: "-"
-            }
-            Connection sum: ${
-              actor.social.connections.entries.sumOf { it.value }.display()
-            } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
-            ${if (actor.social.children.isNotEmpty()) "${actor.social.children.count()} Children with ages: ${actor.social.children.map { it.age.display() }}" else ""}
-            """.trimIndent().trim(),
-            style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 17.sp, fontFeatureSettings = "tnum"),
-          )
-
-          Spacer(Modifier.weight(1f))
-
-          Divider(Modifier.padding(vertical = 16.dp))
-
-          // Charts
-          PartnerChart(game.history)
-          Divider(Modifier.padding(vertical = 10.dp))
-          OccupationChart(game.history)
-          Divider(Modifier.padding(vertical = 16.dp))
-          ActorStatesChart(game.history)
+          Box(Modifier.weight(0.5f).aspectRatio(1f)) {
+            WorldView(inspectingActor.value, game)
+          }
         }
       }
-
-      VerticalScrollbar(
-        modifier = Modifier.align(Alignment.CenterVertically)
-          .fillMaxHeight(),
-        adapter = rememberScrollbarAdapter(leftSideScrollState)
-      )
-
-      Column(
-        Modifier.fillMaxWidth().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-      ) {
+    } else {
+      // Mobile layout
+      Column(Modifier.fillMaxSize().padding(16.dp)) {
         Row(
           Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.Center,
           verticalAlignment = Alignment.CenterVertically
         ) {
-          OutlinedButton(onClick = { paused.value = !paused.value }, modifier = Modifier.padding(end = 16.dp)) {
-            if (paused.value) {
-              Image(vectorResource(Res.drawable.play), null, Modifier.width(16.dp).height(16.dp))
-            } else {
-              Image(vectorResource(Res.drawable.pause), null, Modifier.width(16.dp).height(16.dp))
-            }
-          }
+          PauseButton(paused)
 
-          OutlinedButton(onClick = { speed.value = speed.value.next }, modifier = Modifier.padding(end = 16.dp)) {
-            when (speed.value) {
-              Speed.NORMAL -> Text("1x")
-              Speed.DOUBLE -> Text("2x")
-              Speed.QUADRUPLE -> Text("4x")
-              Speed.TEN_X -> Text("10x")
-            }
-          }
+          SpeedButton(speed)
 
           Spacer(Modifier.weight(1f))
 
-          if (lastTimesSimulationTookTooLong.value
-              .takeIf { it.count() == lastTimesSimulationTookTooLongSize }
-              ?.all { it.elapsedNow().inWholeSeconds < 2 } == true
-          ) {
-            // We skipped at least `lastTimesSimulationTookTooLongSize` ticks within the last 2 seconds
-            Text(
-              "${game.worldState} - ${tick.value} ticks - " +
-                  "Too fast, please run the simulation slower.",
-              style = LocalTextStyle.current.copy(color = MaterialTheme.colors.error)
-            )
-          } else {
-            Text(
-              "${game.worldState} - ${tick.value} ticks - Simulation duration per ${speed.value.factor} ${if (speed.value.factor == 1) "tick" else "ticks"}: " +
-                  "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')} - " +
-                  "max ${
-                    maxTickDuration.value?.toString(DurationUnit.MILLISECONDS, decimals = 0)?.padStart(5, '0') ?: "..."
-                  }",
-              style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
-            )
-          }
+          TickAndTimeInfo(lastTimesSimulationTookTooLong, game, tick, speed, lastTickDuration, maxTickDuration)
 
           Spacer(Modifier.weight(2f))
         }
-        Box(Modifier.weight(0.5f).aspectRatio(1f, matchHeightConstraintsFirst = true)) {
-          WorldView(inspectingActor.value, game)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+          // Segmented buttons, they don't exist in the compose library - https://m3.material.io/components/segmented-buttons/overview
+          OutlinedButton(
+            onClick = { segment.value = 0 },
+            shape = RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp),
+            colors = if (segment.value == 0) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
+          ) {
+            Text("Map")
+          }
+          OutlinedButton(
+            onClick = { segment.value = 1 },
+            shape = RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp),
+            colors = if (segment.value == 1) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
+          ) {
+            Text("Charts")
+          }
+        }
+        Row {
+          if (segment.value == 0) {
+            Box(Modifier.fillMaxWidth().aspectRatio(1f, matchHeightConstraintsFirst = true)) {
+              WorldView(inspectingActor.value, game)
+            }
+          } else {
+            SideMenu(game, inspectingActor, tick)
+          }
         }
       }
     }
+  }
+}
+
+@Composable
+fun SideMenu(game: Game, inspectingActor: MutableState<Actor>, tick: MutableState<Int>) {
+  Box(Modifier.fillMaxSize()) {
+    val leftSideScrollState = rememberScrollState()
+
+    Column(Modifier.fillMaxSize().verticalScroll(leftSideScrollState).padding(end = 16.dp)) {
+      val actor = inspectingActor.value
+
+      Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(actor.name, style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold))
+        Spacer(Modifier.weight(1f))
+        OutlinedButton(onClick = { inspectingActor.value = game.world.actors.random() }) {
+          Image(vectorResource(Res.drawable.refresh), null, Modifier.width(16.dp).height(16.dp))
+        }
+      }
+
+      Text(
+        """
+        Age: ${actor.age.display()}
+        Money: ${actor.money.display()}€
+        Workplace: ${actor.workPlace?.let { "$it ${it.work}" } ?: "[${actor.workingCategory.chartName}]"}
+        Gender: ${actor.gender}
+        ${
+          if (actor.social.partner == null) {
+            if (actor.partnerAgePreference == null) {
+              "No preferred partner yet"
+            } else {
+              "Preferred partner: ${actor.preferences.partnerGenderPreference} with age ${actor.partnerAgePreference!!.display()}"
+            }
+          } else {
+            "Partner: ${actor.social.partner}"
+          }
+        }            
+        Years of education: ${actor.yearsOfEducation.display()}
+        State: ${actor.perceivedState}
+        Strongest connection: ${
+          actor.social.connections.maxByOrNull { it.value }?.let { "${it.key}: ${it.value.display()}" } ?: "-"
+        }
+        Connection sum: ${
+          actor.social.connections.entries.sumOf { it.value }.display()
+        } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
+        ${if (actor.social.children.isNotEmpty()) "${actor.social.children.count()} Children with ages: ${actor.social.children.map { it.age.display() }}" else ""}
+        """.trimIndent().trim(),
+        style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 17.sp, fontFeatureSettings = "tnum"),
+      )
+      tick.value // Trigger recomposition when tick changes
+
+      Spacer(Modifier.weight(1f, fill = true))
+
+      Divider(Modifier.padding(vertical = 16.dp))
+
+      // Charts
+      PartnerChart(game.history)
+      Divider(Modifier.padding(vertical = 10.dp))
+      OccupationChart(game.history)
+      Divider(Modifier.padding(vertical = 16.dp))
+      ActorStatesChart(game.history)
+    }
+
+    VerticalScrollbar(
+      modifier = Modifier.fillMaxHeight().align(Alignment.CenterEnd),
+      adapter = rememberScrollbarAdapter(leftSideScrollState)
+    )
+  }
+}
+
+@Composable
+fun PauseButton(paused: MutableState<Boolean>) {
+  OutlinedButton(onClick = { paused.value = !paused.value }, modifier = Modifier.padding(end = 16.dp)) {
+    if (paused.value) {
+      Image(vectorResource(Res.drawable.play), null, Modifier.width(16.dp).height(16.dp))
+    } else {
+      Image(vectorResource(Res.drawable.pause), null, Modifier.width(16.dp).height(16.dp))
+    }
+  }
+}
+
+@Composable
+fun SpeedButton(speed: MutableState<Speed>) {
+  OutlinedButton(onClick = { speed.value = speed.value.next }, modifier = Modifier.padding(end = 16.dp)) {
+    when (speed.value) {
+      Speed.NORMAL -> Text("1x")
+      Speed.DOUBLE -> Text("2x")
+      Speed.QUADRUPLE -> Text("4x")
+      Speed.TEN_X -> Text("10x")
+    }
+  }
+}
+
+@Composable
+fun TickAndTimeInfo(
+  lastTimesSimulationTookTooLong: MutableState<MutableList<TimeSource.Monotonic.ValueTimeMark>>,
+  game: Game,
+  tick: MutableState<Int>,
+  speed: MutableState<Speed>,
+  lastTickDuration: MutableState<Duration>,
+  maxTickDuration: MutableState<Duration?>,
+) {
+  if (lastTimesSimulationTookTooLong.value
+      .takeIf { it.count() == lastTimesSimulationTookTooLongSize }
+      ?.all { it.elapsedNow().inWholeSeconds < 2 } == true
+  ) {
+    // We skipped at least `lastTimesSimulationTookTooLongSize` ticks within the last 2 seconds
+    Text(
+      "${game.worldState} - ${tick.value} ticks - " +
+          "Too fast, please run the simulation slower.",
+      style = LocalTextStyle.current.copy(color = MaterialTheme.colors.error, fontSize = 14.sp)
+    )
+  } else {
+    Text(
+      "${game.worldState} - ${tick.value} ticks - Simulation duration per ${speed.value.factor} ${if (speed.value.factor == 1) "tick" else "ticks"}: " +
+          "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')} - " +
+          "max ${
+            maxTickDuration.value?.toString(DurationUnit.MILLISECONDS, decimals = 0)?.padStart(5, '0') ?: "..."
+          }",
+      style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum", fontSize = 14.sp),
+    )
   }
 }
 
