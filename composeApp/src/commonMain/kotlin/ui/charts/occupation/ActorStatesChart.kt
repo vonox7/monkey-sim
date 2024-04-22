@@ -48,7 +48,7 @@ fun ActorStatesChart(history: History) {
     )
   }
 
-  Box(Modifier.height(200.dp).padding(end = 8.dp)) {
+  Box(Modifier.height(200.dp).padding(end = 8.dp).defaultMinSize(1.dp, 1.dp)) {
     XYGraph(
       rememberLinearAxisModel(
         historyEntries.first().timestamp.toFloat()..lastEntry.timestamp.toFloat() + 0.001f

@@ -37,7 +37,7 @@ fun PartnerChart(history: History) {
       style = LocalTextStyle.current.copy(fontSize = 14.sp, fontFeatureSettings = "tnum"),
     )
   }
-  Box(Modifier.height(100.dp).padding(end = 8.dp)) {
+  Box(Modifier.height(100.dp).padding(end = 8.dp).defaultMinSize(1.dp, 1.dp)) {
     XYGraph(
       rememberLinearAxisModel(
         historyEntries.first().timestamp.toFloat()..lastEntry.timestamp.toFloat() + 0.001f
