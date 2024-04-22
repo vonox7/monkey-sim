@@ -16,10 +16,17 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
-fun Double.display(decimals: Int = 2): String {
+fun Double.display(decimals: Int = 2, fillUpWithZeros: Boolean = true): String {
   require(decimals != 0) { "Use Math round to get an Int" }
   val factor = 10.toDouble().pow(decimals.toDouble())
-  return ((this * factor).roundToLong().toDouble() / factor).toString()
+  var string = ((this * factor).roundToLong().toDouble() / factor).toString()
+  if (fillUpWithZeros) {
+    val digitsAfterComma = string.substringAfter('.', "")
+    if (digitsAfterComma.length < decimals) {
+      string += "0".repeat(decimals - digitsAfterComma.length)
+    }
+  }
+  return string
 }
 
 // Draws a text with a padding (including background color). Implementation extracted from compose drawText()

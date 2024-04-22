@@ -119,7 +119,7 @@ fun App() {
             } (ideal: ${actor.preferences.minConnectionStrengthSum.display()})
             ${if (actor.social.children.isNotEmpty()) "${actor.social.children.count()} Children with ages: ${actor.social.children.map { it.age.display() }}" else ""}
             """.trimIndent().trim(),
-            style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 17.sp),
+            style = LocalTextStyle.current.copy(fontSize = 12.sp, lineHeight = 17.sp, fontFeatureSettings = "tnum"),
           )
 
           Spacer(Modifier.weight(1f))
