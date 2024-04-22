@@ -19,6 +19,8 @@ fun Actor.tick(
 
   handleAge(elapsedHours, actorModifications, world)
 
+  if (!this.alive) return // Actor might have died in handleAge(), so no further processing of the actor
+
   // Commute
   if (targetState.targetPlace.position != currentPosition) {
     val commuteSpeed = (if (money > 3_000) 600 else 200) * elapsedHours // TODO travel speed more than just by money
@@ -27,19 +29,9 @@ fun Actor.tick(
     currentPosition += Position(direction.dx, direction.dy)
 
     // Update world.actorsGroupedByPosition
-    val previousPositionActors = world.actorsGroupedByPosition[previousPosition]
-    previousPositionActors?.remove(this)
-    if (previousPositionActors == null) {
-      println(
-        "Actor $name ($age) is not in the actorsGroupedByPosition at $previousPosition. wtf?!? but he is in $currentPosition now. and in ${
-          world.actorsGroupedByPosition.filter {
-            it.value.contains(
-              this
-            )
-          }
-        }"
-      )
-    } else if (previousPositionActors.isEmpty()) {
+    val previousPositionActors = world.actorsGroupedByPosition[previousPosition]!!
+    previousPositionActors.remove(this)
+    if (previousPositionActors.isEmpty()) {
       world.actorsGroupedByPosition.remove(previousPosition)
     }
     val currentPositionActors = world.actorsGroupedByPosition[currentPosition]
