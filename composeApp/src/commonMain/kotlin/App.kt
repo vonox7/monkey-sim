@@ -4,9 +4,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +31,6 @@ import kotlin.time.measureTime
 
 private const val lastTimesSimulationTookTooLongSize = 10
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 @Preview
 fun App() {
@@ -86,10 +82,17 @@ fun App() {
       }
     }
 
-    val windowSizeClass = calculateWindowSizeClass()
+    // Measure window size
+    val windowWith = remember { mutableStateOf(0.0f) }
+    val windowHeight = remember { mutableStateOf(0.0f) }
+    BoxWithConstraints(Modifier.fillMaxSize(), propagateMinConstraints = true) {
+      windowWith.value = this.maxWidth.value
+      windowHeight.value = this.maxHeight.value
+    }
+
     val segment = remember { mutableStateOf(0) }
 
-    if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
+    if (windowWith.value >= 900.0) {
       // Desktop layout
       Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
         Box(Modifier.fillMaxWidth(0.35f).padding(16.dp)) {

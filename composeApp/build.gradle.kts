@@ -40,7 +40,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation("io.github.koalaplot:koalaplot-core:0.5.4")
-            implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
