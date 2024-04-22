@@ -314,6 +314,14 @@ private fun Actor.generateTargetState(
       return VisitFriend(2.0, friendToVisit.home)
     }
 
+    // Or friday & saturday is club time for adults
+    if (worldState.isFridayOrSaturday && age.toInt() in AgeCategory.ADULT.range) {
+      val club = getNearestOpenPlaces<Club>(world, worldState).randomOrNull()
+      if (club != null) {
+        return AtTheClub(24 - worldState.hour, club)
+      }
+    }
+
     // Or go to a public place
     val place = (listOf(Club::class, Gym::class, Park::class) +
         if (age.toInt() in 6..50 && workPlace == null && worldState.isWorkDay) listOf(University::class) else emptyList()
@@ -325,7 +333,6 @@ private fun Actor.generateTargetState(
       }
       .maxByOrNull { (place, preference) -> preference * place.position.distanceTo(currentPosition) }
       ?.first
-
 
     return when (place) {
       is Club -> AtTheClub(2.5, place)

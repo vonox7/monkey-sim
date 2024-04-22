@@ -9,6 +9,7 @@ class WorldState(
 
   val isWorkDay: Boolean get() = day < 5
   val isWeekend: Boolean get() = day >= 5
+  val isFridayOrSaturday: Boolean get() = day == 4 || day == 5
   val isLunchTime: Boolean get() = hour >= 12 && hour < 14
   val isDayTime: Boolean get() = hour >= 7 && hour < 20
   val isSleepTime: Boolean get() = hour >= 22 || hour < 6
