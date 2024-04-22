@@ -27,9 +27,19 @@ fun Actor.tick(
     currentPosition += Position(direction.dx, direction.dy)
 
     // Update world.actorsGroupedByPosition
-    val previousPositionActors = world.actorsGroupedByPosition[previousPosition]!!
-    previousPositionActors.remove(this)
-    if (previousPositionActors.isEmpty()) {
+    val previousPositionActors = world.actorsGroupedByPosition[previousPosition]
+    previousPositionActors?.remove(this)
+    if (previousPositionActors == null) {
+      println(
+        "Actor $name ($age) is not in the actorsGroupedByPosition at $previousPosition. wtf?!? but he is in $currentPosition now. and in ${
+          world.actorsGroupedByPosition.filter {
+            it.value.contains(
+              this
+            )
+          }
+        }"
+      )
+    } else if (previousPositionActors.isEmpty()) {
       world.actorsGroupedByPosition.remove(previousPosition)
     }
     val currentPositionActors = world.actorsGroupedByPosition[currentPosition]
@@ -111,6 +121,13 @@ fun Actor.tick(
               social.children.add(baby)
               partner.social.children.add(baby)
               actorModifications.babies.add(baby)
+
+              val currentPositionActors = world.actorsGroupedByPosition[currentPosition]
+              if (currentPositionActors == null) {
+                world.actorsGroupedByPosition[currentPosition] = mutableListOf(this)
+              } else {
+                currentPositionActors.add(this)
+              }
             }
           }
         }
@@ -208,6 +225,13 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
     // Make sure we remove any references so we can GC actors
     social.partner = null
     social.connections.clear()
+
+    // Remove from world.actorsGroupedByPosition
+    val previousPositionActors = world.actorsGroupedByPosition[currentPosition]!!
+    previousPositionActors.remove(this)
+    if (previousPositionActors.isEmpty()) {
+      world.actorsGroupedByPosition.remove(currentPosition)
+    }
 
     // Make sure the actor has no lovePotential any more
     alive = false
