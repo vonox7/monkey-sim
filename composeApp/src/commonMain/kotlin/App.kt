@@ -142,14 +142,14 @@ fun App() {
           // Segmented buttons, they don't exist in the compose library - https://m3.material.io/components/segmented-buttons/overview
           OutlinedButton(
             onClick = { segment.value = 0 },
-            shape = RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp),
+            shape = RoundedCornerShape(topStart = 32.dp, bottomStart = 32.dp),
             colors = if (segment.value == 0) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
           ) {
             Text("Map")
           }
           OutlinedButton(
             onClick = { segment.value = 1 },
-            shape = RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp),
+            shape = RoundedCornerShape(topEnd = 32.dp, bottomEnd = 32.dp),
             colors = if (segment.value == 1) ButtonDefaults.outlinedButtonColors(backgroundColor = Color(0xCCCCCCCC)) else ButtonDefaults.outlinedButtonColors(),
           ) {
             Text("Charts")
