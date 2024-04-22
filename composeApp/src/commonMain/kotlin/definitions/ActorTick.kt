@@ -212,8 +212,8 @@ private fun Actor.generateTargetState(
   // Toddler handling first, because they are pretty simple
   if (this.age.toInt() in AgeCategory.TODDLER.range) {
     return when {
-      needs.food.amount < 0.8 -> Eating(1.0, home)
-      needs.sleep.amount < 0.7 || worldState.isSleepTime -> Sleeping(6.0, home)
+      needs.food.amount < 0.8 -> Eating(Random.nextDouble(), home)
+      needs.sleep.amount < 0.7 || worldState.isSleepTime -> Sleeping(Random.nextDouble(0.0, 8.0), home)
       else -> WatchTv(2.0, home)
     }
   }
