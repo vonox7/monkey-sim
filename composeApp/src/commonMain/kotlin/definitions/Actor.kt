@@ -208,7 +208,7 @@ enum class AgeCategory(private val startAge: Double, private val endAge: Double)
   ADULT(startAge = 18.0, endAge = 70.0),
   SENIOR(startAge = 70.0, endAge = Double.MAX_VALUE);
 
-  val range = startAge..endAge
+  val range: OpenEndRange<Double> = startAge..<endAge
 }
 
 enum class WorkingCategory(val chartName: String) {
