@@ -40,9 +40,9 @@ fun App() {
     val tick = remember { mutableStateOf(0) }
     val lastTimesSimulationTookTooLong: MutableState<MutableList<TimeSource.Monotonic.ValueTimeMark>> =
       remember { mutableStateOf(mutableListOf()) }
-    val lastTimesSimulationTookTooLongSize = 5
+    val lastTimesSimulationTookTooLongSize = 10
     val lastTickDuration = remember { mutableStateOf(Duration.ZERO) }
-    val maxTickDuration = remember { mutableStateOf(Duration.ZERO) }
+    val maxTickDuration: MutableState<Duration?> = remember { mutableStateOf(null) }
 
     val inspectingActor = remember { mutableStateOf(game.world.actors.first()) }
 
@@ -61,7 +61,9 @@ fun App() {
           }
 
           lastTickDuration.value = renderTime
-          maxTickDuration.value = maxOf(maxTickDuration.value, renderTime)
+          if (tick.value > 10) { // Let JIT optimize before starting "real" performance measurements
+            maxTickDuration.value = maxOf(maxTickDuration.value ?: Duration.ZERO, renderTime)
+          }
           if (renderTime.inWholeMilliseconds >= (1000.0 / 60 - 3)) {
             lastTimesSimulationTookTooLong.value.add(lastTime)
             // Make sure we don't keep all the values forever
@@ -103,7 +105,7 @@ fun App() {
                 if (actor.partnerAgePreference == null) {
                   "No preferred partner yet"
                 } else {
-                  "Preferred partner: ${actor.preferences.partnerGenderPreference} with age ${actor.partnerAgePreference}"
+                  "Preferred partner: ${actor.preferences.partnerGenderPreference} with age ${actor.partnerAgePreference!!.display()}"
                 }
               } else {
                 "Partner: ${actor.social.partner}"
@@ -182,7 +184,9 @@ fun App() {
             Text(
               "${game.worldState} - ${tick.value} ticks - Simulation duration per ${speed.value.factor} ${if (speed.value.factor == 1) "tick" else "ticks"}: " +
                   "${lastTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')} - " +
-                  "max ${maxTickDuration.value.toString(DurationUnit.MILLISECONDS, decimals = 0).padStart(5, '0')}",
+                  "max ${
+                    maxTickDuration.value?.toString(DurationUnit.MILLISECONDS, decimals = 0)?.padStart(5, '0') ?: "..."
+                  }",
               style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
             )
           }

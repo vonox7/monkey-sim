@@ -130,14 +130,14 @@ private fun Actor.handleAge(elapsedHours: Double, actorModifications: Game.Actor
 
   val work = workPlace?.work
 
-  if (age.toInt() !in AgeCategory.ADULT.range && work != null) {
+  if (age !in AgeCategory.ADULT.range && work != null) {
     // Retire
     println("$name is retiring at ${age.display()} from $workPlace $work")
     work.currentWorkingPeople -= 1
     workPlace = null
   }
 
-  if (social.partner == null && age.toInt() in AgeCategory.ADULT.range) {
+  if (social.partner == null && age in AgeCategory.ADULT.range) {
     // We have no partner ... with increase age we should look more for them
     preferences.minConnectionStrengthSum += elapsedHours * 0.2
   }
@@ -210,7 +210,7 @@ private fun Actor.generateTargetState(
 ): Actor.State.DurationalState {
 
   // Toddler handling first, because they are pretty simple
-  if (this.age.toInt() in AgeCategory.TODDLER.range) {
+  if (this.age in AgeCategory.TODDLER.range) {
     return when {
       needs.food.amount < 0.8 -> Eating(Random.nextDouble(), home)
       needs.sleep.amount < 0.7 || worldState.isSleepTime -> Sleeping(Random.nextDouble(0.0, 8.0), home)
@@ -254,7 +254,7 @@ private fun Actor.generateTargetState(
     }
   }
 
-  if (worldState.isWorkDay && workPlace == null && age.toInt() in 6..25) {
+  if (worldState.isWorkDay && workPlace == null && age in 6.0..25.0) {
     val nearestSchool = getNearestOpenPlace<School>(world, worldState)
     if (nearestSchool != null) {
       return Educating(6.0, nearestSchool)
@@ -282,7 +282,7 @@ private fun Actor.generateTargetState(
   }
 
   // Find a job if you don't have one (and have less than twice the initial money)
-  if (age.toInt() in AgeCategory.ADULT.range && workPlace == null && money < age * 100 * 2 && worldState.isWorkDay) {
+  if (age in AgeCategory.ADULT.range && workPlace == null && money < age * 100 * 2 && worldState.isWorkDay) {
     val potentialWorkPlace = (
         // Near places people know
         listOf(
@@ -315,7 +315,7 @@ private fun Actor.generateTargetState(
     }
 
     // Or friday & saturday is club time for adults
-    if (worldState.isFridayOrSaturday && age.toInt() in AgeCategory.ADULT.range) {
+    if (worldState.isFridayOrSaturday && age in AgeCategory.ADULT.range) {
       val club = getNearestOpenPlaces<Club>(world, worldState).randomOrNull()
       if (club != null) {
         return AtTheClub(24 - worldState.hour, club)
@@ -324,7 +324,7 @@ private fun Actor.generateTargetState(
 
     // Or go to a public place
     val place = (listOf(Club::class, Gym::class, Park::class) +
-        if (age.toInt() in 6..50 && workPlace == null && worldState.isWorkDay) listOf(School::class) else emptyList()
+        if (age in 6.0..50.0 && workPlace == null && worldState.isWorkDay) listOf(School::class) else emptyList()
         )
       .flatMap { clazz ->
         val places = getNearestOpenPlaces(clazz, world, worldState)

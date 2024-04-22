@@ -229,7 +229,7 @@ fun generateSimpleGraz(): World {
   // Randomly assign people work
   val workPlaces = places.filter { it.work != null }
   actors.forEach { actor ->
-    if (actor.age.toInt() in AgeCategory.ADULT.range) {
+    if (actor.age in AgeCategory.ADULT.range) {
       val workPlace = workPlaces.shuffled(random)
         .firstOrNull { it.work!!.currentWorkingPeople < it.work.maxPeople && it.work.minEducationYears <= actor.yearsOfEducation.toInt() }
       if (workPlace != null) {

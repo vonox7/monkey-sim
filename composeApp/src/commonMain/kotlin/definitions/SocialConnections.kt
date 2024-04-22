@@ -13,8 +13,8 @@ fun Actor.lovePotential(other: Actor): Boolean {
       preferences.partnerGenderPreference == other.gender &&
       social.partner == null &&
       other.social.partner == null &&
-      partnerAgePreference?.let { other.age.toInt() in it } == true &&
-      other.partnerAgePreference?.let { age.toInt() in it } == true &&
+      partnerAgePreference?.let { other.age in it } == true &&
+      other.partnerAgePreference?.let { age in it } == true &&
       alive &&
       other.alive &&
       home != other.home // Avoid dating family members

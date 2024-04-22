@@ -29,6 +29,10 @@ fun Double.display(decimals: Int = 2, fillUpWithZeros: Boolean = true): String {
   return string
 }
 
+fun ClosedRange<Double>.display(decimals: Int = 2, fillUpWithZeros: Boolean = true): String {
+  return "${start.display(decimals, fillUpWithZeros)} - ${endInclusive.display(decimals, fillUpWithZeros)}"
+}
+
 // Draws a text with a padding (including background color). Implementation extracted from compose drawText()
 fun DrawScope.drawText(
   textMeasurer: TextMeasurer,

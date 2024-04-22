@@ -21,12 +21,12 @@ class Actor(
 ) {
   val name: String get() = "$firstName $lastName"
 
-  val partnerAgePreference: IntRange?
+  val partnerAgePreference: ClosedRange<Double>?
     get() {
       if (age <= 18) return null
       // XKCD Dating Pools https://xkcd.com/314/
-      val minAge = (age / 2.0 + 7).toInt().coerceAtLeast(18)
-      val maxAge = (age + (age - 10) * 0.7).toInt().coerceIn(minAge, 100)
+      val minAge = (age / 2.0 + 7).coerceAtLeast(18.0)
+      val maxAge = (age + (age - 10) * 0.7).coerceIn(minAge, 100.0)
       return minAge..maxAge
     }
 
@@ -35,7 +35,7 @@ class Actor(
 
   val preferences = Preferences(gender, random)
 
-  val isReproductive: Boolean get() = if (gender == Gender.Male) age.toInt() in 18..50 else age.toInt() in 18..35
+  val isReproductive: Boolean get() = if (gender == Gender.Male) age in 18.0..50.0 else age in 18.0..35.0
 
   val perceivedState: State
     get() {
@@ -208,8 +208,7 @@ enum class AgeCategory(val startAge: Double, val endAge: Double) {
   ADULT(startAge = 18.0, endAge = 70.0),
   SENIOR(startAge = 70.0, endAge = Double.MAX_VALUE);
 
-  val range: IntRange
-    get() = startAge.toInt()..endAge.toInt()
+  val range = startAge..endAge
 }
 
 enum class WorkingCategory(val chartName: String) {
