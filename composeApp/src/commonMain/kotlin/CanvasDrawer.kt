@@ -178,7 +178,7 @@ fun DrawWorldOnCanvas(
               drawText("🏋️", topLeft = resizedTopLeft, size = size)
             }
 
-            is University -> {
+            is School -> {
               drawCircle(
                 color = Color.White,
                 center = center,

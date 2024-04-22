@@ -179,7 +179,7 @@ fun generateSimpleGraz(): World {
 
   educationAreas.forEach { educationArea ->
     repeat(educationArea.density) {
-      places += University(
+      places += School(
         educationArea.toPosition(random), openHours = 8..16, work = Place.Work(
           maxPeople = random.nextInt(3, 30),
           minEducationYears = 12,

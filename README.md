@@ -48,7 +48,7 @@ JVM desktop application is faster, see building section for instructions.
   - Actors look for a job that is close to their home, or where people they know work
 - Education:
   - Children start their education at age 6
-  - At age 18 actors still go to university, but parallel look for jobs
+  - At age 18 actors still go to school, but parallel look for jobs
   - Actors can continue their education up to an age of 25
   - Each job has a certain education level requirement
 

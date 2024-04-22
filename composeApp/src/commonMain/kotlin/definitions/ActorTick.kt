@@ -255,7 +255,7 @@ private fun Actor.generateTargetState(
   }
 
   if (worldState.isWorkDay && workPlace == null && age.toInt() in 6..25) {
-    val nearestSchool = getNearestOpenPlace<University>(world, worldState)
+    val nearestSchool = getNearestOpenPlace<School>(world, worldState)
     if (nearestSchool != null) {
       return Educating(6.0, nearestSchool)
     }
@@ -324,7 +324,7 @@ private fun Actor.generateTargetState(
 
     // Or go to a public place
     val place = (listOf(Club::class, Gym::class, Park::class) +
-        if (age.toInt() in 6..50 && workPlace == null && worldState.isWorkDay) listOf(University::class) else emptyList()
+        if (age.toInt() in 6..50 && workPlace == null && worldState.isWorkDay) listOf(School::class) else emptyList()
         )
       .flatMap { clazz ->
         val places = getNearestOpenPlaces(clazz, world, worldState)
@@ -338,7 +338,7 @@ private fun Actor.generateTargetState(
       is Club -> AtTheClub(2.5, place)
       is Gym -> AtTheGym(2.0, place)
       is Park -> InThePark(1.5, place)
-      is University -> Educating(6.0, place)
+      is School -> Educating(6.0, place)
       else -> throw Exception("Can't happen")
     }
   }

@@ -57,7 +57,7 @@ class Club(position: Position, openHours: IntRange, work: Work) :
 class Gym(position: Position, openHours: IntRange, work: Work) :
   Place(position, openHours, work, zIndex = 4, Color(0xFF94f8e3)) // light blue
 
-class University(position: Position, openHours: IntRange, work: Work) :
+class School(position: Position, openHours: IntRange, work: Work) :
   Place(position, openHours, work, zIndex = 5, Color(0xFFf8e394)) // yellow
 
 class Park(position: Position, openHours: IntRange) :
