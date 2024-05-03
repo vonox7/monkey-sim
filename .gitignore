@@ -40,4 +40,3 @@ replay_pid*
 !gradle/wrapper/gradle-wrapper.jar
 *.klib
 *.salive
-yarn.lock
