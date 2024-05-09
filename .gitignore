@@ -38,5 +38,5 @@ replay_pid*
 
 # Other stuff
 !gradle/wrapper/gradle-wrapper.jar
-*.klib
+.kotlin
 *.salive
