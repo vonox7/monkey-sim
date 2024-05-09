@@ -9,21 +9,10 @@
     <style>
         .lds-ring {
             color: #1c4c5b;
-            position: absolute;
+            position: fixed;
             left: 50%;
-            transform: translate(0, -50%);
-        }
-
-        .lds-ring,
-        .lds-ring div {
-            box-sizing: border-box;
-        }
-
-        .lds-ring {
-            display: inline-block;
-            position: relative;
-            width: 80px;
-            height: 80px;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .lds-ring div {
@@ -32,6 +21,8 @@
             position: absolute;
             width: 64px;
             height: 64px;
+            left: -32px;
+            top: -32px;
             margin: 8px;
             border: 8px solid currentColor;
             border-radius: 50%;
