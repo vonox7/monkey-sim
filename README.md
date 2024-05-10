@@ -4,7 +4,7 @@ Try a live demo at [vonox7.github.io/monkey-sim/](https://vonox7.github.io/monke
 
 ![Screenshot of the simulator's web interface](/static/screenshot-1.png)
 
-![Short video demo of the application](/static/demo.mp4)
+<video alt="Short video demo of the application" src="/static/demo.mp4" controls="controls" style="max-width: 730px;"></video>
 
 ![Nighttime view of simulator](/static/screenshot-2.png)
 
