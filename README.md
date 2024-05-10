@@ -1,8 +1,15 @@
 # An artificial life simulator
 
-Try a live demo at [https://vonox7.github.io/monkey-sim/](https://vonox7.github.io/monkey-sim/).
-You might need a strong computer to run the whole simulation without frame drops.
-JVM desktop application is faster, see building section for instructions.
+Try a live demo at [vonox7.github.io/monkey-sim/](https://vonox7.github.io/monkey-sim/).
+
+![Screenshot of the simulator's web interface](/static/screenshot-1.png)
+
+![Short video demo of the application](/static/demo.mp4)
+
+![Nighttime view of simulator](/static/screenshot-2.png)
+
+💡 You might need a strong computer to run the whole simulation without frame drops. The JVM desktop application is faster, see building
+section for instructions.
 
 ## Features
 
@@ -10,15 +17,15 @@ JVM desktop application is faster, see building section for instructions.
   - Work
   - Eat
   - Sleep
-  - Socialize (by going to a Club or visiting a friend)
-  - Pursuing hobbies (by going to a Park or Gym)
+  - Socialize (by going to a club or visiting a friend)
+  - Pursuing hobbies (by going to a park or gym)
   - Leisure time by watching TV at home
 - Actors need to do their needs based on external and internal factors:
   - Time of the day:
     - Each place has a different opening time (depends on the type of place)
-    - Each workplace has different working hours. Some have even core hours where you need to work and hours where you
-      can work
-    - Lunch time is favoured by working actors between 12:00 and 14:00
+    - Each workplace has different working hours. Some have even core hours when employees _must_ work and hours when they
+      _can_ work
+    - Lunchtime is favoured by working actors between 12:00 and 14:00
     - Sleep time during the night. You can watch actors turn off the light when they go to sleep at night.
   - Day of the week: Education and work are only available on weekdays
   - Age: Actors have 4 stages of life: Toddler, Child, Adult, Senior.
@@ -55,12 +62,15 @@ JVM desktop application is faster, see building section for instructions.
 All features can be observed in the simulation by looking at the city map, following individual actors or analyzing the
 statistics.
 
+The map is inspired by the city [Graz](https://wikipedia.org/wiki/Graz), Austria.
+The distribution of areas like residential, industrial, parks and others is based on the real city.
+
 ## Building
 
 This is a [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html) project
 targeting Web via [Webassembly](https://kotl.in/wasm/) & Desktop.
-UI is build with [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform) and
-a custom canvas renderer for the simulation itself.
+The UI is built using [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform) and
+the simulation uses a custom canvas renderer.
 
 Run the JVM desktop application locally with `./gradlew desktopRun -DmainClass=MainKt --quiet`.
 And the web application with `./gradlew :composeApp:wasmJsBrowserDevelopmentRun`.
